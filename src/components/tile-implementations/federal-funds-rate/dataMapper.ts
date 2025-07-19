@@ -58,12 +58,4 @@ export class FederalFundsRateDataMapper extends BaseDataMapper<
       typeof firstObs.value === 'string'
     );
   }
-
-  createDefault(): FederalFundsRateTileData {
-    return {
-      currentRate: 0,
-      lastUpdate: new Date(),
-      historicalData: [],
-    };
-  }
 }

@@ -1,11 +1,11 @@
+/* eslint-disable no-undef, @typescript-eslint/no-require-imports */
 /* eslint-env node */
 /* global process */
 // Healthcheck script for dashboard API endpoints
 // Usage: node healthcheck.js
-// Requires: npm install node-fetch dotenv
+// Requires: npm install dotenv
 
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 dotenv.config();
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';

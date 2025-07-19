@@ -17,7 +17,11 @@ export function useTimeApi() {
       const url = buildApiUrl<TimeParams>(TIME_API_ENDPOINT, params);
 
       return dataFetcher.fetchAndMap(
-        () => fetch(url).then((res) => res.json()),
+        async () => {
+          const response = await fetch(url);
+          const data = await response.json();
+          return { data, status: response.status };
+        },
         tileId,
         TileType.TIME_HELSINKI,
         { apiCall: TileApiCallTitle.TIME, forceRefresh },

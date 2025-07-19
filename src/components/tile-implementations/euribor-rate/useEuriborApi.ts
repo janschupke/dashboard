@@ -17,7 +17,11 @@ export function useEuriborApi() {
       // Use ECB 12-month Euribor endpoint
       const url = buildApiUrl<EuriborParams>(ECB_EURIBOR_12M_ENDPOINT, params) + '?format=json';
       return dataFetcher.fetchAndMap(
-        () => fetch(url).then((res) => res.json()),
+        async () => {
+          const response = await fetch(url);
+          const data = await response.json();
+          return { data, status: response.status };
+        },
         tileId,
         TileType.EURIBOR_RATE,
         { apiCall: TileApiCallTitle.EURIBOR_RATE, forceRefresh },

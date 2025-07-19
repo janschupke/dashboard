@@ -24,7 +24,7 @@ export const COINGECKO_MARKETS_ENDPOINT: ApiEndpoint<CryptoMarketsParams> = {
 export interface WeatherParams {
   lat: number; // required
   lon: number; // required
-  appid: string; // API key, set from process.env.OPENWEATHERMAP_API_KEY
+  appid?: string; // API key, set from process.env.OPENWEATHERMAP_API_KEY
   units?: 'metric' | 'imperial' | 'kelvin';
   exclude?: string;
   [key: string]: string | number | undefined;
@@ -38,7 +38,7 @@ export const OPENWEATHERMAP_ONECALL_ENDPOINT: ApiEndpoint<WeatherParams> = {
 export interface AlphaVantageParams {
   function: string; // e.g. 'GLOBAL_QUOTE'
   symbol: string; // e.g. 'GDX'
-  apikey: string; // API key, set from process.env.ALPHA_VANTAGE_API_KEY
+  apikey?: string; // API key, set from process.env.ALPHA_VANTAGE_API_KEY
   [key: string]: string | undefined;
 }
 export const ALPHA_VANTAGE_GDX_ENDPOINT: ApiEndpoint<AlphaVantageParams> = {
@@ -50,7 +50,7 @@ export const ALPHA_VANTAGE_GDX_ENDPOINT: ApiEndpoint<AlphaVantageParams> = {
 export interface FredParams {
   series_id: string; // required, e.g. 'FEDFUNDS'
   file_type: 'json'; // required
-  api_key: string; // API key, set from process.env.FRED_API_KEY
+  api_key?: string; // API key, set from process.env.FRED_API_KEY
   observation_start?: string;
   observation_end?: string;
   frequency?: string;

@@ -6,6 +6,7 @@ import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import type { FredParams } from '../../../services/apiEndpoints';
+import { getApiKeys } from '../../../services/apiConfig';
 
 const FederalFundsRateTileContent = ({ data }: { data: FederalFundsRateTileData | null }) => {
   if (data) {
@@ -29,14 +30,17 @@ export const FederalFundsRateTile = ({
 }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getFederalFundsRate } = useFederalFundsApi();
+  const apiKeys = getApiKeys();
+
   const params = useMemo<FredParams>(
     () => ({
       series_id: 'FEDFUNDS',
       file_type: 'json',
-      api_key: import.meta.env.FRED_API_KEY,
+      ...(apiKeys.fred && { api_key: apiKeys.fred }),
     }),
-    [],
+    [apiKeys.fred],
   );
+
   const { data, status, lastUpdated } = useTileData(
     getFederalFundsRate,
     tile.id,

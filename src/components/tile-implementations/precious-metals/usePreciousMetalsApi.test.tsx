@@ -37,6 +37,7 @@ describe('usePreciousMetalsApi', () => {
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
+      status: 200,
       json: async () => mockResponse,
     });
 

@@ -23,7 +23,11 @@ export function useFederalFundsApi() {
     ): Promise<TileConfig<FederalFundsRateTileData>> => {
       const url = buildApiUrl<FredParams>(FRED_SERIES_OBSERVATIONS_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
-        () => fetch(url).then((res) => res.json()),
+        async () => {
+          const response = await fetch(url);
+          const data = await response.json();
+          return { data, status: response.status };
+        },
         tileId,
         TileType.FEDERAL_FUNDS_RATE,
         { apiCall: TileApiCallTitle.FEDERAL_FUNDS_RATE, forceRefresh },

@@ -5,6 +5,7 @@ import type { TyphoonTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { getApiKeys } from '../../../services/apiConfig';
 
 const TyphoonTileContent = ({ data }: { data: TyphoonTileData | null }) => {
   if (data && data.typhoons.length > 0) {
@@ -28,7 +29,10 @@ export const TyphoonTile = ({
 }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getTyphoonData } = useTyphoonApi();
-  const params = useMemo(() => 'demo-key', []);
+  const apiKeys = getApiKeys();
+
+  const params = useMemo(() => apiKeys.cwb || 'demo-key', [apiKeys.cwb]);
+
   const { data, status, lastUpdated } = useTileData(
     getTyphoonData,
     tile.id,

@@ -16,7 +16,11 @@ export function useWeatherApi() {
     ): Promise<TileConfig<WeatherTileData>> => {
       const url = buildApiUrl<WeatherParams>(OPENWEATHERMAP_ONECALL_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
-        () => fetch(url).then((res) => res.json()),
+        async () => {
+          const response = await fetch(url);
+          const data = await response.json();
+          return { data, status: response.status };
+        },
         tileId,
         TileType.WEATHER_HELSINKI,
         { apiCall: TileApiCallTitle.WEATHER, forceRefresh },

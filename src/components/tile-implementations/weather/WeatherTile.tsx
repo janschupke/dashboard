@@ -6,6 +6,7 @@ import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import type { WeatherParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
+import { getApiKeys } from '../../../services/apiConfig';
 
 const WeatherTileContent = ({ data }: { data: WeatherTileData | null }) => {
   if (data) {
@@ -31,15 +32,18 @@ export const WeatherTile = ({
 }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getWeather } = useWeatherApi();
+  const apiKeys = getApiKeys();
+
   const params = useMemo<WeatherParams>(
     () => ({
       lat: 60.1699,
       lon: 24.9384,
-      appid: import.meta.env.OPENWEATHERMAP_API_KEY,
+      ...(apiKeys.openWeatherMap && { appid: apiKeys.openWeatherMap }),
       units: 'metric',
     }),
-    [],
+    [apiKeys.openWeatherMap],
   );
+
   const { data, status, lastUpdated } = useTileData(getWeather, tile.id, params, isForceRefresh);
   return (
     <GenericTile

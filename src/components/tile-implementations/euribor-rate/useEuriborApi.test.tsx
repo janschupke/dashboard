@@ -55,7 +55,7 @@ describe('useEuriborApi', () => {
   });
 
   it('returns empty data and error if API returns not ok', async () => {
-    EndpointTestUtils.configureMock(API_ENDPOINTS.EMMI_EURIBOR, {
+    EndpointTestUtils.configureMock(API_ENDPOINTS.ECB_EURIBOR_12M, {
       shouldFail: false,
       status: 500,
       responseData: { error: 'API error' },
@@ -67,7 +67,7 @@ describe('useEuriborApi', () => {
   });
 
   it('returns empty data and error if fetch fails', async () => {
-    EndpointTestUtils.configureMock(API_ENDPOINTS.EMMI_EURIBOR, {
+    EndpointTestUtils.configureMock(API_ENDPOINTS.ECB_EURIBOR_12M, {
       shouldFail: true,
       errorType: 'network',
     });

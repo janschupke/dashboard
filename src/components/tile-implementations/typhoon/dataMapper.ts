@@ -60,7 +60,4 @@ export class TyphoonDataMapper extends BaseDataMapper<TyphoonApiResponse, Typhoo
       Array.isArray((records as { location?: unknown }).location)
     );
   }
-  createDefault(): TyphoonTileData {
-    return { typhoons: [], lastUpdated: '' };
-  }
 }

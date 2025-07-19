@@ -152,3 +152,36 @@ npm run test:ui      # Run tests with UI
 npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript type checking
 ```
+
+# Installation
+
+1. Clone the repository and install dependencies:
+
+   ```sh
+   git clone ...
+   cd dashboard
+   npm install
+   ```
+
+2. Copy `.env.example` to `.env` and fill in your API keys:
+
+   ```sh
+   cp .env.example .env
+   # Edit .env and add your API keys
+   ```
+
+3. **(Development only)**: Create `.env.local` for Vite client-side API keys:
+
+   ```sh
+   npm run env
+   ```
+
+   This script will create or update `.env.local` with all keys from `.env`, prefixed with `VITE_`. This ensures Vite can access the necessary keys on localhost only. Do not commit `.env.local` to version control.
+
+4. Start the development server:
+
+   ```sh
+   npm run dev
+   ```
+
+5. For production, only `.env` is required. API keys are never exposed to the client in production.

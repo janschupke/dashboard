@@ -199,8 +199,8 @@ describe('useCryptoApi', () => {
       const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
 
       // Assert
-      const data = fetchResult.data;
-      expect(data?.coins).toEqual([]);
+      expect(fetchResult.data).toBeNull();
+      expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     });
   });
 

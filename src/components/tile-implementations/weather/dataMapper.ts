@@ -113,31 +113,4 @@ export class WeatherDataMapper extends BaseDataMapper<WeatherApiResponse, Weathe
       typeof weather.icon === 'string'
     );
   }
-
-  createDefault(): WeatherTileData {
-    return {
-      city: 'Helsinki',
-      country: 'Finland',
-      temperature: {
-        current: 0,
-        feels_like: 0,
-        min: 0,
-        max: 0,
-      },
-      conditions: {
-        main: 'Unknown',
-        description: 'No data available',
-        icon: '01d',
-      },
-      humidity: 0,
-      wind: {
-        speed: 0,
-        direction: 0,
-      },
-      pressure: 0,
-      visibility: 0,
-      timestamp: Date.now(),
-      daily: [],
-    };
-  }
 }

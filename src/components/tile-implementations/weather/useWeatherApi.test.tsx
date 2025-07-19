@@ -86,12 +86,13 @@ describe('useWeatherApi', () => {
         timezone: 'Europe/Berlin',
       });
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
+
+      // Act
       const fetchResult = await result.current.getWeather(mockTileId, mockParams);
-      expect(fetchResult).toBeDefined();
-      const data = fetchResult.data;
-      // Since the data mapper will return default values, check for those
-      expect(data?.temperature?.current).toBe(0);
-      expect(data?.conditions?.main).toBe('Unknown');
+
+      // Assert
+      expect(fetchResult.data).toBeNull();
+      expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     });
 
     it('should handle delayed response', async () => {

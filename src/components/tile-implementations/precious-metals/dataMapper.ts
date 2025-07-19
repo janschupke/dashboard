@@ -37,11 +37,4 @@ export class PreciousMetalsDataMapper extends BaseDataMapper<
       typeof (apiResponse as { price: unknown }).price === 'number'
     );
   }
-
-  createDefault(): PreciousMetalsTileData {
-    return {
-      gold: { price: 0, change_24h: 0, change_percentage_24h: 0 },
-      silver: { price: 0, change_24h: 0, change_percentage_24h: 0 },
-    };
-  }
 }

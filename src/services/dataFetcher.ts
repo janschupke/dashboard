@@ -11,6 +11,11 @@ import { DataParserRegistry } from './dataParser';
 
 export const DATA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+export interface FetchResponse {
+  data: unknown;
+  status: number;
+}
+
 export interface FetchOptions {
   forceRefresh?: boolean;
   apiCall: string;
@@ -27,7 +32,7 @@ export class DataFetcher {
 
   // Helper to handle fetch, status extraction, mapping/parsing, and error logging
   private async handleFetchAndTransform<TTileData extends TileDataType>(
-    fetchFunction: () => Promise<unknown>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     apiCall: string,
     transform: (input: unknown) => TTileData,
@@ -76,6 +81,19 @@ export class DataFetcher {
           { status: httpStatus },
         );
       }
+      // Alpha Vantage and similar APIs: treat 'Information', 'Error Message', 'Note' as errors
+      if (apiResponse && typeof apiResponse === 'object') {
+        const avErrorFields = ['Information', 'Error Message', 'Note'];
+        const responseObj = apiResponse as Record<string, unknown>;
+        for (const field of avErrorFields) {
+          if (field in responseObj && typeof responseObj[field] === 'string') {
+            const error = new Error(responseObj[field] as string);
+            // Preserve the HTTP status code for logging
+            Object.assign(error, { status: httpStatus });
+            throw error;
+          }
+        }
+      }
 
       const transformed = transform(apiResponse);
       const tileState: TileState<TTileData> = {
@@ -83,6 +101,7 @@ export class DataFetcher {
         lastDataRequest: now,
         lastDataRequestSuccessful: true,
       };
+
       storageManager.setTileState<TTileData>(storageKey, tileState);
       return tileState;
     } catch (error: unknown) {
@@ -123,7 +142,7 @@ export class DataFetcher {
     TApiResponse extends BaseApiResponse | BaseApiResponse[],
     TTileData extends TileDataType,
   >(
-    fetchFunction: () => Promise<TApiResponse>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },
@@ -143,7 +162,7 @@ export class DataFetcher {
   }
 
   async fetchAndParse<TTileType extends string, TRawData, TTileData extends TileDataType>(
-    fetchFunction: () => Promise<TRawData>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },

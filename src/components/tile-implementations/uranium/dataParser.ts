@@ -25,14 +25,4 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
   validate(html: unknown): html is string {
     return typeof html === 'string' && html.includes('spot-price');
   }
-
-  createDefault(): UraniumTileData {
-    return {
-      spotPrice: 0,
-      change: 0,
-      changePercent: 0,
-      lastUpdated: new Date().toISOString(),
-      history: [],
-    };
-  }
 }

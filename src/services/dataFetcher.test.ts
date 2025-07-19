@@ -21,9 +21,6 @@ describe('DataFetcher.fetchAndParse', () => {
     validate(rawData: unknown): rawData is RawData {
       return typeof rawData === 'object' && rawData !== null && 'value' in rawData;
     }
-    createDefault(): TileData {
-      return { doubled: 0 };
-    }
   }
 
   class ThrowingParser extends BaseDataParser<RawData, TileData> {
@@ -32,9 +29,6 @@ describe('DataFetcher.fetchAndParse', () => {
     }
     validate(_rawData: unknown): _rawData is RawData {
       return true;
-    }
-    createDefault(): TileData {
-      return { doubled: 0 };
     }
   }
 
@@ -52,7 +46,7 @@ describe('DataFetcher.fetchAndParse', () => {
   });
 
   it('parses raw data successfully', async () => {
-    const fetchFunction = async () => ({ value: 5 });
+    const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
     const result = await fetcher.fetchAndParse(fetchFunction, 'parse-success-key', tileType);
     expect(result.data).toEqual({ doubled: 10 });
     // No error or isCached fields anymore
@@ -60,22 +54,22 @@ describe('DataFetcher.fetchAndParse', () => {
   });
 
   it('returns error if parser not found', async () => {
-    const fetchFunction = async () => ({ value: 5 });
+    const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
     await expect(
       fetcher.fetchAndParse(fetchFunction, 'parser-not-found-key', 'unknown-tile'),
     ).rejects.toThrow(/No parser registered/);
   });
 
-  it('returns error if parse throws', async () => {
-    const fetchFunction = async () => ({ value: 5 });
+  it('returns null data when parse throws', async () => {
+    const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
     const result = await fetcher.fetchAndParse(fetchFunction, 'parse-throws-key', 'throw-tile');
-    expect(result.data).toEqual({ doubled: 0 });
-    expect(result.lastDataRequestSuccessful).toBe(true); // safeParse returns default, so this is true
+    expect(result.data).toBeNull();
+    expect(result.lastDataRequestSuccessful).toBe(false);
   });
 
   it('returns cached data if fresh', async () => {
     // First call to cache data
-    const fetchFunction = async () => ({ value: 7 });
+    const fetchFunction = async () => ({ data: { value: 7 }, status: 200 });
     await fetcher.fetchAndParse(fetchFunction, 'cache-key', tileType, {
       forceRefresh: true,
       apiCall: tileType,
@@ -88,7 +82,7 @@ describe('DataFetcher.fetchAndParse', () => {
 
   it('returns cached data when fetch fails', async () => {
     // First call to cache data
-    const fetchFunction = async () => ({ value: 7 });
+    const fetchFunction = async () => ({ data: { value: 7 }, status: 200 });
     await fetcher.fetchAndParse(fetchFunction, 'cache-fail-key', tileType, {
       forceRefresh: true,
       apiCall: tileType,
@@ -116,9 +110,6 @@ describe('DataParserRegistry', () => {
     }
     validate(raw: unknown): raw is Raw {
       return typeof raw === 'object' && raw !== null && 'foo' in raw;
-    }
-    createDefault(): Data {
-      return { bar: '' };
     }
   }
   it('registers and retrieves a parser', () => {

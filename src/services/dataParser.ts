@@ -19,15 +19,9 @@ export interface DataParser<TRawData, TTileData> {
   validate(rawData: unknown): rawData is TRawData;
 
   /**
-   * Creates a default/empty tile content data object
-   * @returns Default tile content data
-   */
-  createDefault(): TTileData;
-
-  /**
    * Safely parses raw data with error handling
    * @param rawData - Raw scraped data
-   * @returns Parsed tile content data or default if parsing fails
+   * @returns Parsed tile content data or throws error if parsing fails
    */
   safeParse(rawData: unknown): TTileData;
 }
@@ -42,7 +36,6 @@ export abstract class BaseDataParser<TRawData, TTileData>
 {
   abstract parse(rawData: TRawData): TTileData;
   abstract validate(rawData: unknown): rawData is TRawData;
-  abstract createDefault(): TTileData;
 
   safeParse(rawData: unknown): TTileData {
     if (this.validate(rawData)) {
@@ -50,11 +43,11 @@ export abstract class BaseDataParser<TRawData, TTileData>
         return this.parse(rawData);
       } catch (error) {
         console.error('Data parsing failed:', error);
-        return this.createDefault();
+        throw new Error('Data parsing failed - no valid data available');
       }
     }
     console.warn('Invalid raw data format');
-    return this.createDefault();
+    throw new Error('Invalid raw data format - no valid data available');
   }
 }
 

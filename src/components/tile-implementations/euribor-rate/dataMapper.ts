@@ -38,15 +38,10 @@ export const ecbEuriborDataMapper: DataMapper<EuriborRateApiResponse, EuriborRat
     try {
       return this.map(apiResponse);
     } catch {
-      return this.createDefault();
+      throw new Error('Failed to map Euribor rate data - no valid data available');
     }
   },
   validate: (data: unknown): data is EuriborRateApiResponse => {
     return typeof data === 'object' && data !== null && 'dataSets' in data && 'structure' in data;
   },
-  createDefault: (): EuriborRateTileData => ({
-    currentRate: 0,
-    lastUpdate: new Date(0),
-    historicalData: [],
-  }),
 };

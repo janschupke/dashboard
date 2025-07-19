@@ -23,10 +23,4 @@ export class CryptocurrencyDataMapper extends BaseDataMapper<
       )
     );
   }
-
-  createDefault(): CryptocurrencyTileData {
-    return {
-      coins: [],
-    };
-  }
 }

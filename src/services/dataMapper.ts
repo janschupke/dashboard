@@ -23,15 +23,9 @@ export interface DataMapper<TApiResponse extends BaseApiResponse | BaseApiRespon
   validate(apiResponse: unknown): apiResponse is TApiResponse;
 
   /**
-   * Creates a default/empty tile content data object
-   * @returns Default tile content data
-   */
-  createDefault(): TTileData;
-
-  /**
    * Safely maps API response with error handling
    * @param apiResponse - Raw API response
-   * @returns Mapped tile content data or default if mapping fails
+   * @returns Mapped tile content data or throws error if mapping fails
    */
   safeMap(apiResponse: unknown): TTileData;
 }
@@ -47,12 +41,11 @@ export abstract class BaseDataMapper<
 {
   abstract map(apiResponse: TApiResponse): TTileData;
   abstract validate(apiResponse: unknown): apiResponse is TApiResponse;
-  abstract createDefault(): TTileData;
 
   /**
    * Safely maps API response with error handling
    * @param apiResponse - Raw API response
-   * @returns Mapped tile content data or default if mapping fails
+   * @returns Mapped tile content data or throws error if mapping fails
    */
   safeMap(apiResponse: unknown): TTileData {
     if (this.validate(apiResponse)) {
@@ -60,11 +53,11 @@ export abstract class BaseDataMapper<
         return this.map(apiResponse);
       } catch (error) {
         console.error('Data mapping failed:', error);
-        return this.createDefault();
+        throw new Error('Data mapping failed - no valid data available');
       }
     }
     console.warn('Invalid API response format');
-    return this.createDefault();
+    throw new Error('Invalid API response format - no valid data available');
   }
 }
 

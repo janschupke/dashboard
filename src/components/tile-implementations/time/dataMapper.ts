@@ -56,20 +56,6 @@ export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData
     );
   }
 
-  createDefault(): TimeTileData {
-    return {
-      currentTime: '--:--:--',
-      timezone: 'Europe/Helsinki',
-      abbreviation: 'EET',
-      offset: '+02:00',
-      dayOfWeek: 'Unknown',
-      date: 'Unknown',
-      isBusinessHours: false,
-      businessStatus: 'closed',
-      lastUpdate: new Date().toISOString(),
-    };
-  }
-
   private isBusinessHours(dt: DateTime): boolean {
     const hour = dt.hour;
     return hour >= 9 && hour < 17; // 9 AM to 5 PM

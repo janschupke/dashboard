@@ -14,12 +14,13 @@
     "prettier": "prettier --check .",
     "prettier:write": "prettier --write .",
     "unimported": "unimported --fail-on-unused",
-    "depcheck": "depcheck --ignores='@reduxjs/toolkit,@testing-library/user-event,@lhci/cli,@vitest/coverage-v8,autoprefixer,postcss,tailwindcss,wait-on'",
+    "depcheck": "depcheck --ignores='@reduxjs/toolkit,@testing-library/user-event,@lhci/cli,@vitest/coverage-v8,autoprefixer,postcss,tailwindcss,wait-on,dotenv'",
     "ts-unused-exports": "ts-unused-exports ./tsconfig.json",
     "clean:unimported": "npx unimported --silent --list-unimported | xargs rm -f",
-    "type-check": "tsc --noEmit",
-    "check:all": "npm run test:run && npm run build && npm run lint && npm run ts-unused-exports && npm run depcheck && npm run type-check && npm run prettier:write",
-    "healthcheck": "node healthcheck.js"
+    "types": "tsc --noEmit",
+    "check:all": "npm run test:run && npm run build && npm run lint && npm run ts-unused-exports && npm run depcheck && npm run types && npm run prettier:write",
+    "healthcheck": "node scripts/healthcheck.cjs",
+    "env": "node scripts/copy-env-to-local.cjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -30,7 +31,6 @@
     "@types/react-dom": "^19.1.6",
     "dotenv": "^17.2.0",
     "luxon": "^3.7.1",
-    "node-fetch": "^3.3.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

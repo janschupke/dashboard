@@ -45,18 +45,36 @@ export interface MarketHours {
   currentTime: string;
 }
 
+// Alpha Vantage GLOBAL_QUOTE response format
+export interface AlphaVantageGlobalQuote {
+  '01. symbol': string;
+  '02. open': string;
+  '03. high': string;
+  '04. low': string;
+  '05. price': string;
+  '06. volume': string;
+  '07. latest trading day': string;
+  '08. previous close': string;
+  '09. change': string;
+  '10. change percent': string;
+}
+
 export interface GdxEtfApiResponse extends BaseApiResponse {
-  symbol: string;
-  name: string;
-  currentPrice: number;
-  previousClose: number;
-  priceChange: number;
-  priceChangePercent: number;
-  volume: number;
-  marketCap: number;
-  high: number;
-  low: number;
-  open: number;
-  lastUpdated: string;
-  tradingStatus: 'open' | 'closed' | 'pre-market' | 'after-hours';
+  // Alpha Vantage GLOBAL_QUOTE format
+  'Global Quote'?: AlphaVantageGlobalQuote;
+
+  // Direct property format (for backward compatibility)
+  symbol?: string;
+  name?: string;
+  currentPrice?: number;
+  previousClose?: number;
+  priceChange?: number;
+  priceChangePercent?: number;
+  volume?: number;
+  marketCap?: number;
+  high?: number;
+  low?: number;
+  open?: number;
+  lastUpdated?: string;
+  tradingStatus?: 'open' | 'closed' | 'pre-market' | 'after-hours';
 }

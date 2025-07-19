@@ -23,7 +23,7 @@ export const earthquakeDataMapper: DataMapper<EarthquakeApiResponse, EarthquakeT
     try {
       return this.map(apiResponse);
     } catch {
-      return { items: [] };
+      throw new Error('Failed to map earthquake data - no valid data available');
     }
   },
   validate: (data: unknown): data is EarthquakeApiResponse => {
@@ -33,5 +33,4 @@ export const earthquakeDataMapper: DataMapper<EarthquakeApiResponse, EarthquakeT
       Array.isArray((data as EarthquakeApiResponse).features)
     );
   },
-  createDefault: (): EarthquakeTileDataArray => ({ items: [] }),
 };
