@@ -12,6 +12,7 @@ export function useTimeApi() {
     async (
       tileId: string,
       params: TimeParams,
+      tileType: TileType = TileType.TIME_HELSINKI,
       forceRefresh = false,
     ): Promise<TileConfig<TimeTileData>> => {
       const url = buildApiUrl<TimeParams>(TIME_API_ENDPOINT, params);
@@ -23,7 +24,7 @@ export function useTimeApi() {
           return { data, status: response.status };
         },
         tileId,
-        TileType.TIME_HELSINKI,
+        tileType,
         { apiCall: TileApiCallTitle.TIME, forceRefresh },
       );
     },

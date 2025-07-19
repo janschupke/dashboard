@@ -5,6 +5,7 @@ import type { TimeTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { TileType } from '../../../types/tile';
 
 const TimeTileContent = ({ data }: { data: TimeTileData | null }) => {
   if (data) {
@@ -18,11 +19,34 @@ const TimeTileContent = ({ data }: { data: TimeTileData | null }) => {
   return null;
 };
 
+// Map tile types to timezones
+const getTimezoneForTileType = (tileType: string): string => {
+  switch (tileType) {
+    case TileType.TIME_HELSINKI:
+      return 'Europe/Helsinki';
+    case TileType.TIME_PRAGUE:
+      return 'Europe/Prague';
+    case TileType.TIME_TAIPEI:
+      return 'Asia/Taipei';
+    default:
+      return 'Europe/Helsinki'; // fallback
+  }
+};
+
 export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getTime } = useTimeApi();
-  const params = useMemo(() => ({ city: 'Europe/Helsinki' }), []);
-  const { data, status, lastUpdated } = useTileData(getTime, tile.id, params, isForceRefresh);
+  const timezone = getTimezoneForTileType(tile.type);
+  const params = useMemo(() => ({ city: timezone }), [timezone]);
+  
+  // Create a wrapper function that calls getTime with the correct tile type
+  const getTimeWithTileType = useMemo(() => {
+    return (tileId: string, params: { city: string }, forceRefresh = false) => {
+      return getTime(tileId, params, tile.type as TileType, forceRefresh);
+    };
+  }, [getTime, tile.type]);
+  
+  const { data, status, lastUpdated } = useTileData(getTimeWithTileType, tile.id, params, isForceRefresh);
   return (
     <GenericTile
       tile={tile}
