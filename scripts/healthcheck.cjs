@@ -74,9 +74,9 @@ const endpoints = [
     required: true,
   },
   {
-    name: 'TimeAPI.io - Current Time',
-    url: `${BASE_URL}/api/time/api/timezone/Europe/Helsinki`,
-    baseUrl: 'https://timeapi.io',
+    name: 'GitHub Rate Limit API',
+    url: 'https://api.github.com/rate_limit',
+    baseUrl: 'https://api.github.com',
     key: null,
     required: false,
   },

@@ -17,10 +17,15 @@ export function useTimeApi() {
     ): Promise<TileConfig<TimeTileData>> => {
       const url = buildApiUrl<TimeParams>(TIME_API_ENDPOINT, params);
 
-      return dataFetcher.fetchAndMap(
+      return dataFetcher.fetchAndParse(
         async () => {
-          const response = await fetch(url);
+          const response = await fetch(url, {
+            method: TIME_API_ENDPOINT.method || 'GET',
+            headers: TIME_API_ENDPOINT.headers || {}
+          });
           const data = await response.json();
+          
+          // Return the raw GitHub API response for the parser to handle
           return { data, status: response.status };
         },
         tileId,

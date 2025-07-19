@@ -36,7 +36,7 @@ Each function:
 | `fred.ts`            | https://api.stlouisfed.org     | Federal funds rate tile | ✅     |
 | `openweathermap.ts`  | https://api.openweathermap.org | Weather tile            | ✅     |
 | `precious-metals.ts` | https://api.gold-api.com       | Precious metals tile    | ✅     |
-| `time.ts`            | https://timeapi.io             | Time tile (TimeAPI.io)  | ✅     |
+| `time.ts`            | https://api.github.com         | Time tile (GitHub API)  | ✅     |
 | `uranium-html.ts`    | Placeholder (not implemented)  | Uranium tile            | ⚠️     |
 | `usgs.ts`            | https://earthquake.usgs.gov    | Earthquake tile         | ✅     |
 
