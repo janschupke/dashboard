@@ -30,7 +30,7 @@ export interface WeatherParams {
   [key: string]: string | number | undefined;
 }
 export const OPENWEATHERMAP_ONECALL_ENDPOINT: ApiEndpoint<WeatherParams> = {
-  url: '/api/openweathermap/data/3.0/onecall',
+  url: '/api/openweathermap/data/2.5/onecall',
   queryParams: {} as WeatherParams,
 };
 

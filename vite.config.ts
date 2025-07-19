@@ -1,10 +1,4 @@
 import { defineConfig } from 'vite';
-import { config } from 'dotenv';
-import { resolve } from 'path';
-
-// Load environment variables
-config({ path: resolve(__dirname, '.env.local') });
-config({ path: resolve(__dirname, '.env') });
 
 // https://vite.dev/config/
 export default defineConfig({
