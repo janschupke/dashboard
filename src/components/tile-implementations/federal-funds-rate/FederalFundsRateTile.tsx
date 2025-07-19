@@ -77,9 +77,9 @@ const FederalFundsRateChart = memo(function FederalFundsRateChart({
   }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-gray-300 rounded-lg p-2 shadow-lg">
-          <p className="text-gray-900 font-medium">{`Date: ${label}`}</p>
-          <p className="text-gray-600">{`Rate: ${payload[0].value}%`}</p>
+        <div className="bg-surface-primary border border-border-primary rounded-lg p-2 shadow-lg">
+          <p className="text-theme-primary font-medium">{`Date: ${label}`}</p>
+          <p className="text-theme-secondary">{`Rate: ${payload[0].value}%`}</p>
         </div>
       );
     }
@@ -114,21 +114,25 @@ const FederalFundsRateChart = memo(function FederalFundsRateChart({
           <div style={{ width: '100%', height: '180px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#6b7280" />
-                <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#6b7280' }} stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-secondary)" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
+                  stroke="var(--border-secondary)"
+                />
                 <YAxis
-                  tick={{ fontSize: 10, fill: '#6b7280' }}
-                  stroke="#6b7280"
+                  tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
+                  stroke="var(--border-secondary)"
                   domain={['dataMin - 0.5', 'dataMax + 0.5']}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
                   type="monotone"
                   dataKey="rate"
-                  stroke="#3b82f6"
+                  stroke="var(--color-primary-500)"
                   strokeWidth={2}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
-                  activeDot={{ r: 5, stroke: '#3b82f6', strokeWidth: 2 }}
+                  dot={{ fill: 'var(--color-primary-500)', strokeWidth: 2, r: 3 }}
+                  activeDot={{ r: 5, stroke: 'var(--color-primary-500)', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
