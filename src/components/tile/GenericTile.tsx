@@ -87,120 +87,112 @@ const ErrorContent = React.memo(() => (
   </div>
 ));
 
-export const GenericTile = React.memo(
-  forwardRef<HTMLDivElement, GenericTileProps>(
-    (
-      { tile, meta, onRemove, dragHandleProps, className, children, status, lastUpdate, data },
-      ref,
-    ) => {
-      const handleRemove = useCallback(async () => {
-        try {
-          onRemove?.(tile.id);
-        } catch {
-          // TODO: Optionally show a toast or error message
-        }
-      }, [tile.id, onRemove]);
+export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
+  (
+    { tile, meta, onRemove, dragHandleProps, className, children, status, lastUpdate, data },
+    ref,
+  ) => {
+    const handleRemove = useCallback(async () => {
+      try {
+        onRemove?.(tile.id);
+      } catch {
+        // TODO: Optionally show a toast or error message
+      }
+    }, [tile.id, onRemove]);
 
-      const getTileClasses = useCallback(() => {
-        // Unified tile styling using Tailwind theme classes for theme support
-        const borderStatusClass =
-          status === TileStatus.Error
-            ? 'border-status-error'
-            : status === TileStatus.Stale
-              ? 'border-status-warning'
-              : 'border-surface-primary';
-        const baseClasses = [
-          'bg-surface-primary',
-          'text-primary',
-          'rounded-xl',
-          'shadow-md',
-          'hover:shadow-lg',
-          'transition-shadow',
-          'duration-200',
-          'relative',
-          'border',
-          borderStatusClass,
-          className || '',
-        ].join(' ');
-        return baseClasses;
-      }, [status, className]);
+    const getTileClasses = useCallback(() => {
+      // Unified tile styling using Tailwind theme classes for theme support
+      const borderStatusClass =
+        status === TileStatus.Error
+          ? 'border-status-error'
+          : status === TileStatus.Stale
+            ? 'border-status-warning'
+            : 'border-surface-primary';
+      const baseClasses = [
+        'bg-surface-primary',
+        'text-primary',
+        'rounded-xl',
+        'shadow-md',
+        'hover:shadow-lg',
+        'transition-shadow',
+        'duration-200',
+        'relative',
+        'border',
+        borderStatusClass,
+        className || '',
+      ].join(' ');
+      return baseClasses;
+    }, [status, className]);
 
-      // Memoize the content based on status
-      const content = useMemo(() => {
-        if (status === TileStatus.Loading) {
-          return <LoadingComponent />;
-        }
-        if (status === TileStatus.Error) {
-          return <ErrorContent />;
-        }
-        // For stale and success states, render the children (tile-specific content)
-        return children;
-      }, [status, children]);
+    // Memoize the content based on status
+    const content = useMemo(() => {
+      if (status === TileStatus.Loading) {
+        return <LoadingComponent />;
+      }
+      if (status === TileStatus.Error) {
+        return <ErrorContent />;
+      }
+      // For stale and success states, render the children (tile-specific content)
+      return children;
+    }, [status, children]);
 
-      // Memoize the header props to prevent re-renders
-      const headerProps = useMemo(
-        () => ({
-          className:
-            'flex items-center justify-between px-4 py-2 border-b border-surface-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
-          style: { minHeight: '2.5rem' },
-          ...dragHandleProps,
-        }),
-        [dragHandleProps],
-      );
+    // Memoize the header props to prevent re-renders
+    const headerProps = useMemo(
+      () => ({
+        className:
+          'flex items-center justify-between px-4 py-2 border-b border-surface-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
+        ...dragHandleProps,
+      }),
+      [dragHandleProps],
+    );
 
-      return (
-        <TileErrorBoundary>
-          <div
-            ref={ref}
-            className={getTileClasses()}
-            data-tile-id={tile.id}
-            data-tile-type={tile.type}
-            role="gridcell"
-            aria-label={`${meta.title} tile`}
-          >
-            {/* Tile Header - Grabbable */}
-            <div {...headerProps}>
-              <div className="flex items-center space-x-3">
-                <Icon
-                  name={meta.icon}
-                  size="sm"
-                  className="text-theme-accent-primary"
-                  aria-hidden="true"
-                />
-                <h3 className="text-base font-semibold text-primary truncate">{meta.title}</h3>
-              </div>
+    return (
+      <TileErrorBoundary>
+        <div
+          ref={ref}
+          className={getTileClasses()}
+          data-tile-id={tile.id}
+          data-tile-type={tile.type}
+          role="gridcell"
+          aria-label={`${meta.title} tile`}
+        >
+          {/* Tile Header - Grabbable */}
+          <div {...headerProps}>
+            <div className="flex items-center space-x-3">
+              <Icon
+                name={meta.icon}
+                size="sm"
+                className="text-theme-accent-primary"
+                aria-hidden="true"
+              />
+              <h3 className="text-base font-semibold text-primary truncate">{meta.title}</h3>
             </div>
-
-            {/* Close Button - Positioned in top right corner */}
-            {onRemove && (
-              <button
-                onClick={handleRemove}
-                className="absolute top-1 right-1 p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer z-10"
-                aria-label={`Remove ${meta.title} tile`}
-                onMouseDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-              >
-                <Icon name="close" size="sm" />
-              </button>
-            )}
-
-            {/* Tile Content */}
-            <div className="flex-1 p-2" role="region" aria-label={`${meta.title} content`}>
-              {content}
-            </div>
-
-            {/* Status Bar */}
-            <StatusBar data={data} status={status} lastUpdate={lastUpdate} />
           </div>
-        </TileErrorBoundary>
-      );
-    },
-  ),
-  // TODO: remove the memo?
-  (prev, next) =>
-    prev.tile.id === next.tile.id &&
-    prev.status === next.status &&
-    prev.lastUpdate === next.lastUpdate,
+
+          {/* Close Button - Positioned in top right corner */}
+          {onRemove && (
+            <button
+              onClick={handleRemove}
+              className="absolute top-1 right-1 p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer z-10"
+              aria-label={`Remove ${meta.title} tile`}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
+              <Icon name="close" size="sm" />
+            </button>
+          )}
+
+          {/* Tile Content */}
+          <div className="flex-1 p-2" role="region" aria-label={`${meta.title} content`}>
+            {content}
+          </div>
+
+          {/* Status Bar */}
+          <StatusBar data={data} status={status} lastUpdate={lastUpdate} />
+        </div>
+      </TileErrorBoundary>
+    );
+  },
 );
 
 GenericTile.displayName = 'GenericTile';

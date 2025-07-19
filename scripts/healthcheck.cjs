@@ -34,7 +34,7 @@ const endpoints = [
   },
   {
     name: 'OpenWeatherMap',
-    url: `${BASE_URL}/api/openweathermap/data/2.5/onecall?lat=60.1699&lon=24.9384&appid=${process.env.OPENWEATHERMAP_API_KEY}`,
+    url: `${BASE_URL}/api/openweathermap/data/3.0/onecall?lat=60.1699&lon=24.9384&appid=${process.env.OPENWEATHERMAP_API_KEY}`,
     baseUrl: 'https://api.openweathermap.org',
     key: 'OPENWEATHERMAP_API_KEY',
     required: true,

@@ -14,7 +14,7 @@
     "prettier": "prettier --check .",
     "prettier:write": "prettier --write .",
     "unimported": "unimported --fail-on-unused",
-    "depcheck": "depcheck --ignores='@reduxjs/toolkit,@testing-library/user-event,@lhci/cli,@vitest/coverage-v8,autoprefixer,postcss,tailwindcss,wait-on,dotenv'",
+    "depcheck": "depcheck --ignores='@reduxjs/toolkit,@testing-library/user-event,@lhci/cli,@vitest/coverage-v8,autoprefixer,postcss,tailwindcss,wait-on,dotenv,recharts,date-fns'",
     "ts-unused-exports": "ts-unused-exports ./tsconfig.json",
     "clean:unimported": "npx unimported --silent --list-unimported | xargs rm -f",
     "types": "tsc --noEmit",
@@ -29,10 +29,12 @@
     "@testing-library/user-event": "^14.6.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
     "luxon": "^3.7.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "recharts": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
