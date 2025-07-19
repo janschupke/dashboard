@@ -109,32 +109,34 @@ const FederalFundsRateChart = memo(function FederalFundsRateChart({
       </div>
 
       {/* Chart */}
-      <div className="flex-1 p-2">
+      <div className="flex-1 p-2" style={{ minHeight: '150px' }}>
         {chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-secondary)" />
-              <XAxis
-                dataKey="date"
-                tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
-                stroke="var(--border-secondary)"
-              />
-              <YAxis
-                tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
-                stroke="var(--border-secondary)"
-                domain={['dataMin - 0.5', 'dataMax + 0.5']}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="rate"
-                stroke="var(--color-primary-500)"
-                strokeWidth={2}
-                dot={{ fill: 'var(--color-primary-500)', strokeWidth: 2, r: 3 }}
-                activeDot={{ r: 5, stroke: 'var(--color-primary-500)', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ width: '100%', height: '100%', minHeight: '150px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-secondary)" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
+                  stroke="var(--border-secondary)"
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
+                  stroke="var(--border-secondary)"
+                  domain={['dataMin - 0.5', 'dataMax + 0.5']}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="rate"
+                  stroke="var(--color-primary-500)"
+                  strokeWidth={2}
+                  dot={{ fill: 'var(--color-primary-500)', strokeWidth: 2, r: 3 }}
+                  activeDot={{ r: 5, stroke: 'var(--color-primary-500)', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         ) : (
           <div className="flex items-center justify-center h-full">
             <span className="text-theme-tertiary text-sm">No data available</span>
@@ -170,7 +172,7 @@ const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
       </div>
 
       {/* Chart Section */}
-      <div className="flex-1">
+      <div className="flex-1 min-h-0">
         <FederalFundsRateChart
           data={data}
           timeRange={timeRange}
