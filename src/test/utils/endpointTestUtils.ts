@@ -6,7 +6,7 @@ import { storageManager } from '../../services/storageManager';
 // API endpoint URLs from apiEndpoints.ts
 export const API_ENDPOINTS = {
   COINGECKO_MARKETS: '/api/coingecko/api/v3/coins/markets',
-  OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/2.5/onecall',
+  OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/3.0/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
   FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
   ECB_EURIBOR_12M: '/api/ecb/euribor-12m',

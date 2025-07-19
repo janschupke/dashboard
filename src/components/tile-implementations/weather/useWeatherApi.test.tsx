@@ -53,8 +53,6 @@ describe('useWeatherApi', () => {
       expect(data).toBeDefined();
       expect(data).toEqual(
         expect.objectContaining({
-          city: expect.any(String),
-          country: expect.any(String),
           temperature: expect.objectContaining({
             current: expect.any(Number),
             feels_like: expect.any(Number),
@@ -182,8 +180,6 @@ describe('useWeatherApi', () => {
       const data = fetchResult.data;
       expect(data).toEqual(
         expect.objectContaining({
-          city: expect.any(String),
-          country: expect.any(String),
           temperature: expect.objectContaining({
             current: expect.any(Number),
             feels_like: expect.any(Number),

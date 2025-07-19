@@ -2,8 +2,8 @@ import type { TileDataType } from '../../../services/storageManager';
 import type { BaseApiResponse } from '../../../services/dataMapper';
 
 export interface WeatherTileData extends TileDataType {
-  city: string;
-  country: string;
+  city?: string;
+  country?: string;
   temperature: {
     current: number;
     feels_like: number;
