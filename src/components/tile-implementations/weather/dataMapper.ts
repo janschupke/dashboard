@@ -26,8 +26,6 @@ export class WeatherDataMapper extends BaseDataMapper<WeatherApiResponse, Weathe
       : [];
 
     return {
-      city: 'Helsinki', // Default city, could be configurable
-      country: 'Finland',
       temperature: {
         current: current.temp,
         feels_like: current.feels_like,
