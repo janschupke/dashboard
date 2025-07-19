@@ -74,9 +74,9 @@ const endpoints = [
     required: true,
   },
   {
-    name: 'WorldTimeAPI',
+    name: 'TimeAPI.io - Current Time',
     url: `${BASE_URL}/api/time/api/timezone/Europe/Helsinki`,
-    baseUrl: 'https://worldtimeapi.org',
+    baseUrl: 'https://timeapi.io',
     key: null,
     required: false,
   },

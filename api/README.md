@@ -4,12 +4,20 @@ This directory contains Vercel serverless functions that act as CORS proxies for
 
 ## Overview
 
-These functions solve CORS (Cross-Origin Resource Sharing) issues by:
+**Development vs Production Setup:**
 
-1. **Local Development**: Using Vite's proxy configuration in `vite.config.ts`
-2. **Production (Vercel)**: Using these serverless functions as API proxies
+- **Development**: Vite proxies requests directly to external APIs for simplicity and speed
+- **Production**: These serverless functions handle CORS, error handling, and response formatting
 
 ## How It Works
+
+### Development (Vite Proxy)
+
+- Vite forwards `/api/*` requests directly to external APIs
+- No local API server needed
+- Fast and simple development setup
+
+### Production (Vercel Functions)
 
 Each function:
 
@@ -18,51 +26,50 @@ Each function:
 - Returns the response with proper CORS headers
 - Preserves all query parameters and request methods
 
-## Available Proxies
+## Available APIs
 
-| Function              | External API                        | Used By                 |
-| --------------------- | ----------------------------------- | ----------------------- |
-| `tradingeconomics.ts` | https://api.tradingeconomics.com    | Uranium tile            |
-| `quandl.ts`           | https://www.quandl.com              | Uranium tile (fallback) |
-| `uxc.ts`              | https://www.uxc.com                 | Uranium tile (fallback) |
-| `alpha-vantage.ts`    | https://www.alphavantage.co         | GDX ETF tile            |
-| `yahoo-finance.ts`    | https://query1.finance.yahoo.com    | GDX ETF tile            |
-| `iex-cloud.ts`        | https://cloud.iexapis.com           | GDX ETF tile            |
-| `openweathermap.ts`   | https://api.openweathermap.org      | Weather tile            |
-| `weatherapi.ts`       | https://api.weatherapi.com          | Weather tile            |
-| `accuweather.ts`      | https://dataservice.accuweather.com | Weather tile            |
-| `emmi.ts`             | https://www.emmi-benchmarks.eu      | Euribor rate tile       |
-| `ecb.ts`              | https://api.data.ecb.europa.eu      | Euribor rate tile       |
-| `fred.ts`             | https://api.stlouisfed.org          | Federal funds rate tile |
-| `coingecko.ts`        | https://api.coingecko.com           | Cryptocurrency tile     |
-
-## URL Mapping
-
-Requests are mapped as follows:
-
-- `/api/tradingeconomics/commodity/uranium?range=1Y` → `https://api.tradingeconomics.com/commodity/uranium?range=1Y`
-- `/api/coingecko/api/v3/coins/markets?vs_currency=usd` → `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd`
+| Function             | External API                   | Used By                 | Status |
+| -------------------- | ------------------------------ | ----------------------- | ------ |
+| `alpha-vantage.ts`   | https://www.alphavantage.co    | GDX ETF tile            | ✅     |
+| `coingecko.ts`       | https://api.coingecko.com      | Cryptocurrency tile     | ✅     |
+| `cwb.ts`             | https://opendata.cwb.gov.tw    | Typhoon tile            | ✅     |
+| `fred.ts`            | https://api.stlouisfed.org     | Federal funds rate tile | ✅     |
+| `openweathermap.ts`  | https://api.openweathermap.org | Weather tile            | ✅     |
+| `precious-metals.ts` | https://api.gold-api.com       | Precious metals tile    | ✅     |
+| `time.ts`            | https://timeapi.io             | Time tile (TimeAPI.io)  | ✅     |
+| `uranium-html.ts`    | Placeholder (not implemented)  | Uranium tile            | ⚠️     |
+| `usgs.ts`            | https://earthquake.usgs.gov    | Earthquake tile         | ✅     |
 
 ## Development vs Production
 
 ### Local Development
 
-- Uses Vite proxy configuration in `vite.config.ts`
-- No serverless functions needed
-- Automatic CORS handling
+- Uses Vite proxy to forward requests directly to external APIs
+- No local API server needed for development
+- Fast and simple development setup
+- All API endpoints work immediately without additional setup
 
 ### Production (Vercel)
 
 - Uses these serverless functions
 - Automatic deployment when pushed to connected repository
+- Handles CORS, error handling, and response formatting
 - No additional configuration needed
 
 ## Error Handling
+
+### Development
+
+- Direct API responses with potential CORS issues
+- Browser may block requests if external API doesn't support CORS
+
+### Production
 
 All functions include:
 
 - Proper error status code forwarding
 - Response header preservation
+- CORS headers added automatically
 - Fallback to mock data in tile components if API fails
 
 ## Testing
@@ -73,50 +80,29 @@ Run tests with:
 npm run test:run
 ```
 
-Tests are located in `api/__tests__/` directory.
-
 ## Adding New APIs
 
 To add a new API proxy:
 
-1. Create a new file: `api/{service-name}.ts`
-2. Update the template with your target URL
-3. Add the proxy to `vite.config.ts` for local development
-4. Update tile constants to use `/api/{service-name}` URLs
-5. Add tests in `api/__tests__/`
-
-Example:
-
-```typescript
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = `https://api.example.com${req.url?.replace(/^\/api\/example/, '')}`;
-  const apiRes = await fetch(url, {
-    method: req.method,
-    headers: { ...req.headers, host: undefined },
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-  });
-  const data = await apiRes.arrayBuffer();
-  res.status(apiRes.status);
-  apiRes.headers.forEach((value, key) => res.setHeader(key, value));
-  res.send(Buffer.from(data));
-}
-```
+1. **Create API function**: Create `api/{service-name}.ts`
+2. **Update Vite config**: Add proxy rule in `vite.config.ts`
+3. **Update endpoints**: Add endpoint in `src/services/apiEndpoints.ts`
+4. **Update tiles**: Use `/api/{service-name}` URLs in tile components
+5. **Test**: Verify both development and production work
 
 ## Troubleshooting
 
-### CORS Errors Still Appearing
+### Development Issues
 
-- Check that your tile is using `/api/` URLs instead of direct external URLs
-- Verify the proxy function exists and is correctly named
-- Check Vercel deployment logs for serverless function errors
+- **CORS errors**: External API may not support CORS - this is normal in development
+- **API rate limiting**: Some APIs have rate limits that apply to direct requests
+- **Network issues**: Check if external API is accessible from your network
 
-### API Rate Limiting
+### Production Issues
 
-- Some APIs have rate limits that apply to the proxy
-- Consider implementing caching in the proxy functions
-- Monitor Vercel function execution limits
+- **CORS errors**: Check that your tile is using `/api/` URLs instead of direct external URLs
+- **API function errors**: Check Vercel deployment logs for serverless function errors
+- **Rate limiting**: Monitor Vercel function execution limits
 
 ### Environment Variables
 

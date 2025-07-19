@@ -28,12 +28,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/fred/, ''),
       },
-      // EMMI API
-      '/api/emmi': {
-        target: 'https://www.emmi-benchmarks.eu',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/emmi/, ''),
-      },
       // USGS API
       '/api/usgs': {
         target: 'https://earthquake.usgs.gov',
@@ -46,11 +40,18 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/cwb/, ''),
       },
-      // WorldTime API
+      // TimeAPI.io - Current time and timezone data
       '/api/time': {
-        target: 'https://worldtimeapi.org',
+        target: 'https://timeapi.io',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/time/, ''),
+        rewrite: (path) => {
+          // Convert WorldTimeAPI format to TimeAPI.io format
+          const timezoneMatch = path.match(/\/api\/timezone\/(.+)/);
+          if (timezoneMatch) {
+            return `/api/Time/current/zone?timeZone=${encodeURIComponent(timezoneMatch[1])}`;
+          }
+          return path.replace(/^\/api\/time/, '');
+        },
       },
       // Precious Metals API
       '/api/precious-metals': {
@@ -64,6 +65,12 @@ export default defineConfig({
           }
           return '/price/XAU'; // fallback
         },
+      },
+      // Uranium API (placeholder)
+      '/api/uranium-html': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path,
       },
     },
   },
