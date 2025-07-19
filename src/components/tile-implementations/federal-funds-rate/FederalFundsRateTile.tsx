@@ -31,7 +31,7 @@ export const FederalFundsRateTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getFederalFundsRate } = useFederalFundsApi();
   const apiKeys = getApiKeys();
-  
+
   const params = useMemo<FredParams>(
     () => ({
       series_id: 'FEDFUNDS',
@@ -40,7 +40,7 @@ export const FederalFundsRateTile = ({
     }),
     [apiKeys.fred],
   );
-  
+
   const { data, status, lastUpdated } = useTileData(
     getFederalFundsRate,
     tile.id,

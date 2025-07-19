@@ -30,9 +30,9 @@ export const TyphoonTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getTyphoonData } = useTyphoonApi();
   const apiKeys = getApiKeys();
-  
+
   const params = useMemo(() => apiKeys.cwb || 'demo-key', [apiKeys.cwb]);
-  
+
   const { data, status, lastUpdated } = useTileData(
     getTyphoonData,
     tile.id,

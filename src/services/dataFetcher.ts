@@ -11,6 +11,11 @@ import { DataParserRegistry } from './dataParser';
 
 export const DATA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+export interface FetchResponse {
+  data: unknown;
+  status: number;
+}
+
 export interface FetchOptions {
   forceRefresh?: boolean;
   apiCall: string;
@@ -27,7 +32,7 @@ export class DataFetcher {
 
   // Helper to handle fetch, status extraction, mapping/parsing, and error logging
   private async handleFetchAndTransform<TTileData extends TileDataType>(
-    fetchFunction: () => Promise<unknown>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     apiCall: string,
     transform: (input: unknown) => TTileData,
@@ -137,7 +142,7 @@ export class DataFetcher {
     TApiResponse extends BaseApiResponse | BaseApiResponse[],
     TTileData extends TileDataType,
   >(
-    fetchFunction: () => Promise<TApiResponse>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },
@@ -157,7 +162,7 @@ export class DataFetcher {
   }
 
   async fetchAndParse<TTileType extends string, TRawData, TTileData extends TileDataType>(
-    fetchFunction: () => Promise<TRawData>,
+    fetchFunction: () => Promise<FetchResponse>,
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },

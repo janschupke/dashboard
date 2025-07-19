@@ -33,7 +33,7 @@ export const WeatherTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getWeather } = useWeatherApi();
   const apiKeys = getApiKeys();
-  
+
   const params = useMemo<WeatherParams>(
     () => ({
       lat: 60.1699,
@@ -43,7 +43,7 @@ export const WeatherTile = ({
     }),
     [apiKeys.openWeatherMap],
   );
-  
+
   const { data, status, lastUpdated } = useTileData(getWeather, tile.id, params, isForceRefresh);
   return (
     <GenericTile

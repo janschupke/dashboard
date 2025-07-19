@@ -9,8 +9,8 @@ export const API_ENDPOINTS = {
   OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/2.5/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
   FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
-  EMMI_EURIBOR: '/api/emmi/euribor-rates',
-  TRADINGECONOMICS_URANIUM: '/api/tradingeconomics/commodity/uranium',
+  ECB_EURIBOR_12M: '/api/ecb/euribor-12m',
+  URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',
   TIME_API: '/api/time/api/timezone',
 } as const;
@@ -136,7 +136,7 @@ export const setupTimeSuccessMock = (): void => {
 };
 
 export const setupUraniumSuccessMock = (): void => {
-  setupSuccessMock(API_ENDPOINTS.TRADINGECONOMICS_URANIUM, MockResponseData.getUraniumData());
+  setupSuccessMock(API_ENDPOINTS.URANIUM_HTML, MockResponseData.getUraniumData());
 };
 
 export const setupPreciousMetalsSuccessMock = (): void => {
@@ -148,7 +148,7 @@ export const setupGdxEtfSuccessMock = (): void => {
 };
 
 export const setupEuriborRateSuccessMock = (): void => {
-  setupSuccessMock(API_ENDPOINTS.EMMI_EURIBOR, MockResponseData.getEuriborRateData());
+  setupSuccessMock(API_ENDPOINTS.ECB_EURIBOR_12M, MockResponseData.getEuriborRateData());
 };
 
 // Setup all success mocks at once

@@ -67,7 +67,7 @@ export const GdxEtfTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getGdxEtf } = useGdxEtfApi();
   const apiKeys = getApiKeys();
-  
+
   const params = useMemo<AlphaVantageParams>(
     () => ({
       function: 'GLOBAL_QUOTE',
@@ -76,7 +76,7 @@ export const GdxEtfTile = ({
     }),
     [apiKeys.alphaVantage],
   );
-  
+
   const { data, status, lastUpdated } = useTileData(getGdxEtf, tile.id, params, isForceRefresh);
 
   return (

@@ -34,7 +34,11 @@ describe('useUraniumApi', () => {
 
   beforeEach(() => {
     EndpointTestUtils.clearMocks();
-    global.fetch = vi.fn().mockResolvedValue({ ok: true, text: async () => mockHtml });
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => mockHtml,
+    });
   });
 
   it('should successfully fetch uranium data (HTML scraping)', async () => {
