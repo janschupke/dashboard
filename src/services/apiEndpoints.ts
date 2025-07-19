@@ -3,6 +3,8 @@ export interface ApiEndpoint<TParams extends object> {
   queryParams: TParams;
   pathParams?: Record<string, string>; // Add path parameters support
   broken?: boolean;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers?: Record<string, string>;
 }
 
 // --- Cryptocurrency (CoinGecko) ---
@@ -110,9 +112,13 @@ export interface TimeParams {
   city: string; // required, e.g. 'Europe/Berlin'
 }
 export const TIME_API_ENDPOINT: ApiEndpoint<TimeParams> = {
-  url: '/api/time/api/timezone/{city}',
-  queryParams: {} as TimeParams,
-  pathParams: { city: '{city}' },
+  url: 'https://api.github.com/rate_limit',
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json',
+    'User-Agent': 'Dashboard/1.0'
+  },
+  queryParams: {} as TimeParams
 };
 
 // --- Typhoon (CWB) ---

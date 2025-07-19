@@ -13,6 +13,7 @@ import { CryptocurrencyDataMapper } from './components/tile-implementations/cryp
 import { PreciousMetalsDataMapper } from './components/tile-implementations/precious-metals/dataMapper';
 import { FederalFundsRateDataMapper } from './components/tile-implementations/federal-funds-rate/dataMapper';
 import { TimeDataMapper } from './components/tile-implementations/time/dataMapper';
+import { HelsinkiTimeDataParser, PragueTimeDataParser, TaipeiTimeDataParser } from './components/tile-implementations/time/dataParser';
 import { WeatherDataMapper } from './components/tile-implementations/weather/dataMapper';
 import { gdxEtfDataMapper } from './components/tile-implementations/gdx-etf/dataMapper';
 import { ecbEuriborDataMapper } from './components/tile-implementations/euribor-rate/dataMapper';
@@ -33,6 +34,9 @@ mapperRegistry.register(TileType.FEDERAL_FUNDS_RATE, new FederalFundsRateDataMap
 mapperRegistry.register(TileType.TIME_HELSINKI, new TimeDataMapper());
 mapperRegistry.register(TileType.TIME_PRAGUE, new TimeDataMapper());
 mapperRegistry.register(TileType.TIME_TAIPEI, new TimeDataMapper());
+parserRegistry.register(TileType.TIME_HELSINKI, new HelsinkiTimeDataParser());
+parserRegistry.register(TileType.TIME_PRAGUE, new PragueTimeDataParser());
+parserRegistry.register(TileType.TIME_TAIPEI, new TaipeiTimeDataParser());
 mapperRegistry.register(TileType.WEATHER_HELSINKI, new WeatherDataMapper());
 mapperRegistry.register(TileType.WEATHER_PRAGUE, new WeatherDataMapper());
 mapperRegistry.register(TileType.WEATHER_TAIPEI, new WeatherDataMapper());

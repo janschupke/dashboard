@@ -24,7 +24,7 @@ export const TileApiCallTitle = {
   EURIBOR_RATE: 'Euribor Rate API',
   WEATHER: 'Weather API',
   GDX_ETF: 'Alpha Vantage API',
-  TIME: 'WorldTimeAPI',
+  TIME: 'GitHub Rate Limit API',
   URANIUM: 'Uranium API',
   EARTHQUAKE: 'USGS Earthquake API',
   TYPHOON: 'CWB Open Data API',
