@@ -7,6 +7,7 @@ import { useTileData } from '../../tile/useTileData';
 import type { AlphaVantageParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
 import { getApiKeys } from '../../../services/apiConfig';
+import { DataRow } from '../../ui/DataRow';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   // Check if data is null or contains only default/empty values
@@ -20,37 +21,27 @@ const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
     );
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(price);
-  };
-
-  const formatChange = (change: number, percent: number) => {
-    const sign = change >= 0 ? '+' : '';
-    const changeFormatted = formatPrice(Math.abs(change));
-    const percentFormatted = `${sign}${(percent || 0).toFixed(2)}%`;
-    return { changeFormatted, percentFormatted };
-  };
-
   // Ensure all required values are numbers
   const currentPrice = data.currentPrice || 0;
   const priceChange = data.priceChange || 0;
   const priceChangePercent = data.priceChangePercent || 0;
   const symbol = data.symbol || 'GDX';
-
-  const { changeFormatted, percentFormatted } = formatChange(priceChange, priceChangePercent);
-  const isPositive = priceChange >= 0;
+  const name = data.name || 'VanEck Gold Miners ETF';
 
   return (
-    <div className="flex flex-col items-center justify-center h-full space-y-2 p-2">
-      <div className="text-2xl font-bold text-theme-primary">{formatPrice(currentPrice)}</div>
-      <div className="text-sm text-theme-tertiary">{symbol}</div>
-      <div className={`text-xs ${isPositive ? 'text-status-success' : 'text-status-error'}`}>
-        {changeFormatted} ({percentFormatted})
+    <div className="flex flex-col h-full p-2">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-1">
+          <DataRow
+            index={1}
+            name={name}
+            code={symbol}
+            price={currentPrice}
+            priceChange={priceChange}
+            priceChangePercent={priceChangePercent}
+            showBorder={false}
+          />
+        </div>
       </div>
     </div>
   );

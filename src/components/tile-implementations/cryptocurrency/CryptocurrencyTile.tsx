@@ -5,7 +5,7 @@ import type { CryptocurrencyTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
-import { PriceDisplay } from '../../ui/PriceDisplay';
+import { DataRow } from '../../ui/DataRow';
 
 const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
   if (data && data.coins.length > 0) {
@@ -16,33 +16,15 @@ const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | nu
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-1">
             {coins.map((coin, index) => (
-              <div
+              <DataRow
                 key={coin.id}
-                className="flex items-center justify-between py-1 border-b border-theme-secondary last:border-b-0"
-              >
-                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <span className="text-xs text-theme-tertiary w-4 text-right">{index + 1}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium truncate text-theme-primary">
-                      {coin.name}
-                    </div>
-                    <div className="text-xs text-theme-tertiary uppercase">{coin.symbol}</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end space-y-1">
-                  <PriceDisplay price={coin.current_price} currency="USD" className="text-xs" />
-                  <div
-                    className={`text-xs ${
-                      coin.price_change_percentage_24h >= 0
-                        ? 'text-status-success'
-                        : 'text-status-error'
-                    }`}
-                  >
-                    {coin.price_change_percentage_24h >= 0 ? '+' : ''}
-                    {coin.price_change_percentage_24h.toFixed(2)}%
-                  </div>
-                </div>
-              </div>
+                index={index + 1}
+                name={coin.name}
+                code={coin.symbol}
+                price={coin.current_price}
+                priceChange={coin.price_change_24h}
+                priceChangePercent={coin.price_change_percentage_24h}
+              />
             ))}
           </div>
         </div>
