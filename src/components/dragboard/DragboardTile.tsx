@@ -84,6 +84,11 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({ id, position, si
         gridRow: `${position.y + 1} / span ${config.tileSizes[size].rowSpan}`,
         zIndex: isDragging ? 50 : undefined,
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignSelf: 'stretch', // Stretch to fill grid cell height
+        justifySelf: 'stretch', // Stretch to fill grid cell width
+        minHeight: '100px', // Minimum height to match drop zones
       }}
       data-tile-id={id}
       role="gridcell"

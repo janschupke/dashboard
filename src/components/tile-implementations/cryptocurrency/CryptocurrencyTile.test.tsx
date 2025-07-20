@@ -269,12 +269,22 @@ describe('CryptocurrencyTile', () => {
     expect(screen.getByText('$0.50')).toBeInTheDocument();
     expect(screen.getByText('$95.00')).toBeInTheDocument();
 
-    // Check that price changes are displayed with correct colors
-    expect(screen.getByText('+2.50%')).toBeInTheDocument();
-    expect(screen.getByText('-1.20%')).toBeInTheDocument();
-    expect(screen.getByText('+0.80%')).toBeInTheDocument();
-    expect(screen.getByText('+1.50%')).toBeInTheDocument();
-    expect(screen.getByText('+3.20%')).toBeInTheDocument();
+    // Check that price changes are displayed with correct colors (match full row text)
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '+1097.50 (+2.50%)' : false)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '-38.40 (-1.20%)' : false)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '+2.56 (+0.80%)' : false)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '+0.01 (+1.50%)' : false)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '+2.95 (+3.20%)' : false)),
+    ).toBeInTheDocument();
   });
 
   it('should display ranking numbers', () => {

@@ -63,7 +63,10 @@ describe('GdxEtfTile', () => {
 
     expect(screen.getByText('$30.50')).toBeInTheDocument();
     expect(screen.getByText('GDX')).toBeInTheDocument();
-    expect(screen.getByText('$0.50 (+1.67%)')).toBeInTheDocument();
+    // Use a function matcher to match the full text content for price change and percent
+    expect(
+      screen.getByText((_, node) => (node ? node.textContent === '+0.50 (+1.67%)' : false)),
+    ).toBeInTheDocument();
   });
 
   it('renders tile with undefined values gracefully', () => {
