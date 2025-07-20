@@ -1,10 +1,11 @@
-import type { GdxEtfTileData } from './types';
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { ALPHA_VANTAGE_GDX_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
 import type { AlphaVantageParams } from '../../../services/apiEndpoints';
-import { TileApiCallTitle, TileType } from '../../../types/tile';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+import type { GdxEtfTileData } from './types';
 import type { TileConfig } from '../../../services/storageManager';
+import { fetchWithError } from '../../../services/fetchWithError';
 
 export function useGdxEtfApi() {
   const { dataFetcher } = useDataServices();
@@ -17,7 +18,7 @@ export function useGdxEtfApi() {
       const url = buildApiUrl<AlphaVantageParams>(ALPHA_VANTAGE_GDX_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetch(url);
+          const response = await fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },

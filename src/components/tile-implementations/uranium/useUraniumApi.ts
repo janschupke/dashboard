@@ -5,6 +5,7 @@ import { URANIUM_HTML_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoin
 import type { UraniumHtmlParams } from '../../../services/apiEndpoints';
 import { TileApiCallTitle, TileType } from '../../../types/tile';
 import type { TileConfig } from '../../../services/storageManager';
+import { fetchWithError } from '../../../services/fetchWithError';
 
 export function useUraniumApi() {
   const { dataFetcher } = useDataServices();
@@ -15,10 +16,9 @@ export function useUraniumApi() {
       forceRefresh = false,
     ): Promise<TileConfig<UraniumTileData>> => {
       const url = buildApiUrl<UraniumHtmlParams>(URANIUM_HTML_ENDPOINT, params);
-
       return dataFetcher.fetchAndParse(
         async () => {
-          const response = await fetch(url);
+          const response = await fetchWithError(url);
           const data = await response.text();
           return { data, status: response.status };
         },

@@ -4,6 +4,7 @@ import { CWB_TYPHOON_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoint
 import { TileApiCallTitle, TileType } from '../../../types/tile';
 import { useCallback } from 'react';
 import type { TileConfig } from '../../../services/storageManager';
+import { fetchWithError } from '../../../services/fetchWithError';
 
 export function useTyphoonApi() {
   const { dataFetcher } = useDataServices();
@@ -17,7 +18,7 @@ export function useTyphoonApi() {
       const url = buildApiUrl(CWB_TYPHOON_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetch(url);
+          const response = await fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },
