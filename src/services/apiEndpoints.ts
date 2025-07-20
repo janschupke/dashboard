@@ -114,16 +114,6 @@ export interface TimeParams {
   key?: string; // API key, set from env or config
 }
 
-export function getTimeApiKey(): string {
-  return (
-    (typeof process !== 'undefined' && process.env && process.env.TIMEZONEDB_API_KEY) ||
-    (typeof import.meta !== 'undefined' &&
-      import.meta.env &&
-      import.meta.env.VITE_TIMEZONEDB_API_KEY) ||
-    ''
-  );
-}
-
 export const TIME_API_ENDPOINT: ApiEndpoint<TimeParams> = {
   url: '/api/timezonedb/v2.1/get-time-zone',
   queryParams: {} as TimeParams,
@@ -212,16 +202,4 @@ export function buildApiUrl<TParams extends TileApiParams>(
     .join('&');
 
   return query ? `${url}?${query}` : url;
-}
-
-// Patch buildApiUrl to always inject the key for TIME_API_ENDPOINT
-const _originalBuildApiUrl = buildApiUrl;
-export function buildApiUrlWithKey<TParams extends TileApiParams>(
-  endpoint: ApiEndpoint<TParams>,
-  params: TParams,
-): string {
-  if (endpoint === TIME_API_ENDPOINT) {
-    return _originalBuildApiUrl(endpoint, { ...params, key: getTimeApiKey() });
-  }
-  return _originalBuildApiUrl(endpoint, params);
 }

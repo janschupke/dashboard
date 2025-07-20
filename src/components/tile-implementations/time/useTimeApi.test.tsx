@@ -31,8 +31,29 @@ beforeAll(() => {
 
 describe('useTimeApi', () => {
   const mockTileId = 'test-time-tile';
-  const mockParams: TimeParams = {
-    city: 'Europe/Berlin',
+  const berlinParams: TimeParams = {
+    lat: 52.52,
+    lng: 13.405,
+    by: 'position',
+    format: 'json',
+  };
+  const newYorkParams: TimeParams = {
+    lat: 40.7128,
+    lng: -74.006,
+    by: 'position',
+    format: 'json',
+  };
+  const londonParams: TimeParams = {
+    lat: 51.5074,
+    lng: -0.1278,
+    by: 'position',
+    format: 'json',
+  };
+  const chicagoParams: TimeParams = {
+    lat: 41.8781,
+    lng: -87.6298,
+    by: 'position',
+    format: 'json',
   };
 
   describe('getTime - Success Scenarios', () => {
@@ -43,7 +64,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, mockParams);
+      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
 
       // Assert
       expect(fetchResult).toBeDefined();
@@ -53,35 +74,40 @@ describe('useTimeApi', () => {
       expect(typeof fetchResult.lastDataRequest).toBe('number');
 
       const data = fetchResult.data;
-      expect(data).toBeNull();
+      // Instead of expect(data).toBeNull(), check the mapped values
+      expect(data).toBeDefined();
+      expect(data?.currentTime).toBe('14:30:25');
+      expect(data?.timezone).toBe('Europe/Berlin');
+      expect(data?.abbreviation).toBe('CET');
+      expect(data?.offset).toBe('+01:00');
     });
 
     it('should handle delayed response', async () => {
       // Arrange
       EndpointTestUtils.clearMocks();
-      // Provide a TimeApiData mock that will map to '14:30:25' local time in Berlin
       const delayedApiData = {
-        datetime: '2024-01-15T14:30:25+01:00',
-        timezone: 'Europe/Berlin',
-        utc_datetime: '2024-01-15T13:30:25Z',
-        utc_offset: '+01:00',
-        day_of_week: 2, // Tuesday
-        day_of_year: 15,
-        week_number: 3,
+        status: 'OK',
+        message: '',
+        countryCode: 'DE',
+        zoneName: 'Europe/Berlin',
         abbreviation: 'CET',
-        client_ip: '127.0.0.1',
+        gmtOffset: 3600,
+        dst: '0',
+        timestamp: 1705329025,
+        formatted: '2024-01-15 14:30:25',
       };
-      setupDelayedMock('/api/time/api/timezone/Europe/Berlin', delayedApiData, 50);
+      setupDelayedMock('/api/timezonedb/v2.1/get-time-zone', delayedApiData, 50);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
-      // Use params that match the mock's timezone
-      const params = { city: 'Europe/Berlin' };
       // Act & Assert
       await waitFor(async () => {
-        const fetchResult = await result.current.getTime(mockTileId, params);
+        const fetchResult = await result.current.getTime(mockTileId, berlinParams);
         expect(fetchResult).toBeDefined();
         const data = fetchResult.data;
         expect(data).toBeDefined();
         expect(data?.currentTime).toBe('14:30:25');
+        expect(data?.timezone).toBe('Europe/Berlin');
+        expect(data?.abbreviation).toBe('CET');
+        expect(data?.offset).toBe('+01:00');
       });
     });
   });
@@ -94,7 +120,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, mockParams);
+      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -108,7 +134,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, mockParams);
+      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -122,7 +148,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, mockParams);
+      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -136,7 +162,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, mockParams);
+      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -145,166 +171,83 @@ describe('useTimeApi', () => {
   });
 
   describe('getTime - Edge Cases', () => {
-    it.skip('should handle different timezone configurations', async () => {
-      // Arrange
-      EndpointTestUtils.clearMocks();
-      // Use a TimeApiData mock with a datetime that will map to '14:30:25' in each timezone
-      const testParams: { params: TimeParams; apiData: unknown; expected: string }[] = [
-        {
-          params: { city: 'America/New_York' },
-          apiData: {
-            datetime: '2024-01-16T14:30:25-05:00', // Wednesday
-            timezone: 'America/New_York',
-            utc_datetime: '2024-01-16T19:30:25Z',
-            utc_offset: '-05:00',
-            day_of_week: 3,
-            day_of_year: 16,
-            week_number: 3,
-            abbreviation: 'EST',
-            client_ip: '127.0.0.1',
-          },
-          expected: '14:30:25',
-        },
-        {
-          params: { city: 'Europe/London' },
-          apiData: {
-            datetime: '2024-01-16T14:30:25+00:00', // Wednesday
-            timezone: 'Europe/London',
-            utc_datetime: '2024-01-16T14:30:25Z',
-            utc_offset: '+00:00',
-            day_of_week: 3,
-            day_of_year: 16,
-            week_number: 3,
-            abbreviation: 'GMT',
-            client_ip: '127.0.0.1',
-          },
-          expected: '14:30:25',
-        },
-        {
-          params: { city: 'Asia/Tokyo' },
-          apiData: {
-            datetime: '2024-01-16T14:30:25+09:00', // Wednesday
-            timezone: 'Asia/Tokyo',
-            utc_datetime: '2024-01-16T05:30:25Z',
-            utc_offset: '+09:00',
-            day_of_week: 3,
-            day_of_year: 16,
-            week_number: 3,
-            abbreviation: 'JST',
-            client_ip: '127.0.0.1',
-          },
-          expected: '14:30:25',
-        },
-        {
-          params: { city: 'Australia/Sydney' },
-          apiData: {
-            datetime: '2024-01-16T14:30:25+11:00', // Wednesday
-            timezone: 'Australia/Sydney',
-            utc_datetime: '2024-01-16T03:30:25Z',
-            utc_offset: '+11:00',
-            day_of_week: 3,
-            day_of_year: 16,
-            week_number: 3,
-            abbreviation: 'AEDT',
-            client_ip: '127.0.0.1',
-          },
-          expected: '14:30:25',
-        },
-      ];
-
-      const { result } = renderHook(() => useTimeApi(), { wrapper });
-
-      // Act & Assert
-      for (const { params, apiData, expected } of testParams) {
-        setupSuccessMock(API_ENDPOINTS.TIME_API, apiData);
-        const fetchResult = await result.current.getTime(mockTileId, params);
-        const data = fetchResult.data;
-        // Debug: log if currentTime is '--:--:--' (invalid)
-        if (data?.currentTime === '--:--:--') {
-          console.error('Invalid DateTime for params:', params, apiData);
-        }
-        expect(data).toBeDefined();
-        expect(data?.currentTime).toBe(expected);
-      }
-    });
     it('should handle business hours data', async () => {
       // Arrange
-      // Use a datetime within business hours (e.g., 14:30) and matching params
       const businessHoursApiData = {
-        datetime: '2024-01-15T14:30:00-05:00',
-        timezone: 'America/New_York',
-        utc_datetime: '2024-01-15T19:30:00Z',
-        utc_offset: '-05:00',
-        day_of_week: 1, // Monday
-        day_of_year: 15,
-        week_number: 3,
+        status: 'OK',
+        message: '',
+        countryCode: 'US',
+        zoneName: 'America/New_York',
         abbreviation: 'EST',
-        client_ip: '127.0.0.1',
+        gmtOffset: -18000,
+        dst: '0',
+        timestamp: 1705331400,
+        formatted: '2024-01-15 14:30:00',
       };
       EndpointTestUtils.clearMocks();
-      setupSuccessMock('/api/time/api/timezone/America/New_York', businessHoursApiData);
+      setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', businessHoursApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
-      // Use params that match the mock's timezone
-      const params = { city: 'America/New_York' };
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, params);
+      const fetchResult = await result.current.getTime(mockTileId, newYorkParams);
       const data = fetchResult.data;
       // Assert
+      expect(data).toBeDefined();
       expect(data?.isBusinessHours).toBe(true);
       expect(['open', 'closed', 'opening soon', 'closing soon']).toContain(data?.businessStatus);
+      expect(data?.timezone).toBe('America/New_York');
+      expect(data?.abbreviation).toBe('EST');
+      expect(data?.offset).toBe('-05:00');
     });
-
     it('should handle time calculations', async () => {
       // Arrange
       const timeApiData = {
-        datetime: '2024-01-17T18:45:30+00:00', // Wednesday
-        timezone: 'Europe/London',
-        utc_datetime: '2024-01-17T18:45:30Z',
-        utc_offset: '+00:00',
-        day_of_week: 3, // Wednesday
-        day_of_year: 17,
-        week_number: 3,
+        status: 'OK',
+        message: '',
+        countryCode: 'GB',
+        zoneName: 'Europe/London',
         abbreviation: 'GMT',
-        client_ip: '127.0.0.1',
+        gmtOffset: 0,
+        dst: '0',
+        timestamp: 1705507530,
+        formatted: '2024-01-17 18:45:30',
       };
       EndpointTestUtils.clearMocks();
-      setupSuccessMock('/api/time/api/timezone/Europe/London', timeApiData);
+      setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timeApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
-
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, { city: 'Europe/London' });
+      const fetchResult = await result.current.getTime(mockTileId, londonParams);
       const data = fetchResult.data;
-
       // Assert
-      expect(data?.currentTime).toBeDefined();
+      expect(data).toBeDefined();
+      expect(data?.currentTime).toBe('18:45:30');
       expect(data?.timezone).toBe('Europe/London');
-      expect(data?.dayOfWeek).toBe('Wednesday');
-      // Optionally, check for timeUntilNextDay if you add this logic to the mapper
+      expect(data?.abbreviation).toBe('GMT');
+      expect(data?.offset).toBe('+00:00');
     });
-
     it('should handle timezone offset data', async () => {
       // Arrange
       const timezoneApiData = {
-        datetime: '2024-01-15T09:15:00-05:00',
-        timezone: 'America/Chicago',
-        utc_datetime: '2024-01-15T14:15:00Z',
-        utc_offset: '-05:00',
-        day_of_week: 5, // Friday
-        day_of_year: 15,
-        week_number: 3,
+        status: 'OK',
+        message: '',
+        countryCode: 'US',
+        zoneName: 'America/Chicago',
         abbreviation: 'CST',
-        client_ip: '127.0.0.1',
+        gmtOffset: -18000,
+        dst: '0',
+        timestamp: 1705319700,
+        formatted: '2024-01-15 09:15:00',
       };
       EndpointTestUtils.clearMocks();
-      setupSuccessMock('/api/time/api/timezone/America/Chicago', timezoneApiData);
+      setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timezoneApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
-
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, { city: 'America/Chicago' });
+      const fetchResult = await result.current.getTime(mockTileId, chicagoParams);
       const data = fetchResult.data;
-
       // Assert
+      expect(data).toBeDefined();
       expect(data?.offset).toBe('-05:00');
+      expect(data?.timezone).toBe('America/Chicago');
+      expect(data?.abbreviation).toBe('CST');
     });
   });
 });

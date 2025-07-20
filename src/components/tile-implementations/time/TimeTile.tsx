@@ -54,8 +54,8 @@ const TimeTileContent = ({ data, city }: { data: TimeTileData | null; city: stri
             data.businessStatus === 'open'
               ? 'text-xs font-semibold text-status-success'
               : data.businessStatus === 'closed'
-              ? 'text-xs font-semibold text-status-error'
-              : 'text-xs font-semibold text-status-warning'
+                ? 'text-xs font-semibold text-status-error'
+                : 'text-xs font-semibold text-status-warning'
           }
         >
           {data.businessStatus.charAt(0).toUpperCase() + data.businessStatus.slice(1)}
@@ -69,7 +69,8 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
   const isForceRefresh = useForceRefreshFromKey();
   const { getTime } = useTimeApi();
   const apiKeys = getApiKeys();
-  const cityConfig = CITY_CONFIG[tile.type as keyof typeof CITY_CONFIG] || CITY_CONFIG[TileType.TIME_TAIPEI];
+  const cityConfig =
+    CITY_CONFIG[tile.type as keyof typeof CITY_CONFIG] || CITY_CONFIG[TileType.TIME_TAIPEI];
   const params = useMemo(
     () => ({
       lat: cityConfig.lat,

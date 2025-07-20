@@ -129,16 +129,15 @@ export class MockResponseData {
 
   static getTimeData(): TimeApiResponse {
     return {
-      datetime: '2024-01-15T14:30:25.000Z',
-      timezone: 'Europe/Berlin',
-      utc_datetime: '2024-01-15T13:30:25.000Z',
-      utc_offset: '+01:00',
-      day_of_week: 1,
-      day_of_year: 15,
-      week_number: 3,
+      status: 'OK',
+      message: '',
+      countryCode: 'DE',
+      zoneName: 'Europe/Berlin',
       abbreviation: 'CET',
-      client_ip: '127.0.0.1',
-      // Optionally, add any extra fields as needed
+      gmtOffset: 3600,
+      dst: '0',
+      timestamp: 1705329025, // 2024-01-15T14:30:25+01:00
+      formatted: '2024-01-15 14:30:25',
     };
   }
 

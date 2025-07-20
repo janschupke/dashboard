@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
   ECB_EURIBOR_12M: '/api/ecb/euribor-12m',
   URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',
-  TIME_API: '/api/time/api/timezone',
+  TIME_API: '/api/timezonedb/v2.1/get-time-zone',
 } as const;
 
 function normalizeUrl(url: string): string {

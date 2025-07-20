@@ -4,10 +4,15 @@ import { DateTime } from 'luxon';
 
 export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData> {
   map(apiResponse: TimeApiResponse): TimeTileData {
-    // formatted: '2024-06-10 15:30:00'
+    if (!apiResponse || typeof apiResponse.formatted !== 'string' || !apiResponse.zoneName) {
+      throw new Error('Invalid time API response: missing formatted or zoneName');
+    }
     const dt = DateTime.fromFormat(apiResponse.formatted, 'yyyy-MM-dd HH:mm:ss', {
       zone: apiResponse.zoneName,
     });
+    if (!dt.isValid) {
+      throw new Error('Invalid time API response: formatted date is invalid');
+    }
     return {
       currentTime: dt.toFormat('HH:mm:ss'),
       date: dt.toISODate() ?? '',

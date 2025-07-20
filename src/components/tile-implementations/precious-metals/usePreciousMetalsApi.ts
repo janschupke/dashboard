@@ -5,6 +5,7 @@ import type { TileConfig } from '../../../services/storageManager';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import { PRECIOUS_METALS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
 import type { GoldApiParams } from '../../../services/apiEndpoints';
+import { fetchWithError } from '../../../services/fetchWithError';
 
 export function usePreciousMetalsApi() {
   const { dataFetcher } = useDataServices();
@@ -18,13 +19,14 @@ export function usePreciousMetalsApi() {
 
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetch(url);
+          const response = await fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },
         tileId,
         TileType.PRECIOUS_METALS,
         { apiCall: TileApiCallTitle.PRECIOUS_METALS, forceRefresh },
+        url,
       );
     },
     [dataFetcher],
