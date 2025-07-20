@@ -1,5 +1,22 @@
-import type { WeatherAlertsApiResponse, WeatherAlert } from './types';
+import { BaseDataMapper } from '../../../services/dataMapper';
+import type { WeatherAlertsApiResponse, WeatherAlertsTileData } from './types';
 
-export function mapWeatherAlertsApiResponse(response: WeatherAlertsApiResponse): WeatherAlert[] {
+export class WeatherAlertsDataMapper extends BaseDataMapper<
+  WeatherAlertsApiResponse,
+  WeatherAlertsTileData
+> {
+  map(apiResponse: WeatherAlertsApiResponse): WeatherAlertsTileData {
+    return { alerts: apiResponse.alerts || [] };
+  }
+  validate(apiResponse: unknown): apiResponse is WeatherAlertsApiResponse {
+    return (
+      typeof apiResponse === 'object' &&
+      apiResponse !== null &&
+      Array.isArray((apiResponse as WeatherAlertsApiResponse).alerts)
+    );
+  }
+}
+
+export function mapWeatherAlertsApiResponse(response: WeatherAlertsApiResponse) {
   return response.alerts || [];
 }

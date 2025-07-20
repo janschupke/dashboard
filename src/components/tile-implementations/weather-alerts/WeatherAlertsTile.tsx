@@ -16,11 +16,14 @@ const WeatherAlertsTileContent = ({ alerts }: { alerts: WeatherAlertsTileData['a
           <div className="font-bold text-theme-text-primary">{alert.event}</div>
           <div className="text-xs text-theme-text-secondary">{alert.sender_name}</div>
           <div className="text-xs text-theme-text-secondary">
-            {new Date(alert.start * 1000).toLocaleString()} - {new Date(alert.end * 1000).toLocaleString()}
+            {new Date(alert.start * 1000).toLocaleString()} -{' '}
+            {new Date(alert.end * 1000).toLocaleString()}
           </div>
           <div className="text-sm mt-1">{alert.description}</div>
           {alert.tags && alert.tags.length > 0 && (
-            <div className="text-xs mt-1 text-theme-text-tertiary">Tags: {alert.tags.join(', ')}</div>
+            <div className="text-xs mt-1 text-theme-text-tertiary">
+              Tags: {alert.tags.join(', ')}
+            </div>
           )}
         </div>
       ))}
@@ -28,7 +31,14 @@ const WeatherAlertsTileContent = ({ alerts }: { alerts: WeatherAlertsTileData['a
   );
 };
 
-export const WeatherAlertsTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
+export const WeatherAlertsTile = ({
+  tile,
+  meta,
+  ...rest
+}: {
+  tile: DragboardTileData;
+  meta: TileMeta;
+}) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getWeatherAlerts } = useWeatherAlertsApi();
   const params = { lat: 23.7, lon: 121.0 };
@@ -53,4 +63,4 @@ export const WeatherAlertsTile = ({ tile, meta, ...rest }: { tile: DragboardTile
   );
 };
 
-WeatherAlertsTile.displayName = 'WeatherAlertsTile'; 
+WeatherAlertsTile.displayName = 'WeatherAlertsTile';

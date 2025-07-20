@@ -3,6 +3,8 @@ import { renderHook } from '@testing-library/react';
 import { useWeatherAlertsApi } from './useWeatherAlertsApi';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import type { WeatherParams } from '../../../services/apiEndpoints';
+import { WeatherAlertsDataMapper } from './dataMapper';
+import { TileType } from '../../../types/tile';
 
 const mockApiResponse = {
   alerts: [
@@ -18,11 +20,16 @@ const mockApiResponse = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-(globalThis.fetch as any) = globalThis.vi.fn();
+(globalThis.fetch as any) = (globalThis as any).vi.fn();
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <MockDataServicesProvider>{children}</MockDataServicesProvider>
+  <MockDataServicesProvider
+    setup={({ mapperRegistry }) => {
+      mapperRegistry.register(TileType.WEATHER_ALERTS, new WeatherAlertsDataMapper());
+    }}
+  >
+    {children}
+  </MockDataServicesProvider>
 );
 
 describe('useWeatherAlertsApi', () => {
@@ -44,4 +51,4 @@ describe('useWeatherAlertsApi', () => {
       expect(fetchResult.data.alerts[0].event).toBe('Severe Weather Warning');
     }
   });
-}); 
+});

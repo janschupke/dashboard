@@ -17,22 +17,26 @@ export function useWeatherAlertsApi() {
       forceRefresh = false,
     ): Promise<TileConfig<WeatherAlertsTileData>> => {
       const url = buildApiUrl<WeatherParams>(OPENWEATHERMAP_ALERTS_ENDPOINT, params);
-      return dataFetcher.fetchAndMap(
-        async () => {
-          const response = await fetchWithError(url);
-          const data: WeatherAlertsApiResponse = await response.json();
-          return { data, status: response.status };
-        },
-        tileId,
-        TileType.WEATHER_ALERTS,
-        { apiCall: TileApiCallTitle.WEATHER_ALERTS, forceRefresh },
-        url,
-      ).then((tileConfig) => ({
-        ...tileConfig,
-        data: { alerts: mapWeatherAlertsApiResponse(tileConfig.data as WeatherAlertsApiResponse) },
-      }));
+      return dataFetcher
+        .fetchAndMap(
+          async () => {
+            const response = await fetchWithError(url);
+            const data: WeatherAlertsApiResponse = await response.json();
+            return { data, status: response.status };
+          },
+          tileId,
+          TileType.WEATHER_ALERTS,
+          { apiCall: TileApiCallTitle.WEATHER_ALERTS, forceRefresh },
+          url,
+        )
+        .then((tileConfig) => ({
+          ...tileConfig,
+          data: {
+            alerts: mapWeatherAlertsApiResponse(tileConfig.data as WeatherAlertsApiResponse),
+          },
+        }));
     },
     [dataFetcher],
   );
   return { getWeatherAlerts };
-} 
+}

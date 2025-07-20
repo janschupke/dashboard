@@ -1,5 +1,4 @@
 import type { TileDataType } from '../../../services/storageManager';
-import type { BaseApiResponse } from '../../../services/dataMapper';
 
 export interface WeatherAlert {
   sender_name: string;
@@ -14,6 +13,6 @@ export type WeatherAlertsApiResponse = {
   alerts?: WeatherAlert[];
 };
 
-export interface WeatherAlertsTileData {
+export interface WeatherAlertsTileData extends TileDataType {
   alerts: WeatherAlert[];
 }
