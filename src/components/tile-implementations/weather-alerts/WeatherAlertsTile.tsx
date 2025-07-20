@@ -4,10 +4,17 @@ import { useWeatherAlertsApi } from './useWeatherAlertsApi';
 import type { WeatherAlertsTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
+import { useMemo } from 'react';
+import { getApiKeys } from '../../../services/apiConfig';
 
 const WeatherAlertsTileContent = ({ alerts }: { alerts: WeatherAlertsTileData['alerts'] }) => {
   if (!alerts || alerts.length === 0) {
-    return <div className="text-theme-text-secondary">No active weather alerts.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center h-full space-y-2">
+        <span className="text-4xl" role="img" aria-label="typhoon">🌪️</span>
+        <span className="text-theme-tertiary text-sm">No active weather alerts.</span>
+      </div>
+    );
   }
   return (
     <div className="flex flex-col space-y-2 w-full">
@@ -41,7 +48,16 @@ export const WeatherAlertsTile = ({
 }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getWeatherAlerts } = useWeatherAlertsApi();
-  const params = { lat: 23.7, lon: 121.0 };
+  const apiKeys = getApiKeys();
+  const params = useMemo(
+    () => ({
+      lat: 23.7,
+      lon: 121.0,
+      ...(apiKeys.openWeatherMap && { appid: apiKeys.openWeatherMap }),
+      units: 'metric' as const,
+    }),
+    [apiKeys.openWeatherMap],
+  );
   const { data, status, lastUpdated } = useTileData(
     getWeatherAlerts,
     tile.id,

@@ -10,6 +10,20 @@ import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
 import { DataParserRegistry } from './dataParser';
 
 export const DATA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+export const DATA_FETCH_TIMEOUT_MS = 15_000;
+
+function timeoutPromise<T>(promise: Promise<T>, ms: number, errorMessage: string): Promise<T> {
+  let timeoutId: NodeJS.Timeout;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(errorMessage));
+    }, ms);
+  });
+  return Promise.race([
+    promise.finally(() => clearTimeout(timeoutId)),
+    timeout,
+  ]);
+}
 
 export interface FetchResponse {
   data: unknown;
@@ -55,7 +69,11 @@ export class DataFetcher {
 
     let httpStatus: number | undefined;
     try {
-      let apiResponse: unknown = await fetchFunction();
+      let apiResponse: unknown = await timeoutPromise(
+        fetchFunction(),
+        DATA_FETCH_TIMEOUT_MS,
+        `API request timed out after ${DATA_FETCH_TIMEOUT_MS / 1000} seconds`,
+      );
       // If fetchFunction returns a Response, extract status and data
       if (apiResponse instanceof Response) {
         httpStatus = apiResponse.status;
