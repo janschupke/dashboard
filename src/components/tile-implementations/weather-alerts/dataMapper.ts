@@ -9,10 +9,7 @@ export class WeatherAlertsDataMapper extends BaseDataMapper<
     return { alerts: apiResponse.alerts || [] };
   }
   validate(apiResponse: unknown): apiResponse is WeatherAlertsApiResponse {
-    return (
-      typeof apiResponse === 'object' &&
-      apiResponse !== null
-    );
+    return typeof apiResponse === 'object' && apiResponse !== null;
   }
 }
 

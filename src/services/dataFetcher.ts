@@ -19,10 +19,7 @@ function timeoutPromise<T>(promise: Promise<T>, ms: number, errorMessage: string
       reject(new Error(errorMessage));
     }, ms);
   });
-  return Promise.race([
-    promise.finally(() => clearTimeout(timeoutId)),
-    timeout,
-  ]);
+  return Promise.race([promise.finally(() => clearTimeout(timeoutId)), timeout]);
 }
 
 export interface FetchResponse {

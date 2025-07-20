@@ -11,7 +11,9 @@ const WeatherAlertsTileContent = ({ alerts }: { alerts: WeatherAlertsTileData['a
   if (!alerts || alerts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full space-y-2">
-        <span className="text-4xl" role="img" aria-label="typhoon">🌪️</span>
+        <span className="text-4xl" role="img" aria-label="typhoon">
+          🌪️
+        </span>
         <span className="text-theme-tertiary text-sm">No active weather alerts.</span>
       </div>
     );
