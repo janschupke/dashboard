@@ -59,6 +59,7 @@ export const CryptocurrencyTile = ({
     isForceRefresh,
   );
 
+  // TODO: fix the undefined update
   return (
     <GenericTile
       tile={tile}

@@ -97,8 +97,9 @@ export const DragboardGrid = memo<DragboardGridProps>(({ children }) => {
     const validPositions = getValidDropPositions(config, draggingTileSize);
     return validPositions.map(({ x, y }) => {
       const { colSpan, rowSpan } = config.tileSizes[draggingTileSize];
-      const isActive = dragState.dropTarget && dragState.dropTarget.x === x && dragState.dropTarget.y === y;
-      
+      const isActive =
+        dragState.dropTarget && dragState.dropTarget.x === x && dragState.dropTarget.y === y;
+
       return (
         <div
           key={`drop-${x}-${y}`}

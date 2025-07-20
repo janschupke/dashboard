@@ -136,20 +136,12 @@ export const EarthquakeTile = ({
     setMagnitudeThreshold(value);
   }, []);
 
-  // Use the time of the first earthquake as lastUpdate if available
-  const lastUpdate =
-    data && data.items?.length > 0
-      ? new Date(data.items[0].time).toISOString()
-      : lastUpdated
-        ? lastUpdated.toISOString()
-        : undefined;
-
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdate}
+      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       {...rest}
     >
