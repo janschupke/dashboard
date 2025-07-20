@@ -5,6 +5,7 @@ import type { TimeTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { getApiKeys } from '../../../services/apiConfig';
 
 const TimeTileContent = ({ data }: { data: TimeTileData | null }) => {
   if (data) {
@@ -27,12 +28,16 @@ const CITY_COORDS = {
 export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getTime } = useTimeApi();
+  const apiKeys = getApiKeys();
   // Get city from tile.config.city, fallback to 'helsinki'
   const city = (tile.config && typeof tile.config.city === 'string' && CITY_COORDS[tile.config.city.toLowerCase() as keyof typeof CITY_COORDS])
     ? tile.config.city.toLowerCase() as keyof typeof CITY_COORDS
     : 'helsinki';
   const coords = CITY_COORDS[city];
-  const params = useMemo(() => ({ lat: coords.lat, lng: coords.lng, by: 'position' as const, format: 'json' as const }), [coords.lat, coords.lng]);
+  const params = useMemo(
+    () => ({ lat: coords.lat, lng: coords.lng, by: 'position' as const, format: 'json' as const, ...(apiKeys.TIMEZONEDB_API_KEY && { key: apiKeys.TIMEZONEDB_API_KEY }) }),
+    [coords.lat, coords.lng, apiKeys.TIMEZONEDB_API_KEY]
+  );
   const { data, status, lastUpdated } = useTileData(getTime, tile.id, params, isForceRefresh);
   return (
     <GenericTile
