@@ -34,12 +34,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/usgs/, ''),
       },
-      // CWB API
-      '/api/cwb': {
-        target: 'https://opendata.cwb.gov.tw',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/cwb/, ''),
-      },
       // Precious Metals API
       '/api/precious-metals': {
         target: 'https://api.gold-api.com',

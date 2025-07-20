@@ -67,13 +67,6 @@ const endpoints = [
     required: false,
   },
   {
-    name: 'CWB Typhoon',
-    url: `${BASE_URL}/api/cwb/v1/rest/datastore/W-C0034-002?Authorization=${process.env.CWB_API_KEY}&format=JSON`,
-    baseUrl: 'https://opendata.cwb.gov.tw',
-    key: 'CWB_API_KEY',
-    required: true,
-  },
-  {
     name: 'TimeZoneDB',
     url: `${BASE_URL}/api/timezonedb?key=${process.env.TIMEZONEDB_API_KEY}&lat=60.1699&lng=24.9384&format=json&by=position`,
     baseUrl: 'https://api.timezonedb.com',

@@ -53,7 +53,7 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
 
     // Weather/geo icons
     earthquake: '🌎',
-    typhoon: '🌪️',
+    'weather-alerts': '🌪️',
   };
 
   const icon = iconMap[name] || '?';

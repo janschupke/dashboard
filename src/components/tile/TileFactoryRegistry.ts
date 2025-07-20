@@ -11,7 +11,7 @@ import { timeTileMeta } from '../tile-implementations/time/meta';
 import { weatherTileMeta } from '../tile-implementations/weather/meta';
 import { euriborRateTileMeta } from '../tile-implementations/euribor-rate/meta';
 import { earthquakeTileMeta } from '../tile-implementations/earthquake/meta';
-import { typhoonTileMeta } from '../tile-implementations/typhoon/meta';
+import { weatherAlertsTileMeta } from '../tile-implementations/weather-alerts/meta';
 
 export interface TileCatalogEntry {
   type: TileType;
@@ -148,16 +148,14 @@ export const TILE_CATALOG: TileCatalogEntry[] = [
     meta: earthquakeTileMeta,
   },
   {
-    type: TileType.TYPHOON,
+    type: TileType.WEATHER_ALERTS,
     getLazyComponent: () =>
       React.lazy(() =>
-        import('../tile-implementations/typhoon/TyphoonTile').then((m) => {
-          // TyphoonTile expects apiKey, but the generic loader does not provide it.
-          // Make apiKey optional in TyphoonTile, or provide a default here if possible.
-          return { default: m.TyphoonTile };
-        }),
+        import('../tile-implementations/weather-alerts/WeatherAlertsTile').then((m) => ({
+          default: m.WeatherAlertsTile,
+        })),
       ),
-    meta: typhoonTileMeta,
+    meta: weatherAlertsTileMeta,
   },
 ];
 

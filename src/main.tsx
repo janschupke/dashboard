@@ -17,7 +17,7 @@ import { WeatherDataMapper } from './components/tile-implementations/weather/dat
 import { gdxEtfDataMapper } from './components/tile-implementations/gdx-etf/dataMapper';
 import { ecbEuriborDataMapper } from './components/tile-implementations/euribor-rate/dataMapper';
 import { earthquakeDataMapper } from './components/tile-implementations/earthquake/dataMapper';
-import { TyphoonDataMapper } from './components/tile-implementations/typhoon/dataMapper';
+import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
 
 setupGlobalErrorHandling();
 
@@ -39,7 +39,7 @@ mapperRegistry.register(TileType.WEATHER_TAIPEI, new WeatherDataMapper());
 mapperRegistry.register(TileType.GDX_ETF, gdxEtfDataMapper);
 mapperRegistry.register(TileType.EURIBOR_RATE, ecbEuriborDataMapper);
 mapperRegistry.register(TileType.EARTHQUAKE, earthquakeDataMapper);
-mapperRegistry.register(TileType.TYPHOON, new TyphoonDataMapper());
+mapperRegistry.register(TileType.WEATHER_ALERTS, new WeatherAlertsDataMapper());
 
 const dataServices = { parserRegistry, mapperRegistry, dataFetcher };
 
