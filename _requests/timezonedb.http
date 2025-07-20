@@ -1,0 +1,11 @@
+POST https://timezonedb.p.rapidapi.com/v2.1/get-time-zone HTTP/1.1
+content-type: application/json
+X-RapidAPI-Key: {{RAPIDAPI_KEY}}
+X-RapidAPI-Host: timezonedb.p.rapidapi.com
+
+{
+    "lat": 60.1699,
+    "lng": 24.9384,
+    "format": "json",
+    "by": "position"
+}

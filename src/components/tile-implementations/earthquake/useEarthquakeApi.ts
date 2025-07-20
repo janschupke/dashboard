@@ -5,6 +5,7 @@ import { USGS_EARTHQUAKE_ENDPOINT, buildApiUrl } from '../../../services/apiEndp
 import type { UsgsEarthquakeParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { TileConfig, TileDataType } from '../../../services/storageManager';
+import { fetchWithError } from '../../../services/fetchWithError';
 
 // Wrapper type for array
 export interface EarthquakeTileDataArray extends TileDataType {
@@ -40,13 +41,14 @@ export function useEarthquakeApi() {
       const url = buildApiUrl<UsgsEarthquakeParams>(USGS_EARTHQUAKE_ENDPOINT, query);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetch(url);
+          const response = await fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },
         tileId,
         TileType.EARTHQUAKE,
         { apiCall: TileApiCallTitle.EARTHQUAKE, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

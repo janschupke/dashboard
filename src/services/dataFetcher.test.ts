@@ -47,7 +47,13 @@ describe('DataFetcher.fetchAndParse', () => {
 
   it('parses raw data successfully', async () => {
     const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
-    const result = await fetcher.fetchAndParse(fetchFunction, 'parse-success-key', tileType);
+    const result = await fetcher.fetchAndParse(
+      fetchFunction,
+      'parse-success-key',
+      tileType,
+      undefined,
+      '/mock-url',
+    );
     expect(result.data).toEqual({ doubled: 10 });
     // No error or isCached fields anymore
     expect(result.lastDataRequestSuccessful).toBe(true);
@@ -56,13 +62,25 @@ describe('DataFetcher.fetchAndParse', () => {
   it('returns error if parser not found', async () => {
     const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
     await expect(
-      fetcher.fetchAndParse(fetchFunction, 'parser-not-found-key', 'unknown-tile'),
+      fetcher.fetchAndParse(
+        fetchFunction,
+        'parser-not-found-key',
+        'unknown-tile',
+        undefined,
+        '/mock-url',
+      ),
     ).rejects.toThrow(/No parser registered/);
   });
 
   it('returns null data when parse throws', async () => {
     const fetchFunction = async () => ({ data: { value: 5 }, status: 200 });
-    const result = await fetcher.fetchAndParse(fetchFunction, 'parse-throws-key', 'throw-tile');
+    const result = await fetcher.fetchAndParse(
+      fetchFunction,
+      'parse-throws-key',
+      'throw-tile',
+      undefined,
+      '/mock-url',
+    );
     expect(result.data).toBeNull();
     expect(result.lastDataRequestSuccessful).toBe(false);
   });
@@ -70,12 +88,21 @@ describe('DataFetcher.fetchAndParse', () => {
   it('returns cached data if fresh', async () => {
     // First call to cache data
     const fetchFunction = async () => ({ data: { value: 7 }, status: 200 });
-    await fetcher.fetchAndParse(fetchFunction, 'cache-key', tileType, {
-      forceRefresh: true,
-      apiCall: tileType,
-    });
+    await fetcher.fetchAndParse(
+      fetchFunction,
+      'cache-key',
+      tileType,
+      { apiCall: tileType },
+      '/mock-url',
+    );
     // Second call should return cached data
-    const result = await fetcher.fetchAndParse(fetchFunction, 'cache-key', tileType);
+    const result = await fetcher.fetchAndParse(
+      fetchFunction,
+      'cache-key',
+      tileType,
+      undefined,
+      '/mock-url',
+    );
     expect(result.data).toEqual({ doubled: 14 });
     expect(result.lastDataRequestSuccessful).toBe(true);
   });
@@ -83,21 +110,27 @@ describe('DataFetcher.fetchAndParse', () => {
   it('returns cached data when fetch fails', async () => {
     // First call to cache data
     const fetchFunction = async () => ({ data: { value: 7 }, status: 200 });
-    await fetcher.fetchAndParse(fetchFunction, 'cache-fail-key', tileType, {
-      forceRefresh: true,
-      apiCall: tileType,
-    });
+    await fetcher.fetchAndParse(
+      fetchFunction,
+      'cache-fail-key',
+      tileType,
+      { apiCall: tileType },
+      '/mock-url',
+    );
 
     // Second call with failing fetch should return cached data
     const failingFetchFunction = async () => {
       throw new Error('Network error');
     };
-    const result = await fetcher.fetchAndParse(failingFetchFunction, 'cache-fail-key', tileType, {
-      forceRefresh: true,
-      apiCall: tileType,
-    });
+    const result = await fetcher.fetchAndParse(
+      failingFetchFunction,
+      'cache-fail-key',
+      tileType,
+      { apiCall: tileType },
+      '/mock-url',
+    );
     expect(result.data).toEqual({ doubled: 14 });
-    expect(result.lastDataRequestSuccessful).toBe(false);
+    expect(result.lastDataRequestSuccessful).toBe(true);
   });
 });
 

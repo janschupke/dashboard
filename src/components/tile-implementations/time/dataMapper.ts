@@ -4,14 +4,21 @@ import { DateTime } from 'luxon';
 
 export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData> {
   map(apiResponse: TimeApiResponse): TimeTileData {
-    const dt = DateTime.fromISO(apiResponse.datetime, { zone: apiResponse.timezone });
+    if (!apiResponse || typeof apiResponse.formatted !== 'string' || !apiResponse.zoneName) {
+      throw new Error('Invalid time API response: missing formatted or zoneName');
+    }
+    const dt = DateTime.fromFormat(apiResponse.formatted, 'yyyy-MM-dd HH:mm:ss', {
+      zone: apiResponse.zoneName,
+    });
+    if (!dt.isValid) {
+      throw new Error('Invalid time API response: formatted date is invalid');
+    }
     return {
       currentTime: dt.toFormat('HH:mm:ss'),
-      timezone: apiResponse.timezone,
-      abbreviation: apiResponse.abbreviation,
-      offset: apiResponse.utc_offset,
-      dayOfWeek: dt.weekdayLong ?? '',
       date: dt.toISODate() ?? '',
+      timezone: apiResponse.zoneName,
+      abbreviation: apiResponse.abbreviation,
+      offset: this.formatOffset(apiResponse.gmtOffset),
       isBusinessHours: this.isBusinessHours(dt),
       businessStatus: this.getBusinessStatus(dt),
       lastUpdate: DateTime.now().toISO(),
@@ -22,38 +29,23 @@ export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData
     if (!apiResponse || typeof apiResponse !== 'object') {
       return false;
     }
-
     const response = apiResponse as Record<string, unknown>;
-
-    // Check for required fields
-    const requiredFields = [
-      'datetime',
-      'timezone',
-      'utc_datetime',
-      'utc_offset',
-      'day_of_week',
-      'day_of_year',
-      'week_number',
-      'abbreviation',
-    ];
-
-    for (const field of requiredFields) {
-      if (!(field in response)) {
-        return false;
-      }
-    }
-
-    // Validate data types
     return (
-      typeof response.datetime === 'string' &&
-      typeof response.timezone === 'string' &&
-      typeof response.utc_datetime === 'string' &&
-      typeof response.utc_offset === 'string' &&
-      typeof response.day_of_week === 'number' &&
-      typeof response.day_of_year === 'number' &&
-      typeof response.week_number === 'number' &&
-      typeof response.abbreviation === 'string'
+      typeof response.status === 'string' &&
+      typeof response.zoneName === 'string' &&
+      typeof response.abbreviation === 'string' &&
+      typeof response.gmtOffset === 'number' &&
+      typeof response.timestamp === 'number' &&
+      typeof response.formatted === 'string'
     );
+  }
+
+  private formatOffset(offsetSeconds: number): string {
+    const sign = offsetSeconds >= 0 ? '+' : '-';
+    const abs = Math.abs(offsetSeconds);
+    const hours = Math.floor(abs / 3600);
+    const minutes = Math.floor((abs % 3600) / 60);
+    return `${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
 
   private isBusinessHours(dt: DateTime): boolean {
@@ -64,7 +56,6 @@ export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData
   private getBusinessStatus(dt: DateTime): 'open' | 'closed' | 'opening soon' | 'closing soon' {
     const hour = dt.hour;
     const minute = dt.minute;
-
     if (hour >= 9 && hour < 17) {
       if (hour === 16 && minute >= 45) {
         return 'closing soon';

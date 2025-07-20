@@ -105,14 +105,18 @@ export const PRECIOUS_METALS_ENDPOINT: ApiEndpoint<GoldApiParams> = {
   pathParams: { symbol: '{symbol}' },
 };
 
-// --- Time (WorldTimeAPI) ---
+// --- Time (TimeZoneDB) ---
 export interface TimeParams {
-  city: string; // required, e.g. 'Europe/Berlin'
+  lat: number; // required, e.g. 60.1699
+  lng: number; // required, e.g. 24.9384
+  by?: 'position' | 'zone'; // default: 'position'
+  format?: 'json'; // default: 'json'
+  key?: string; // API key, set from env or config
 }
+
 export const TIME_API_ENDPOINT: ApiEndpoint<TimeParams> = {
-  url: '/api/time/api/timezone/{city}',
+  url: '/api/timezonedb/v2.1/get-time-zone',
   queryParams: {} as TimeParams,
-  pathParams: { city: '{city}' },
 };
 
 // --- Typhoon (CWB) ---

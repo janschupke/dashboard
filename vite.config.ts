@@ -28,12 +28,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/fred/, ''),
       },
-      // EMMI API
-      '/api/emmi': {
-        target: 'https://www.emmi-benchmarks.eu',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/emmi/, ''),
-      },
       // USGS API
       '/api/usgs': {
         target: 'https://earthquake.usgs.gov',
@@ -46,24 +40,23 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/cwb/, ''),
       },
-      // WorldTime API
-      '/api/time': {
-        target: 'https://worldtimeapi.org',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/time/, ''),
-      },
       // Precious Metals API
       '/api/precious-metals': {
         target: 'https://api.gold-api.com',
         changeOrigin: true,
-        rewrite: (path) => {
-          // Extract symbol from path like /api/precious-metals/XAU
-          const match = path.match(/^\/api\/precious-metals\/([^/]+)/);
-          if (match) {
-            return `/price/${match[1]}`;
-          }
-          return '/price/XAU'; // fallback
-        },
+        rewrite: (path) => path.replace(/^\/api\/precious-metals\//, '/price/'),
+      },
+      // TimeZoneDB API (official, not RapidAPI)
+      '/api/timezonedb': {
+        target: 'https://api.timezonedb.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/timezonedb/, ''),
+      },
+      // ECB Euribor API
+      '/api/ecb': {
+        target: 'https://sdw-wsrest.ecb.europa.eu',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ecb/, ''),
       },
     },
   },
