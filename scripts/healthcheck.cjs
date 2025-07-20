@@ -56,7 +56,7 @@ const endpoints = [
   // Precious Metals API
   {
     name: 'Precious Metals (Gold & Silver)',
-    url: 'http://localhost:5173/api/precious-metals/XAU',
+    url: `${BASE_URL}/api/precious-metals/XAU`,
     baseUrl: 'https://api.gold-api.com',
   },
   {
@@ -74,15 +74,15 @@ const endpoints = [
     required: true,
   },
   {
-    name: 'WorldTimeAPI',
-    url: `${BASE_URL}/api/time/api/timezone/Europe/Helsinki`,
-    baseUrl: 'https://worldtimeapi.org',
-    key: null,
-    required: false,
+    name: 'TimeZoneDB',
+    url: `${BASE_URL}/api/timezonedb?key=${process.env.TIMEZONEDB_API_KEY}&lat=60.1699&lng=24.9384&format=json&by=position`,
+    baseUrl: 'https://api.timezonedb.com',
+    key: 'TIMEZONEDB_API_KEY',
+    required: true,
   },
   {
     name: 'ECB Euribor 12M',
-    url: 'https://sdw-wsrest.ecb.europa.eu/service/data/BSI.M.U2.EUR.R.IR12MM.R.A?format=json',
+    url: `${BASE_URL}/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A?format=json`,
     baseUrl: 'https://sdw-wsrest.ecb.europa.eu',
     key: null,
     required: false,
