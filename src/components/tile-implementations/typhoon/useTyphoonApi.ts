@@ -25,6 +25,7 @@ export function useTyphoonApi() {
         tileId,
         TileType.TYPHOON,
         { apiCall: TileApiCallTitle.TYPHOON, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

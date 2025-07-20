@@ -25,6 +25,7 @@ export function useWeatherApi() {
         tileId,
         TileType.WEATHER_HELSINKI,
         { apiCall: TileApiCallTitle.WEATHER, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

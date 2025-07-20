@@ -25,6 +25,7 @@ export function useCryptoApi() {
         tileId,
         TileType.CRYPTOCURRENCY,
         { apiCall: TileApiCallTitle.CRYPTOCURRENCY, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

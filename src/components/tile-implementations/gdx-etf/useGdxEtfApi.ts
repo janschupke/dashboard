@@ -25,6 +25,7 @@ export function useGdxEtfApi() {
         tileId,
         TileType.GDX_ETF,
         { apiCall: TileApiCallTitle.GDX_ETF, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

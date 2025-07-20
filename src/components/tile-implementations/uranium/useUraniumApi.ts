@@ -25,6 +25,7 @@ export function useUraniumApi() {
         tileId,
         TileType.URANIUM,
         { apiCall: TileApiCallTitle.URANIUM, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

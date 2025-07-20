@@ -25,6 +25,7 @@ export function useTimeApi() {
         tileId,
         TileType.TIME_HELSINKI,
         { apiCall: TileApiCallTitle.TIME, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

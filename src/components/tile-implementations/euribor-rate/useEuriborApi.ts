@@ -25,6 +25,7 @@ export function useEuriborApi() {
         tileId,
         TileType.EURIBOR_RATE,
         { apiCall: TileApiCallTitle.EURIBOR_RATE, forceRefresh },
+        url,
       );
     },
     [dataFetcher],

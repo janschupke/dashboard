@@ -37,6 +37,7 @@ export class DataFetcher {
     apiCall: string,
     transform: (input: unknown) => TTileData,
     forceRefresh = false,
+    requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
     const cachedTileState = storageManager.getTileState<TTileData>(storageKey);
     const now = Date.now();
@@ -119,6 +120,7 @@ export class DataFetcher {
         errorName: error instanceof Error ? error.name : 'Unknown',
         errorMessage,
         ...(httpStatus !== undefined ? { status: httpStatus } : {}),
+        ...(requestUrl ? { requestUrl } : {}),
       };
       storageManager.addLog({
         level: APILogLevel.ERROR,
@@ -146,6 +148,7 @@ export class DataFetcher {
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },
+    requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
     const { forceRefresh = false, apiCall = tileType } = options;
     const mapper = this.mapperRegistry.get<TTileType, TApiResponse, TTileData>(tileType);
@@ -158,6 +161,7 @@ export class DataFetcher {
       apiCall,
       (input) => mapper.safeMap(input) as unknown as TTileData,
       forceRefresh,
+      requestUrl,
     );
   }
 
@@ -166,6 +170,7 @@ export class DataFetcher {
     storageKey: string,
     tileType: TTileType,
     options: FetchOptions = { apiCall: tileType },
+    requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
     const { forceRefresh = false, apiCall = tileType } = options;
     const parser = this.parserRegistry.get<TTileType, TRawData, TTileData>(tileType);
@@ -178,6 +183,7 @@ export class DataFetcher {
       apiCall,
       (input) => parser.safeParse(input) as unknown as TTileData,
       forceRefresh,
+      requestUrl,
     );
   }
 }
