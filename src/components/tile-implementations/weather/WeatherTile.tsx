@@ -226,7 +226,7 @@ export const WeatherTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const [showForecast, setShowForecast] = useState(true); // Expanded by default
+  const [showForecast, setShowForecast] = useState(false);
   const isForceRefresh = useForceRefreshFromKey();
   const { getWeather } = useWeatherApi();
   const apiKeys = getApiKeys();

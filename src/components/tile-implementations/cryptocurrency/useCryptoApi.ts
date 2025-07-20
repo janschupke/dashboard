@@ -9,7 +9,7 @@ import { fetchWithError } from '../../../services/fetchWithError';
 
 export function useCryptoApi() {
   const { dataFetcher } = useDataServices();
-  const getCryptoMarkets = useCallback(
+  const getCryptocurrencyMarkets = useCallback(
     async (
       tileId: string,
       params: CryptoMarketsParams,
@@ -30,5 +30,5 @@ export function useCryptoApi() {
     },
     [dataFetcher],
   );
-  return { getCryptoMarkets };
+  return { getCryptocurrencyMarkets };
 }

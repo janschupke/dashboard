@@ -5,7 +5,9 @@ import { DateTime } from 'luxon';
 export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData> {
   map(apiResponse: TimeApiResponse): TimeTileData {
     // formatted: '2024-06-10 15:30:00'
-    const dt = DateTime.fromFormat(apiResponse.formatted, 'yyyy-MM-dd HH:mm:ss', { zone: apiResponse.zoneName });
+    const dt = DateTime.fromFormat(apiResponse.formatted, 'yyyy-MM-dd HH:mm:ss', {
+      zone: apiResponse.zoneName,
+    });
     return {
       currentTime: dt.toFormat('HH:mm:ss'),
       date: dt.toISODate() ?? '',

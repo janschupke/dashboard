@@ -117,7 +117,9 @@ export interface TimeParams {
 export function getTimeApiKey(): string {
   return (
     (typeof process !== 'undefined' && process.env && process.env.TIMEZONEDB_API_KEY) ||
-    (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_TIMEZONEDB_API_KEY) ||
+    (typeof import.meta !== 'undefined' &&
+      import.meta.env &&
+      import.meta.env.VITE_TIMEZONEDB_API_KEY) ||
     ''
   );
 }
