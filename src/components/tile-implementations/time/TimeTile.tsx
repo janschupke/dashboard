@@ -18,10 +18,21 @@ const TimeTileContent = ({ data }: { data: TimeTileData | null }) => {
   return null;
 };
 
+const CITY_COORDS = {
+  helsinki: { lat: 60.1699, lng: 24.9384 },
+  prague: { lat: 50.0755, lng: 14.4378 },
+  taipei: { lat: 25.033, lng: 121.5654 },
+} as const;
+
 export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getTime } = useTimeApi();
-  const params = useMemo(() => ({ city: 'Europe/Helsinki' }), []);
+  // Get city from tile.config.city, fallback to 'helsinki'
+  const city = (tile.config && typeof tile.config.city === 'string' && CITY_COORDS[tile.config.city.toLowerCase() as keyof typeof CITY_COORDS])
+    ? tile.config.city.toLowerCase() as keyof typeof CITY_COORDS
+    : 'helsinki';
+  const coords = CITY_COORDS[city];
+  const params = useMemo(() => ({ lat: coords.lat, lng: coords.lng, by: 'position' as const, format: 'json' as const }), [coords.lat, coords.lng]);
   const { data, status, lastUpdated } = useTileData(getTime, tile.id, params, isForceRefresh);
   return (
     <GenericTile

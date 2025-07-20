@@ -2,30 +2,31 @@ import type { TileSize } from '../../../types/tile';
 import type { TileDataType } from '../../../services/storageManager';
 import type { BaseApiResponse } from '../../../services/dataMapper';
 
+export interface TimeApiResponse extends BaseApiResponse {
+  status: 'OK' | 'FAILED';
+  message: string;
+  countryCode: string;
+  zoneName: string;
+  abbreviation: string;
+  gmtOffset: number;
+  dst: '0' | '1';
+  zoneStart?: number;
+  zoneEnd?: number;
+  nextAbbreviation?: string;
+  timestamp: number;
+  formatted: string;
+  [key: string]: unknown;
+}
+
 export interface TimeTileData extends TileDataType {
   currentTime: string;
+  date: string;
   timezone: string;
   abbreviation: string;
   offset: string;
-  dayOfWeek: string;
-  date: string;
   isBusinessHours: boolean;
   businessStatus: 'open' | 'closed' | 'opening soon' | 'closing soon';
-  timeUntilNextDay?: string;
   lastUpdate: string;
-}
-
-export interface TimeApiResponse extends BaseApiResponse {
-  datetime: string;
-  timezone: string;
-  utc_datetime: string;
-  utc_offset: string;
-  day_of_week: number;
-  day_of_year: number;
-  week_number: number;
-  abbreviation: string;
-  client_ip: string;
-  [key: string]: unknown;
 }
 
 export interface CityConfig {
