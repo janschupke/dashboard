@@ -34,6 +34,11 @@ export const OPENWEATHERMAP_ONECALL_ENDPOINT: ApiEndpoint<WeatherParams> = {
   queryParams: {} as WeatherParams,
 };
 
+export const OPENWEATHERMAP_ALERTS_ENDPOINT: ApiEndpoint<WeatherParams> = {
+  url: '/api/openweathermap/data/3.0/onecall',
+  queryParams: {} as WeatherParams,
+};
+
 // --- GDX ETF (Alpha Vantage) ---
 export interface AlphaVantageParams {
   function: string; // e.g. 'GLOBAL_QUOTE'
@@ -119,18 +124,6 @@ export const TIME_API_ENDPOINT: ApiEndpoint<TimeParams> = {
   queryParams: {} as TimeParams,
 };
 
-// --- Typhoon (CWB) ---
-export interface TyphoonParams {
-  Authorization: string; // API key, set from process.env.CWB_API_KEY
-  format?: 'JSON' | 'XML'; // optional
-  dataid?: string; // optional
-}
-
-export const CWB_TYPHOON_ENDPOINT: ApiEndpoint<TyphoonParams> = {
-  url: '/api/cwb/v1/rest/datastore/W-C0034-002',
-  queryParams: {} as TyphoonParams,
-};
-
 // --- Earthquake (USGS) ---
 export interface UsgsEarthquakeParams {
   format: 'geojson';
@@ -156,7 +149,6 @@ export type TileApiParams =
   | FredParams
   | GoldApiParams
   | TimeParams
-  | TyphoonParams
   | UsgsEarthquakeParams
   | EuriborParams
   | UraniumHtmlParams;

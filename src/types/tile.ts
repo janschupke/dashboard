@@ -12,7 +12,7 @@ export const TileType = {
   TIME_TAIPEI: 'time_taipei',
   URANIUM: 'uranium',
   EARTHQUAKE: 'earthquake',
-  TYPHOON: 'typhoon',
+  WEATHER_ALERTS: 'weather-alerts',
 } as const;
 
 export type TileType = (typeof TileType)[keyof typeof TileType];
@@ -27,7 +27,7 @@ export const TileApiCallTitle = {
   TIME: 'Time API',
   URANIUM: 'Uranium API',
   EARTHQUAKE: 'USGS Earthquake API',
-  TYPHOON: 'CWB Open Data API',
+  WEATHER_ALERTS: 'Weather Alerts (OpenWeatherMap One Call API)',
 } as const;
 
 export type TileApiCallTitle = (typeof TileApiCallTitle)[keyof typeof TileApiCallTitle];
