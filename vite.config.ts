@@ -38,7 +38,7 @@ export default defineConfig({
       '/api/precious-metals': {
         target: 'https://api.gold-api.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/precious-metals\//, '/price/'),
+        rewrite: (path) => path.replace(/^\/api\/precious-metals\//, ''),
       },
       // TimeZoneDB API (official, not RapidAPI)
       '/api/timezonedb': {
