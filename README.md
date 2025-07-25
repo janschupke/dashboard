@@ -188,16 +188,16 @@ npm run type-check   # Run TypeScript type checking
 
 External API:
 
-| Name           | Base URL                         | Needs Key | Purpose                | Limitation           | Documentation                                     |
-| -------------- | -------------------------------- | --------- | ---------------------- | -------------------- | ------------------------------------------------- |
-| CoinGecko      | https://api.coingecko.com        | ✅ no     | Cryptocurrency         |                      | https://docs.coingecko.com/reference/introduction |
-| OpenWeatherMap | https://api.openweathermap.org   | ⚠️ yes    | Weather forecasts      | 1000 monthly         | https://openweathermap.org/api/one-call-3         |
-| Alpha Vantage  | https://www.alphavantage.co      | ⚠️ yes    | Stock data             | 25 requests daily    | https://www.alphavantage.co/documentation/        |
-| FRED           | https://api.stlouisfed.org       | ⚠️ yes    | Fed Funds rate         |                      | https://fred.stlouisfed.org/docs/api/fred/        |
-| USGS           | https://earthquake.usgs.gov      | ✅ no     | Earthquake database    |                      | https://earthquake.usgs.gov/fdsnws/event/1/       |
-| Gold API       | https://api.gold-api.com         | ✅ no     | Precious metals prices |                      | https://gold-api.com/docs                         |
-| TimeZoneDB     | https://api.timezonedb.com       | ⚠️ yes    | Current time           | 1 request per minute | https://timezonedb.com/references/get-time-zone   |
-| ECB            | https://sdw-wsrest.ecb.europa.eu | ✅ no     | Euribor                |                      |
-| Polygon.io     | https://polygon.io/              | ⚠️ yes    | Market data            | ❌ Not implemented   | https://polygon.io/docs/rest/quickstart           |
-| NASDAQ         | https://data.nasdaq.com/         | ⚠️ yes    | Market data            | ❌ Not implemented   |
-| RapidAPI       | https://rapidapi.com/            | ⚠️ yes    | Yahoo Finance          | ❌ Not implemented   |
+| Name           | Base URL                                                             | Needs Key | Purpose                | Limitation           | Documentation                                                                                          |
+| -------------- | -------------------------------------------------------------------- | --------- | ---------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| CoinGecko      | [https://api.coingecko.com](https://api.coingecko.com)               | ✅ no     | Cryptocurrency         |                      | [https://docs.coingecko.com/reference/introduction](https://docs.coingecko.com/reference/introduction) |
+| OpenWeatherMap | [https://api.openweathermap.org](https://api.openweathermap.org)     | ⚠️ yes    | Weather forecasts      | 1000 monthly         | [https://openweathermap.org/api/one-call-3](https://openweathermap.org/api/one-call-3)                 |
+| Alpha Vantage  | [https://www.alphavantage.co](https://www.alphavantage.co)           | ⚠️ yes    | Stock data             | 25 requests daily    | [https://www.alphavantage.co/documentation/](https://www.alphavantage.co/documentation/)               |
+| FRED           | [https://api.stlouisfed.org](https://api.stlouisfed.org)             | ⚠️ yes    | Fed Funds rate         |                      | [https://fred.stlouisfed.org/docs/api/fred/](https://fred.stlouisfed.org/docs/api/fred/)               |
+| USGS           | [https://earthquake.usgs.gov](https://earthquake.usgs.gov)           | ✅ no     | Earthquake database    |                      | [https://earthquake.usgs.gov/fdsnws/event/1/](https://earthquake.usgs.gov/fdsnws/event/1/)             |
+| Gold API       | [https://api.gold-api.com](https://api.gold-api.com)                 | ✅ no     | Precious metals prices |                      | [https://gold-api.com/docs](https://gold-api.com/docs)                                                 |
+| TimeZoneDB     | [https://api.timezonedb.com](https://api.timezonedb.com)             | ⚠️ yes    | Current time           | 1 request per minute | [https://timezonedb.com/references/get-time-zone](https://timezonedb.com/references/get-time-zone)     |
+| ECB            | [https://sdw-wsrest.ecb.europa.eu](https://sdw-wsrest.ecb.europa.eu) | ✅ no     | Euribor                |                      | [https://sdw-wsrest.ecb.europa.eu/help/](https://sdw-wsrest.ecb.europa.eu/help/)                       |
+| Polygon.io     | [https://polygon.io/](https://polygon.io/)                           | ⚠️ yes    | Market data            | ❌ Not implemented   | [https://polygon.io/docs/rest/quickstart](https://polygon.io/docs/rest/quickstart)                     |
+| NASDAQ         | [https://data.nasdaq.com/](https://data.nasdaq.com/)                 | ⚠️ yes    | Market data            | ❌ Not implemented   | [https://docs.data.nasdaq.com/](https://docs.data.nasdaq.com/)                                         |
+| RapidAPI       | [https://rapidapi.com/](https://rapidapi.com/)                       | ⚠️ yes    | Yahoo Finance          | ❌ Not implemented   | [https://rapidapi.com/docs/](https://rapidapi.com/docs/)                                               |
