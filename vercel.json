@@ -6,10 +6,10 @@
       "use": "@vercel/static-build",
       "config": { "distDir": "dist", "buildCommand": "npm run build" }
     },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
+    { "src": "api/**/*.ts", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/([^/]+)/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api/([^/]+)/(.*)", "dest": "/api/$1.ts" },
     { "src": "/@vite/(.*)", "dest": "/@vite/$1" },
     { "src": "/@react-refresh", "dest": "/@react-refresh" },
     { "src": "/src/(.*)", "dest": "/src/$1" },
