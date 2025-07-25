@@ -85,8 +85,7 @@ const endpoints = [
     pathParams: {
       symbol: 'XAU',
     },
-    queryParams: {
-    },
+    queryParams: {},
     baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
     key: null,
     required: false,
