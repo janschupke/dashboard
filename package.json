@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run build:api && tsc -b && vite build",
-    "build:api": "node scripts/add-es-module-declarations.js && tsc --project tsconfig.api.json",
+    "build:api": "node scripts/add-es-module-declarations.js",
     "lint": "eslint . --fix --max-warnings=0",
     "preview": "vite preview",
     "test": "vitest run",
