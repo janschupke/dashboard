@@ -1,4 +1,3 @@
-// @ts-check
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 interface GoldApiResponse {
@@ -33,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error(`Failed to fetch ${symbol} data: ${response.status}`);
     }
 
-    const data = (await response.json()) as GoldApiResponse;
+    const data: GoldApiResponse = await response.json();
 
     res.status(200).json(data);
   } catch (error) {
