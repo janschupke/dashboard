@@ -167,6 +167,8 @@ async function checkEndpoint(ep) {
   console.log('\nAPI Endpoint Healthcheck\n------------------------');
   console.log(`Testing ${endpoints.length} endpoints...`);
   const results = await Promise.all(endpoints.map(checkEndpoint));
+  console.log('Results received:', results.length);
+
   const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 2;
   const baseUrlPad = Math.max(...endpoints.map((e) => e.baseUrl.length)) + 2;
 
