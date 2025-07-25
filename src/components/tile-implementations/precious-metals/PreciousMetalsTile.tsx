@@ -47,7 +47,7 @@ export const PreciousMetalsTile = ({
 }) => {
   const isForceRefresh = useForceRefreshFromKey();
   const { getPreciousMetals } = usePreciousMetalsApi();
-  const params = useMemo(() => ({ symbol: 'XAU' }), []);
+  const params = useMemo(() => ({ symbol: 'XAU' as const }), []);
   const { data, status, lastUpdated } = useTileData(
     getPreciousMetals,
     tile.id,

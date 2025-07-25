@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = `https://api.coingecko.com${req.url?.replace(/^\/api\/coingecko/, '')}`;
+  const url = `https://sdw-wsrest.ecb.europa.eu${req.url?.replace(/^\/api\/ecb/, '')}`;
 
   try {
     const apiRes = await fetch(url, {

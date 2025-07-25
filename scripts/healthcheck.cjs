@@ -1,82 +1,137 @@
 /* eslint-disable no-undef, @typescript-eslint/no-require-imports */
 /* eslint-env node */
 /* global process */
-// Healthcheck script for dashboard API endpoints
+// Environment-agnostic healthcheck script for dashboard API endpoints
+// Works with Vercel API functions across all environments (local, staging, production)
 // Usage: node healthcheck.js
 // Requires: npm install dotenv
 
 const dotenv = require('dotenv');
 dotenv.config();
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+// Environment-agnostic base URL - works with Vercel API functions
+// For local development: http://localhost:3000 (Vercel dev server)
+// For production: https://your-domain.vercel.app
+// Usage examples:
+//   - Local: BASE_URL=http://localhost:3000 node healthcheck.cjs
+//   - Production: BASE_URL=https://your-app.vercel.app node healthcheck.cjs
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
-// Generate dynamic date range for USGS earthquake API (last 7 days)
-function getDateRange() {
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 7);
+// Build URL function that constructs the final URL from path and query parameters
+function buildUrl(baseUrl, pathParams = {}, queryParams = {}) {
+  let url = baseUrl;
 
-  return {
-    starttime: startDate.toISOString().split('T')[0], // YYYY-MM-DD format
-    endtime: endDate.toISOString().split('T')[0], // YYYY-MM-DD format
-  };
+  // Replace path parameters
+  Object.entries(pathParams).forEach(([key, value]) => {
+    url = url.replace(`{${key}}`, value);
+  });
+
+  // Add query parameters
+  const queryString = Object.entries(queryParams)
+    .filter(([, value]) => value !== null && value !== undefined)
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join('&');
+
+  if (queryString) {
+    url += (url.includes('?') ? '&' : '?') + queryString;
+  }
+
+  return url;
 }
-
-const { starttime, endtime } = getDateRange();
 
 const endpoints = [
   {
     name: 'CoinGecko Markets',
-    url: `${BASE_URL}/api/coingecko/api/v3/coins/markets?vs_currency=usd`,
-    baseUrl: 'https://api.coingecko.com',
+    pathParams: {},
+    queryParams: {
+      vs_currency: 'usd',
+    },
+    baseUrl: `${BASE_URL}/api/coingecko/api/v3/coins/markets`,
     key: null,
     required: false,
   },
   {
     name: 'OpenWeatherMap',
-    url: `${BASE_URL}/api/openweathermap/data/3.0/onecall?lat=60.1699&lon=24.9384&appid=${process.env.OPENWEATHERMAP_API_KEY}`,
-    baseUrl: 'https://api.openweathermap.org',
+    pathParams: {},
+    queryParams: {
+      lat: '60.1699',
+      lon: '24.9384',
+      appid: process.env.OPENWEATHERMAP_API_KEY,
+    },
+    baseUrl: `${BASE_URL}/api/openweathermap/data/3.0/onecall`,
     key: 'OPENWEATHERMAP_API_KEY',
     required: true,
   },
   {
     name: 'Alpha Vantage GDX',
-    url: `${BASE_URL}/api/alpha-vantage/query?function=GLOBAL_QUOTE&symbol=GDX&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`,
-    baseUrl: 'https://www.alphavantage.co',
+    pathParams: {},
+    queryParams: {
+      function: 'GLOBAL_QUOTE',
+      symbol: 'GDX',
+      apikey: process.env.ALPHA_VANTAGE_API_KEY,
+    },
+    baseUrl: `${BASE_URL}/api/alpha-vantage/query`,
     key: 'ALPHA_VANTAGE_API_KEY',
     required: true,
   },
   {
     name: 'FRED Series Observations',
-    url: `${BASE_URL}/api/fred/fred/series/observations?series_id=FEDFUNDS&api_key=${process.env.FRED_API_KEY}&file_type=json`,
-    baseUrl: 'https://api.stlouisfed.org',
+    pathParams: {},
+    queryParams: {
+      series_id: 'FEDFUNDS',
+      api_key: process.env.FRED_API_KEY,
+      file_type: 'json',
+    },
+    baseUrl: `${BASE_URL}/api/fred/fred/series/observations`,
     key: 'FRED_API_KEY',
     required: true,
   },
   // Precious Metals API
   {
     name: 'Precious Metals (Gold & Silver)',
-    url: `${BASE_URL}/api/precious-metals/XAU`,
-    baseUrl: 'https://api.gold-api.com',
+    pathParams: {
+      symbol: 'XAU',
+    },
+    queryParams: {},
+    baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
+    key: null,
+    required: false,
   },
   {
     name: 'USGS Earthquake',
-    url: `${BASE_URL}/api/usgs/fdsnws/event/1/query?format=geojson&starttime=${starttime}&endtime=${endtime}`,
-    baseUrl: 'https://earthquake.usgs.gov',
+    pathParams: {},
+    queryParams: {
+      format: 'geojson',
+      starttime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      endtime: new Date().toISOString().slice(0, 10),
+    },
+    baseUrl: `${BASE_URL}/api/usgs/fdsnws/event/1/query`,
     key: null,
     required: false,
   },
   {
     name: 'TimeZoneDB',
-    url: `${BASE_URL}/api/timezonedb?key=${process.env.TIMEZONEDB_API_KEY}&lat=60.1699&lng=24.9384&format=json&by=position`,
-    baseUrl: 'https://api.timezonedb.com',
+    pathParams: {},
+    queryParams: {
+      key: process.env.TIMEZONEDB_API_KEY,
+      lat: '60.1699',
+      lng: '24.9384',
+      format: 'json',
+      by: 'position',
+    },
+    baseUrl: `${BASE_URL}/api/timezonedb`,
     key: 'TIMEZONEDB_API_KEY',
     required: true,
   },
   {
     name: 'ECB Euribor 12M',
-    url: `${BASE_URL}/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A?format=json`,
-    baseUrl: 'https://sdw-wsrest.ecb.europa.eu',
+    pathParams: {
+      series: 'BSI.M.U2.EUR.R.IR12MM.R.A',
+    },
+    queryParams: {
+      format: 'json',
+    },
+    baseUrl: `${BASE_URL}/api/ecb/service/data/:series`,
     key: null,
     required: false,
   },
@@ -90,8 +145,11 @@ async function checkEndpoint(ep) {
   if (ep.required && (!ep.key || !process.env[ep.key])) {
     return { name: ep.name, status: '❌', msg: `Missing API key (${ep.key})` };
   }
+
+  const url = buildUrl(ep.baseUrl, ep.pathParams, ep.queryParams);
+
   try {
-    const res = await fetch(ep.url);
+    const res = await fetch(url);
     if (!res.ok) {
       return { name: ep.name, status: '❌', msg: `HTTP ${res.status}` };
     }
@@ -107,6 +165,7 @@ async function checkEndpoint(ep) {
 
 (async () => {
   console.log('\nAPI Endpoint Healthcheck\n------------------------');
+  console.log(`Testing ${endpoints.length} endpoints...`);
   const results = await Promise.all(endpoints.map(checkEndpoint));
   const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 2;
   const baseUrlPad = Math.max(...endpoints.map((e) => e.baseUrl.length)) + 2;
@@ -127,4 +186,16 @@ async function checkEndpoint(ep) {
   } else {
     console.log('\nAll endpoints are healthy!');
   }
-})();
+
+  console.log('\nEnvironment Information:');
+  console.log(`- Base URL: ${BASE_URL}`);
+  console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('- API Functions: Vercel serverless functions');
+  console.log('- CORS: Handled by serverless functions');
+
+  if (BASE_URL.includes('localhost')) {
+    console.log('\n💡 Local Development Tips:');
+    console.log('- Make sure to run "vercel dev" to start the development server');
+    console.log('- API functions will be available at http://localhost:3000/api/*');
+  }
+})().catch(console.error);

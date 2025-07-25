@@ -1,18 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-function filterHeaders(headers: Record<string, string | string[]>) {
-  const filtered: Record<string, string | string[]> = {};
-  for (const [key, value] of Object.entries(headers)) {
-    if (key.toLowerCase() !== 'host') filtered[key] = value;
-  }
-  return filtered;
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = `https://opendata.cwb.gov.tw${req.url?.replace(/^\/api\/cwb/, '')}`;
+  const url = `https://api.timezonedb.com${req.url?.replace(/^\/api\/timezonedb/, '')}`;
+
+  // Create headers object, filtering out problematic headers
+  const headers: Record<string, string> = {};
+  Object.entries(req.headers).forEach(([key, value]) => {
+    if (key.toLowerCase() !== 'host' && value !== undefined) {
+      headers[key] = Array.isArray(value) ? value[0] : value;
+    }
+  });
+
   const apiRes = await fetch(url, {
     method: req.method,
-    headers: filterHeaders(req.headers as Record<string, string | string[]>),
+    headers,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
   });
   const data = await apiRes.arrayBuffer();

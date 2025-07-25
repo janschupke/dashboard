@@ -2,17 +2,16 @@ export interface ApiEndpoint<TParams extends object> {
   url: string;
   queryParams: TParams;
   pathParams?: Record<string, string>; // Add path parameters support
-  broken?: boolean;
 }
 
 // --- Cryptocurrency (CoinGecko) ---
 export interface CryptoMarketsParams {
-  vs_currency: string; // required, e.g. 'usd'
-  ids?: string; // optional, comma-separated coin ids
-  order?: string; // optional, e.g. 'market_cap_desc'
-  per_page?: number; // optional
-  page?: number; // optional
-  sparkline?: boolean; // optional
+  vs_currency: string;
+  ids?: string;
+  order?: string;
+  per_page?: number;
+  page?: number;
+  sparkline?: boolean;
 }
 
 export const COINGECKO_MARKETS_ENDPOINT: ApiEndpoint<CryptoMarketsParams> = {
@@ -27,7 +26,6 @@ export interface WeatherParams {
   appid?: string; // API key, set from process.env.OPENWEATHERMAP_API_KEY
   units?: 'metric' | 'imperial' | 'kelvin';
   exclude?: string;
-  [key: string]: string | number | undefined;
 }
 export const OPENWEATHERMAP_ONECALL_ENDPOINT: ApiEndpoint<WeatherParams> = {
   url: '/api/openweathermap/data/3.0/onecall',
@@ -41,10 +39,13 @@ export const OPENWEATHERMAP_ALERTS_ENDPOINT: ApiEndpoint<WeatherParams> = {
 
 // --- GDX ETF (Alpha Vantage) ---
 export interface AlphaVantageParams {
-  function: string; // e.g. 'GLOBAL_QUOTE'
-  symbol: string; // e.g. 'GDX'
-  apikey?: string; // API key, set from process.env.ALPHA_VANTAGE_API_KEY
-  [key: string]: string | undefined;
+  function: string;
+  symbol: string;
+  apikey?: string;
+  observation_start?: string;
+  observation_end?: string;
+  frequency?: string;
+  aggregation_method?: string;
 }
 export const ALPHA_VANTAGE_GDX_ENDPOINT: ApiEndpoint<AlphaVantageParams> = {
   url: '/api/alpha-vantage/query',
@@ -56,12 +57,6 @@ export interface FredParams {
   series_id: string; // required, e.g. 'FEDFUNDS'
   file_type: 'json'; // required
   api_key?: string; // API key, set from process.env.FRED_API_KEY
-  observation_start?: string;
-  observation_end?: string;
-  frequency?: string;
-  aggregation_method?: string;
-  // TODO: comlletely useless...
-  [key: string]: string | undefined;
 }
 export const FRED_SERIES_OBSERVATIONS_ENDPOINT: ApiEndpoint<FredParams> = {
   url: '/api/fred/fred/series/observations',
@@ -71,12 +66,10 @@ export const FRED_SERIES_OBSERVATIONS_ENDPOINT: ApiEndpoint<FredParams> = {
 // --- Euribor Rate (ECB, 12M) ---
 export interface EuriborParams {
   format?: 'json' | 'xml';
-  // ECB API doesn't require additional parameters
-  [key: string]: string | undefined;
 }
 export const ECB_EURIBOR_12M_ENDPOINT: ApiEndpoint<EuriborParams> = {
   // TODO: this is a direct URL, not an API endpoint
-  url: 'https://sdw-wsrest.ecb.europa.eu/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
+  url: '/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
   queryParams: {} as EuriborParams,
 };
 
@@ -91,31 +84,21 @@ export const URANIUM_HTML_ENDPOINT: ApiEndpoint<UraniumHtmlParams> = {
   queryParams: {} as UraniumHtmlParams,
 };
 
-// --- Precious Metals (Gold & Silver Spot, gold-api.com via local proxy) ---
-/**
- * Params for gold-api.com endpoints:
- * The API supports /price/{symbol} endpoints where symbol can be XAU, XAG, etc.
- * No query parameters are supported - prices are returned in USD
- *
- * Usage examples:
- * - buildApiUrl(PRECIOUS_METALS_ENDPOINT, { symbol: 'XAU' }) -> '/api/precious-metals/XAU'
- * - buildApiUrl(PRECIOUS_METALS_ENDPOINT, { symbol: 'XAG' }) -> '/api/precious-metals/XAG'
- */
 export interface GoldApiParams {
-  symbol: string; // required, e.g. 'XAU' for gold, 'XAG' for silver
+  symbol: 'XAU' | 'XAG';
 }
 export const PRECIOUS_METALS_ENDPOINT: ApiEndpoint<GoldApiParams> = {
-  url: '/api/precious-metals/{symbol}',
+  url: '/api/precious-metals/price/{symbol}',
   queryParams: {} as GoldApiParams,
   pathParams: { symbol: '{symbol}' },
 };
 
 // --- Time (TimeZoneDB) ---
 export interface TimeParams {
-  lat: number; // required, e.g. 60.1699
-  lng: number; // required, e.g. 24.9384
-  by?: 'position' | 'zone'; // default: 'position'
-  format?: 'json'; // default: 'json'
+  lat: number;
+  lng: number;
+  by?: 'position' | 'zone';
+  format?: 'json';
   key?: string; // API key, set from env or config
 }
 
@@ -127,15 +110,13 @@ export const TIME_API_ENDPOINT: ApiEndpoint<TimeParams> = {
 // --- Earthquake (USGS) ---
 export interface UsgsEarthquakeParams {
   format: 'geojson';
-  starttime: string; // YYYY-MM-DD
-  endtime: string; // YYYY-MM-DD
+  starttime: string;
+  endtime: string;
   minmagnitude?: number;
   maxmagnitude?: number;
   latitude?: number;
   longitude?: number;
   maxradiuskm?: number;
-  // TODO: comlletely useless...
-  [key: string]: string | number | undefined;
 }
 export const USGS_EARTHQUAKE_ENDPOINT: ApiEndpoint<UsgsEarthquakeParams> = {
   url: '/api/usgs/fdsnws/event/1/query',
@@ -158,10 +139,6 @@ export function buildApiUrl<TParams extends TileApiParams>(
   endpoint: ApiEndpoint<TParams>,
   params: TParams,
 ): string {
-  if (endpoint.broken) {
-    throw new Error('This endpoint is currently broken or not implemented.');
-  }
-
   let url = endpoint.url;
 
   // Handle path parameters
