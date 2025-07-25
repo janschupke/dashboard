@@ -1,14 +1,21 @@
 /* eslint-disable no-undef, @typescript-eslint/no-require-imports */
 /* eslint-env node */
 /* global process */
-// Healthcheck script for dashboard API endpoints
+// Environment-agnostic healthcheck script for dashboard API endpoints
+// Works with Vercel API functions across all environments (local, staging, production)
 // Usage: node healthcheck.js
 // Requires: npm install dotenv
 
 const dotenv = require('dotenv');
 dotenv.config();
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+// Environment-agnostic base URL - works with Vercel API functions
+// For local development: http://localhost:3000 (Vercel dev server)
+// For production: https://your-domain.vercel.app
+// Usage examples:
+//   - Local: BASE_URL=http://localhost:3000 node healthcheck.cjs
+//   - Production: BASE_URL=https://your-app.vercel.app node healthcheck.cjs
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Build URL function that constructs the final URL from path and query parameters
 function buildUrl(baseUrl, pathParams = {}, queryParams = {}) {
@@ -158,6 +165,7 @@ async function checkEndpoint(ep) {
 
 (async () => {
   console.log('\nAPI Endpoint Healthcheck\n------------------------');
+  console.log(`Testing ${endpoints.length} endpoints...`);
   const results = await Promise.all(endpoints.map(checkEndpoint));
   const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 2;
   const baseUrlPad = Math.max(...endpoints.map((e) => e.baseUrl.length)) + 2;
@@ -178,4 +186,16 @@ async function checkEndpoint(ep) {
   } else {
     console.log('\nAll endpoints are healthy!');
   }
-})();
+
+  console.log('\nEnvironment Information:');
+  console.log(`- Base URL: ${BASE_URL}`);
+  console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('- API Functions: Vercel serverless functions');
+  console.log('- CORS: Handled by serverless functions');
+
+  if (BASE_URL.includes('localhost')) {
+    console.log('\n💡 Local Development Tips:');
+    console.log('- Make sure to run "vercel dev" to start the development server');
+    console.log('- API functions will be available at http://localhost:3000/api/*');
+  }
+})().catch(console.error);

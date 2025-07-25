@@ -109,7 +109,7 @@ src/
 
 ## API Integration
 
-The application uses a comprehensive API proxy system to handle CORS issues and ensure reliable data fetching. See [api/README.md](api/README.md) for details.
+The application uses Vercel API functions to handle CORS issues and ensure reliable data fetching across all environments. All API proxying is handled by serverless functions in the `/api` directory, making the application environment-agnostic. See [api/README.md](api/README.md) for details.
 
 ## Accessibility, Performance, Testing, and Deployment
 
@@ -121,6 +121,7 @@ The application uses a comprehensive API proxy system to handle CORS issues and 
 
 - Node.js 18+
 - npm or yarn
+- Vercel CLI (for local development with API functions)
 
 ### Setup
 
@@ -132,15 +133,35 @@ cd dashboard
 # Install dependencies
 npm install
 
-# Start development server
-npm run dev
+# Install Vercel CLI globally (if not already installed)
+npm install -g vercel
+
+# Start development server with Vercel CLI
+vercel dev
 ```
+
+**Note**: The application now uses Vercel API functions for all API proxying, ensuring consistent behavior across all environments. Use `vercel dev` for local development to enable both frontend and API functions.
+
+### API Healthcheck
+
+The project includes an environment-agnostic healthcheck script that tests all API endpoints:
+
+```bash
+# Test API endpoints (requires vercel dev to be running)
+node scripts/healthcheck.cjs
+
+# Test against production environment
+BASE_URL=https://your-app.vercel.app node scripts/healthcheck.cjs
+```
+
+The healthcheck script works with Vercel API functions across all environments and provides detailed status information for each endpoint.
 
 ### Available Scripts
 
 ```bash
 # Development
-npm run dev          # Start development server
+vercel dev           # Start development server with API functions
+npm run dev          # Start development server (without API functions)
 npm run build        # Build for production
 npm run preview      # Preview production build
 
@@ -151,6 +172,9 @@ npm run test:ui      # Run tests with UI
 # Code Quality
 npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript type checking
+
+# Healthcheck
+node scripts/healthcheck.cjs  # Test API endpoints health
 ```
 
 # Installation
@@ -181,8 +205,10 @@ npm run type-check   # Run TypeScript type checking
 4. Start the development server:
 
    ```sh
-   npm run dev
+   vercel dev
    ```
+
+   **Note**: Use `vercel dev` for local development to enable both frontend and API functions.
 
 5. For production, only `.env` is required. API keys are never exposed to the client in production.
 

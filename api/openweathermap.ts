@@ -2,9 +2,18 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = `https://api.openweathermap.org${req.url?.replace(/^\/api\/openweathermap/, '')}`;
+
+  // Create headers object, filtering out problematic headers
+  const headers: Record<string, string> = {};
+  Object.entries(req.headers).forEach(([key, value]) => {
+    if (key.toLowerCase() !== 'host' && value !== undefined) {
+      headers[key] = Array.isArray(value) ? value[0] : value;
+    }
+  });
+
   const apiRes = await fetch(url, {
     method: req.method,
-    headers: { ...req.headers, host: undefined },
+    headers,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
   });
   const data = await apiRes.arrayBuffer();
