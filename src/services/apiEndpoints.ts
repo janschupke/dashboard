@@ -7,8 +7,11 @@ export interface ApiEndpoint<TParams extends object> {
 // --- Cryptocurrency (CoinGecko) ---
 export interface CryptoMarketsParams {
   vs_currency: string;
+  ids?: string;
   order?: string;
   per_page?: number;
+  page?: number;
+  sparkline?: boolean;
 }
 
 export const COINGECKO_MARKETS_ENDPOINT: ApiEndpoint<CryptoMarketsParams> = {
@@ -22,6 +25,7 @@ export interface WeatherParams {
   lon: number; // required
   appid?: string; // API key, set from process.env.OPENWEATHERMAP_API_KEY
   units?: 'metric' | 'imperial' | 'kelvin';
+  exclude?: string;
 }
 export const OPENWEATHERMAP_ONECALL_ENDPOINT: ApiEndpoint<WeatherParams> = {
   url: '/api/openweathermap/data/3.0/onecall',
@@ -35,9 +39,13 @@ export const OPENWEATHERMAP_ALERTS_ENDPOINT: ApiEndpoint<WeatherParams> = {
 
 // --- GDX ETF (Alpha Vantage) ---
 export interface AlphaVantageParams {
-  function: string; // e.g. 'GLOBAL_QUOTE'
-  symbol: string; // e.g. 'GDX'
-  apikey?: string; // API key, set from process.env.ALPHA_VANTAGE_API_KEY
+  function: string;
+  symbol: string;
+  apikey?: string;
+  observation_start?: string;
+  observation_end?: string;
+  frequency?: string;
+  aggregation_method?: string;
 }
 export const ALPHA_VANTAGE_GDX_ENDPOINT: ApiEndpoint<AlphaVantageParams> = {
   url: '/api/alpha-vantage/query',
@@ -76,7 +84,6 @@ export const URANIUM_HTML_ENDPOINT: ApiEndpoint<UraniumHtmlParams> = {
   queryParams: {} as UraniumHtmlParams,
 };
 
-
 export interface GoldApiParams {
   symbol: 'XAU' | 'XAG';
 }
@@ -90,8 +97,8 @@ export const PRECIOUS_METALS_ENDPOINT: ApiEndpoint<GoldApiParams> = {
 export interface TimeParams {
   lat: number;
   lng: number;
-  by?: 'position' | 'zone'; 
-  format?: 'json'; 
+  by?: 'position' | 'zone';
+  format?: 'json';
   key?: string; // API key, set from env or config
 }
 
@@ -105,6 +112,11 @@ export interface UsgsEarthquakeParams {
   format: 'geojson';
   starttime: string;
   endtime: string;
+  minmagnitude?: number;
+  maxmagnitude?: number;
+  latitude?: number;
+  longitude?: number;
+  maxradiuskm?: number;
 }
 export const USGS_EARTHQUAKE_ENDPOINT: ApiEndpoint<UsgsEarthquakeParams> = {
   url: '/api/usgs/fdsnws/event/1/query',

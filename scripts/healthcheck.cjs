@@ -10,39 +10,25 @@ dotenv.config();
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
 
-// Generate dynamic date range for USGS earthquake API (last 7 days)
-function getDateRange() {
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 7);
-
-  return {
-    starttime: startDate.toISOString().split('T')[0], // YYYY-MM-DD format
-    endtime: endDate.toISOString().split('T')[0], // YYYY-MM-DD format
-  };
-}
-
-const { starttime, endtime } = getDateRange();
-
 // Build URL function that constructs the final URL from path and query parameters
 function buildUrl(baseUrl, pathParams = {}, queryParams = {}) {
   let url = baseUrl;
-  
+
   // Replace path parameters
   Object.entries(pathParams).forEach(([key, value]) => {
     url = url.replace(`{${key}}`, value);
   });
-  
+
   // Add query parameters
   const queryString = Object.entries(queryParams)
     .filter(([, value]) => value !== null && value !== undefined)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join('&');
-  
+
   if (queryString) {
     url += (url.includes('?') ? '&' : '?') + queryString;
   }
-  
+
   return url;
 }
 
@@ -96,9 +82,12 @@ const endpoints = [
   // Precious Metals API
   {
     name: 'Precious Metals (Gold & Silver)',
-    pathParams: {},
-    queryParams: {},
-    baseUrl: `${BASE_URL}/api/precious-metals/XAU`,
+    pathParams: {
+      symbol: 'XAU',
+    },
+    queryParams: {
+    },
+    baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
     key: null,
     required: false,
   },
@@ -107,8 +96,8 @@ const endpoints = [
     pathParams: {},
     queryParams: {
       format: 'geojson',
-      starttime,
-      endtime,
+      starttime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      endtime: new Date().toISOString().slice(0, 10),
     },
     baseUrl: `${BASE_URL}/api/usgs/fdsnws/event/1/query`,
     key: null,
@@ -150,9 +139,9 @@ async function checkEndpoint(ep) {
   if (ep.required && (!ep.key || !process.env[ep.key])) {
     return { name: ep.name, status: '❌', msg: `Missing API key (${ep.key})` };
   }
-  
+
   const url = buildUrl(ep.baseUrl, ep.pathParams, ep.queryParams);
-  
+
   try {
     const res = await fetch(url);
     if (!res.ok) {
