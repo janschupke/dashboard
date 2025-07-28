@@ -23,7 +23,7 @@ beforeAll(() => {
 
 describe('usePreciousMetalsApi', () => {
   const mockTileId = 'test-precious-metals-tile';
-  const mockParams: QueryParams = { symbol: 'XAU' };
+  const mockParams: QueryParams = {};
 
   it('should successfully fetch precious metals data', async () => {
     // Mock the gold API response (current actual behavior)
