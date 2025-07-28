@@ -6,8 +6,8 @@
       "use": "@vercel/static-build",
       "config": { "distDir": "dist", "buildCommand": "npm run build" }
     },
-    { 
-      "src": "api/**/*.js", 
+    {
+      "src": "api/**/*.js",
       "use": "@vercel/node",
       "config": {
         "nodeVersion": "22.x"
