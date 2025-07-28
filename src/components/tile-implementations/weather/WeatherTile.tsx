@@ -244,7 +244,12 @@ export const WeatherTile = ({
     [apiKeys.openWeatherMap, cityConfig],
   );
 
-  const { data, status, lastUpdated } = useTileData(getWeather, tile.id, params, isForceRefresh);
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
+    getWeather,
+    tile.id,
+    params,
+    isForceRefresh,
+  );
 
   const handleToggleForecast = useCallback(() => {
     setShowForecast((prev) => !prev);
@@ -257,6 +262,7 @@ export const WeatherTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <WeatherTileContent

@@ -81,7 +81,12 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
     }),
     [cityConfig.lat, cityConfig.lng, apiKeys.TIMEZONEDB_API_KEY],
   );
-  const { data, status, lastUpdated } = useTileData(getTime, tile.id, params, isForceRefresh);
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
+    getTime,
+    tile.id,
+    params,
+    isForceRefresh,
+  );
   return (
     <GenericTile
       tile={tile}
@@ -89,6 +94,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <TimeTileContent data={data} city={cityConfig.city} />

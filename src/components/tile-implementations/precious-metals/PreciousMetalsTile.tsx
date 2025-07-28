@@ -48,11 +48,20 @@ export const PreciousMetalsTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getPreciousMetals } = usePreciousMetalsApi();
   const params = useMemo(() => ({ symbol: 'XAU' as const }), []);
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: 1 * 60 * 1000, // 1 minute
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
     getPreciousMetals,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
 
   return (
@@ -62,6 +71,7 @@ export const PreciousMetalsTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <PreciousMetalsTileContent data={data} />

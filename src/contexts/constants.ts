@@ -152,6 +152,16 @@ export const CACHE_CONFIG = {
 export const REFRESH_INTERVALS = {
   TILE_DATA: 10 * 60 * 1000, // 10 minutes
   COUNTDOWN_UPDATE: 1000, // 1 second for countdown timer
+
+  // Tile-specific refresh intervals
+  TILES: {
+    CRYPTOCURRENCY: 2 * 60 * 1000,
+    PRECIOUS_METALS: 1 * 60 * 1000,
+    FEDERAL_FUNDS_RATE: 60 * 60 * 1000,
+    GDX_ETF: 60 * 60 * 1000,
+    URANIUM: 60 * 60 * 1000,
+    EURIBOR_RATE: 60 * 60 * 1000,
+  },
 } as const;
 
 /**

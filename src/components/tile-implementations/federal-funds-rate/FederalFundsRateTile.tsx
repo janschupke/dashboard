@@ -4,7 +4,7 @@ import { useFederalFundsApi } from './useFederalFundsApi';
 import type { FederalFundsRateTileData, TimeRange } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
-import { useMemo, useState, useCallback, memo } from 'react';
+import { useMemo, useState, memo } from 'react';
 import type { FredParams } from '../../../services/apiEndpoints';
 import { getApiKeys } from '../../../services/apiConfig';
 import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
@@ -80,16 +80,21 @@ export const FederalFundsRateTile = ({
     [apiKeys.fred],
   );
 
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: 60 * 60 * 1000, // 1 hour
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
     getFederalFundsRate,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
-
-  const handleTimeRangeChange = useCallback((range: TimeRange) => {
-    setTimeRange(range);
-  }, []);
 
   return (
     <GenericTile
@@ -98,12 +103,13 @@ export const FederalFundsRateTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <FederalFundsRateTileContent
         data={data}
         timeRange={timeRange}
-        onTimeRangeChange={handleTimeRangeChange}
+        onTimeRangeChange={setTimeRange}
       />
     </GenericTile>
   );

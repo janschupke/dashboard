@@ -52,11 +52,20 @@ export const CryptocurrencyTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: 2 * 60 * 1000, // 2 minutes
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
     getCryptocurrencyMarkets,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
 
   // TODO: fix the undefined update
@@ -67,6 +76,7 @@ export const CryptocurrencyTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <CryptocurrencyTileContent data={data} />

@@ -60,7 +60,7 @@ export const WeatherAlertsTile = ({
     }),
     [apiKeys.openWeatherMap],
   );
-  const { data, status, lastUpdated } = useTileData(
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
     getWeatherAlerts,
     tile.id,
     params,
@@ -74,6 +74,7 @@ export const WeatherAlertsTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <WeatherAlertsTileContent alerts={data?.alerts || []} />

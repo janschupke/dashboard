@@ -29,11 +29,20 @@ export const UraniumTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getUraniumPrice } = useUraniumApi();
   const params = useMemo(() => ({ range: '1D' }), []);
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: 60 * 60 * 1000, // 1 hour
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh } = useTileData(
     getUraniumPrice,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
   return (
     <GenericTile
@@ -42,6 +51,7 @@ export const UraniumTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
       {...rest}
     >
       <UraniumTileContent data={data} />
