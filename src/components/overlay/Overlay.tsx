@@ -19,7 +19,7 @@ function OverlayContent({
   setSidebarSelectedIndex,
 }: {
   isSidebarCollapsed: boolean;
-  setSidebarCollapsed: () => void;
+  setSidebarCollapsed: (tiles: string[]) => void;
   sidebarSelectedIndex: number;
   setSidebarSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
 }) {
@@ -62,7 +62,7 @@ function OverlayContent({
           toggleLogView={toggleLogView}
           toggleTheme={toggleTheme}
           theme={theme}
-          toggleCollapse={setSidebarCollapsed}
+          toggleCollapse={() => setSidebarCollapsed(tiles.map((t) => t.id))}
           tilesCount={tiles.length}
           refreshAllTiles={refreshAllTiles}
           isRefreshing={isRefreshing}
@@ -70,7 +70,7 @@ function OverlayContent({
         <div className="flex h-full pt-16 relative">
           <Sidebar
             isCollapsed={isSidebarCollapsed}
-            onSidebarToggle={setSidebarCollapsed}
+            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
             selectedIndex={sidebarSelectedIndex}
             setSelectedIndex={setSidebarSelectedIndex}
             tiles={tiles}
@@ -181,18 +181,21 @@ export function Overlay() {
   const [sidebarSelectedIndex, setSidebarSelectedIndex] = useState(0);
 
   // Save sidebar state when it changes
-  const handleSidebarToggle = useCallback(() => {
-    setSidebarCollapsed((prev) => {
-      const newState = !prev;
-      // Save to storage
-      storage.setSidebarState({
-        activeTiles: [], // We'll update this if needed
-        isCollapsed: newState,
-        lastUpdated: Date.now(),
+  const handleSidebarToggle = useCallback(
+    (activeTiles: string[]) => {
+      setSidebarCollapsed((prev) => {
+        const newState = !prev;
+        // Save to storage with actual active tiles
+        storage.setSidebarState({
+          activeTiles,
+          isCollapsed: newState,
+          lastUpdated: Date.now(),
+        });
+        return newState;
       });
-      return newState;
-    });
-  }, [storage]);
+    },
+    [storage],
+  );
 
   return (
     <ErrorBoundary variant="app">
