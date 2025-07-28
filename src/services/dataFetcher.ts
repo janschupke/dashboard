@@ -9,7 +9,6 @@ import {
 import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
 import { DataParserRegistry } from './dataParser';
 
-export const DATA_REFRESH_INTERVAL = 1 * 60 * 1000;
 export const DATA_FETCH_TIMEOUT_MS = 15 * 1000;
 
 function timeoutPromise<T>(promise: Promise<T>, ms: number, errorMessage: string): Promise<T> {
@@ -28,7 +27,6 @@ export interface FetchResponse {
 }
 
 export interface FetchOptions {
-  forceRefresh?: boolean;
   apiCall: string;
 }
 
@@ -47,24 +45,11 @@ export class DataFetcher {
     storageKey: string,
     apiCall: string,
     transform: (input: unknown) => TTileData,
-    forceRefresh = false,
     requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
-    const cachedTileState = storageManager.getTileState<TTileData>(storageKey);
     const now = Date.now();
-    const isRefreshNeeded =
-      cachedTileState && now - cachedTileState.lastDataRequest > DATA_REFRESH_INTERVAL;
-
-    // Return cached data, no API call performed
-    if (!forceRefresh && cachedTileState && !isRefreshNeeded) {
-      return {
-        data: cachedTileState.data,
-        lastDataRequest: cachedTileState.lastDataRequest,
-        lastDataRequestSuccessful: cachedTileState.lastDataRequestSuccessful,
-      };
-    }
-
     let httpStatus: number | undefined;
+
     try {
       let apiResponse: unknown = await timeoutPromise(
         fetchFunction(),
@@ -144,6 +129,7 @@ export class DataFetcher {
         details: logDetails,
       });
 
+      const cachedTileState = storageManager.getTileState<TTileData>(storageKey);
       const tileState: TileState<TTileData> = {
         data: cachedTileState?.data || null,
         lastDataRequest: now,
@@ -165,7 +151,7 @@ export class DataFetcher {
     options: FetchOptions = { apiCall: tileType },
     requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
-    const { forceRefresh = false, apiCall = tileType } = options;
+    const { apiCall = tileType } = options;
     const mapper = this.mapperRegistry.get<TTileType, TApiResponse, TTileData>(tileType);
     if (!mapper) {
       throw new Error(`No data mapper found for tile type: ${tileType}`);
@@ -175,7 +161,6 @@ export class DataFetcher {
       storageKey,
       apiCall,
       (input) => mapper.safeMap(input) as unknown as TTileData,
-      forceRefresh,
       requestUrl,
     );
   }
@@ -187,7 +172,7 @@ export class DataFetcher {
     options: FetchOptions = { apiCall: tileType },
     requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
-    const { forceRefresh = false, apiCall = tileType } = options;
+    const { apiCall = tileType } = options;
     const parser = this.parserRegistry.get<TTileType, TRawData, TTileData>(tileType);
     if (!parser) {
       throw new Error(`No parser registered for tile type: ${tileType}`);
@@ -197,7 +182,6 @@ export class DataFetcher {
       storageKey,
       apiCall,
       (input) => parser.safeParse(input) as unknown as TTileData,
-      forceRefresh,
       requestUrl,
     );
   }

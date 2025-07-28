@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { usePreciousMetalsApi } from './usePreciousMetalsApi';
 import type { PreciousMetalsTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
@@ -46,7 +45,6 @@ export const PreciousMetalsTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getPreciousMetals } = usePreciousMetalsApi();
   const params = useMemo(() => ({ symbol: 'XAU' as const }), []);
   const refreshConfig = useMemo(
@@ -61,7 +59,6 @@ export const PreciousMetalsTile = ({
     getPreciousMetals,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
 

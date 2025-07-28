@@ -18,7 +18,7 @@ import { TileType } from '../../../types/tile';
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider
     setup={({ mapperRegistry }) => {
-      mapperRegistry.register(TileType.TIME_HELSINKI, new TimeDataMapper());
+      mapperRegistry.register(TileType.TIME_TAIPEI, new TimeDataMapper());
     }}
   >
     {children}

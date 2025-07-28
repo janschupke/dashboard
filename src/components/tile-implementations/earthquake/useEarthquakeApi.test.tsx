@@ -6,6 +6,7 @@ import type { EarthquakeApiResponse } from './types';
 import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { TileType } from '../../../types/tile';
+import type { UsgsEarthquakeParams } from '../../../services/apiEndpoints';
 
 const mockApiResponse: EarthquakeApiResponse = {
   type: 'FeatureCollection',
@@ -80,6 +81,12 @@ describe('useEarthquakeApi', () => {
     storageManager.clearTileState(); // Clear cache between tests
   });
 
+  const mockParams: UsgsEarthquakeParams = {
+    format: 'geojson',
+    starttime: '2024-01-01',
+    endtime: '2024-01-08',
+  };
+
   it('fetches and maps USGS earthquake data successfully', async () => {
     (globalThis.fetch as unknown as { mockResolvedValueOnce: Function }).mockResolvedValueOnce({
       ok: true,
@@ -89,7 +96,7 @@ describe('useEarthquakeApi', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
     await act(async () => {
-      fetchResult = await result.current.getEarthquakes('test-tile', {});
+      fetchResult = await result.current.getEarthquakes('test-tile', mockParams);
     });
     expect(fetchResult).not.toBeNull();
     if (fetchResult) {
@@ -119,7 +126,7 @@ describe('useEarthquakeApi', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
     await act(async () => {
-      fetchResult = await result.current.getEarthquakes('test-tile', {});
+      fetchResult = await result.current.getEarthquakes('test-tile', mockParams);
     });
     expect(fetchResult).not.toBeNull();
     if (fetchResult) {
@@ -139,7 +146,7 @@ describe('useEarthquakeApi', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
     await act(async () => {
-      fetchResult = await result.current.getEarthquakes('test-tile', {});
+      fetchResult = await result.current.getEarthquakes('test-tile', mockParams);
     });
     expect(fetchResult).not.toBeNull();
     if (fetchResult) {

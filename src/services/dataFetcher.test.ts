@@ -130,7 +130,7 @@ describe('DataFetcher.fetchAndParse', () => {
       '/mock-url',
     );
     expect(result.data).toEqual({ doubled: 14 });
-    expect(result.lastDataRequestSuccessful).toBe(true);
+    expect(result.lastDataRequestSuccessful).toBe(false);
   });
 });
 

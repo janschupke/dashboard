@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useWeatherApi } from './useWeatherApi';
 import type { WeatherTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import type { WeatherParams } from '../../../services/apiEndpoints';
 import { useMemo, useState, useCallback, memo } from 'react';
@@ -227,7 +226,6 @@ export const WeatherTile = ({
   meta: TileMeta;
 }) => {
   const [showForecast, setShowForecast] = useState(false);
-  const isForceRefresh = useForceRefreshFromKey();
   const { getWeather } = useWeatherApi();
   const apiKeys = getApiKeys();
 
@@ -248,7 +246,6 @@ export const WeatherTile = ({
     getWeather,
     tile.id,
     params,
-    isForceRefresh,
   );
 
   const handleToggleForecast = useCallback(() => {
