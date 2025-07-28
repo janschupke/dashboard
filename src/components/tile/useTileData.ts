@@ -97,15 +97,31 @@ export function useTileData<T extends TileDataType, P>(
       }, refreshInterval);
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Pause interval when tab is not visible
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      } else {
+        // Resume interval when tab becomes visible
+        setupInterval();
+      }
+    };
+
     // Start the interval
     setupInterval();
+
+    // Listen for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Cleanup on unmount or config change
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
-        intervalRef.current = null;
       }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [enableAutoRefresh, refreshInterval, fetchData]);
 
