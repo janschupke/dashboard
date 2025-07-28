@@ -12,49 +12,33 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
   };
 
   const iconMap: Record<string, string> = {
-    // Cryptocurrency icons
-    bitcoin: '₿',
-    ethereum: 'Ξ',
     crypto: '💎',
-
-    // Precious metals icons
-    gold: '🥇',
-    silver: '🥈',
     metals: '🏆',
 
     // UI icons
     close: '✕',
-    add: '+',
     menu: '☰',
-    drag: '⋮⋮',
-    resize: '⤡',
-    settings: '⚙',
     refresh: '↻',
     error: '⚠',
     success: '✓',
-    check: '✓',
     loading: '⟳',
     hourglass: '⏳',
     sun: '☀',
     moon: '🌙',
+    warning: '⚠',
     chart: '📊',
     weather: '🌤',
     clock: '🕐',
-    database: '💾',
-    'alert-circle': '⚠',
+    earthquake: '🌎',
+    'weather-alerts': '🌪️',
 
     // Log view icons
     'clipboard-list': '📋',
     'exclamation-triangle': '⚠',
     'exclamation-circle': '⚠',
     'check-circle': '✓',
-    'information-circle': 'ℹ',
     trash: '🗑',
     x: '✕',
-
-    // Weather/geo icons
-    earthquake: '🌎',
-    'weather-alerts': '🌪️',
   };
 
   const icon = iconMap[name] || '?';

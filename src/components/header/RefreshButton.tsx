@@ -23,10 +23,6 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
     title="Refresh all tiles (R)"
     data-testid="refresh-button"
   >
-    <Icon
-      name={isRefreshing ? 'loading' : 'refresh'}
-      size="md"
-      className={isRefreshing ? 'animate-spin' : ''}
-    />
+    <Icon name={isRefreshing ? 'hourglass' : 'refresh'} size="md" />
   </button>
 );

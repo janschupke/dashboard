@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef, useMemo } from 'react';
+import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
 import type { DragboardTileData, DraggableTileProps } from '../dragboard';
 import { Icon } from '../ui/Icon';
 import { TileErrorBoundary } from './TileErrorBoundary';
@@ -37,13 +37,24 @@ const StatusBar = ({
   onManualRefresh?: () => void;
   isLoading?: boolean;
 }) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update current time every minute to keep elapsed time accurate
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Determine status icon and color
   const getStatusIcon = () => {
     switch (status) {
       case TileStatus.Stale:
         return { name: 'warning', className: 'text-theme-status-warning' };
       case TileStatus.Success:
-        return { name: 'check', className: 'text-theme-status-success' };
+        return { name: 'success', className: 'text-theme-status-success' };
       case TileStatus.Error:
         return { name: 'close', className: 'text-theme-status-error' };
       default:
@@ -52,12 +63,12 @@ const StatusBar = ({
   };
 
   // Format last update time
-  const formatLastUpdate = (timestamp?: string) => {
+  const formatLastUpdate = (isLoading?: boolean, timestamp?: string) => {
+    if (isLoading) return 'Pending';
     if (!timestamp) return 'Never';
     try {
       const date = new Date(timestamp);
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
+      const diffMs = currentTime.getTime() - date.getTime();
       const diffMins = Math.floor(diffMs / (1000 * 60));
       if (diffMins < 1) return 'Just now';
       if (diffMins < 60) return `${diffMins}m ago`;
@@ -87,7 +98,7 @@ const StatusBar = ({
             <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
           </button>
         )}
-        <span>Last request: {formatLastUpdate(lastUpdate)}</span>
+        <span>Last request: {formatLastUpdate(isLoading, lastUpdate)}</span>
       </div>
       {statusIcon && (
         <span onClick={logTileState} className="cursor-pointer">

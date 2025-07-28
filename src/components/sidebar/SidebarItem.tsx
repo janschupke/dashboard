@@ -108,7 +108,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
             aria-hidden="true"
           />
         ) : isActive ? (
-          <Icon name="check" size="sm" className="text-accent-primary" aria-hidden="true" />
+          <Icon name="success" size="sm" className="text-accent-primary" aria-hidden="true" />
         ) : null}
       </span>
     </button>

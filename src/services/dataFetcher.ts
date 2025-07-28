@@ -9,8 +9,8 @@ import {
 import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
 import { DataParserRegistry } from './dataParser';
 
-export const DATA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
-export const DATA_FETCH_TIMEOUT_MS = 15_000;
+export const DATA_REFRESH_INTERVAL = 1 * 60 * 1000;
+export const DATA_FETCH_TIMEOUT_MS = 15 * 1000;
 
 function timeoutPromise<T>(promise: Promise<T>, ms: number, errorMessage: string): Promise<T> {
   let timeoutId: NodeJS.Timeout;
