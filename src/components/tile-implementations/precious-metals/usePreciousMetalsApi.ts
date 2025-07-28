@@ -10,11 +10,7 @@ import { fetchWithError } from '../../../services/fetchWithError';
 export function usePreciousMetalsApi() {
   const { dataFetcher } = useDataServices();
   const getPreciousMetals = useCallback(
-    async (
-      tileId: string,
-      params: GoldApiParams,
-      forceRefresh = false,
-    ): Promise<TileConfig<PreciousMetalsTileData>> => {
+    async (tileId: string, params: GoldApiParams): Promise<TileConfig<PreciousMetalsTileData>> => {
       const url = buildApiUrl<GoldApiParams>(PRECIOUS_METALS_ENDPOINT, params);
 
       return dataFetcher.fetchAndMap(
@@ -25,7 +21,7 @@ export function usePreciousMetalsApi() {
         },
         tileId,
         TileType.PRECIOUS_METALS,
-        { apiCall: TileApiCallTitle.PRECIOUS_METALS, forceRefresh },
+        { apiCall: TileApiCallTitle.PRECIOUS_METALS },
         url,
       );
     },

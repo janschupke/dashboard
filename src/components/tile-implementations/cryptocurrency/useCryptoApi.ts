@@ -1,7 +1,7 @@
-import type { CryptoMarketsParams } from '../../../services/apiEndpoints';
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { COINGECKO_MARKETS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
+import type { CryptoMarketsParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { CryptocurrencyTileData } from './types';
 import type { TileConfig } from '../../../services/storageManager';
@@ -13,7 +13,6 @@ export function useCryptoApi() {
     async (
       tileId: string,
       params: CryptoMarketsParams,
-      forceRefresh = false,
     ): Promise<TileConfig<CryptocurrencyTileData>> => {
       const url = buildApiUrl<CryptoMarketsParams>(COINGECKO_MARKETS_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
@@ -24,7 +23,7 @@ export function useCryptoApi() {
         },
         tileId,
         TileType.CRYPTOCURRENCY,
-        { apiCall: TileApiCallTitle.CRYPTOCURRENCY, forceRefresh },
+        { apiCall: TileApiCallTitle.CRYPTOCURRENCY },
         url,
       );
     },

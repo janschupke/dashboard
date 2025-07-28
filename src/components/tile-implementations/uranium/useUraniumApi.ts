@@ -3,18 +3,14 @@ import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { URANIUM_HTML_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
 import type { UraniumHtmlParams } from '../../../services/apiEndpoints';
-import { TileApiCallTitle, TileType } from '../../../types/tile';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { TileConfig } from '../../../services/storageManager';
 import { fetchWithError } from '../../../services/fetchWithError';
 
 export function useUraniumApi() {
   const { dataFetcher } = useDataServices();
   const getUraniumPrice = useCallback(
-    async (
-      tileId: string,
-      params: UraniumHtmlParams,
-      forceRefresh = false,
-    ): Promise<TileConfig<UraniumTileData>> => {
+    async (tileId: string, params: UraniumHtmlParams): Promise<TileConfig<UraniumTileData>> => {
       const url = buildApiUrl<UraniumHtmlParams>(URANIUM_HTML_ENDPOINT, params);
       return dataFetcher.fetchAndParse(
         async () => {
@@ -24,7 +20,7 @@ export function useUraniumApi() {
         },
         tileId,
         TileType.URANIUM,
-        { apiCall: TileApiCallTitle.URANIUM, forceRefresh },
+        { apiCall: TileApiCallTitle.URANIUM },
         url,
       );
     },

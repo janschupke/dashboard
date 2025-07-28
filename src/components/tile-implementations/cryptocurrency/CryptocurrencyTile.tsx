@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useCryptoApi } from './useCryptoApi';
 import type { CryptocurrencyTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
@@ -43,7 +42,6 @@ export const CryptocurrencyTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getCryptocurrencyMarkets } = useCryptoApi();
   const params = useMemo(
     () => ({
@@ -65,7 +63,6 @@ export const CryptocurrencyTile = ({
     getCryptocurrencyMarkets,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
 

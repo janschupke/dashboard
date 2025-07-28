@@ -20,10 +20,9 @@ export interface TileRefreshConfig {
 }
 
 export function useTileData<T extends TileDataType, P>(
-  apiFn: (tileId: string, params: P, forceRefresh?: boolean) => Promise<TileConfig<T>>,
+  apiFn: (tileId: string, params: P) => Promise<TileConfig<T>>,
   tileId: string,
   params: P,
-  forceRefresh: boolean,
   refreshConfig?: TileRefreshConfig,
 ): {
   data: T | null;
@@ -45,35 +44,32 @@ export function useTileData<T extends TileDataType, P>(
   } = refreshConfig || {};
 
   // Function to fetch data
-  const fetchData = useCallback(
-    async (force = false) => {
-      let cancelled = false;
-      setIsLoading(true);
+  const fetchData = useCallback(async () => {
+    let cancelled = false;
+    setIsLoading(true);
 
-      try {
-        const tileConfig = await apiFn(tileId, params, force);
-        if (!cancelled) {
-          setResult(tileConfig);
-          setIsLoading(false);
-          lastFetchTimeRef.current = Date.now();
-        }
-      } catch {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+    try {
+      const tileConfig = await apiFn(tileId, params);
+      if (!cancelled) {
+        setResult(tileConfig);
+        setIsLoading(false);
+        lastFetchTimeRef.current = Date.now();
       }
+    } catch {
+      if (!cancelled) {
+        setIsLoading(false);
+      }
+    }
 
-      return () => {
-        cancelled = true;
-      };
-    },
-    [apiFn, tileId, params],
-  );
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFn, tileId, params]);
 
   // Initial data fetch
   useEffect(() => {
-    fetchData(forceRefresh);
-  }, [fetchData, forceRefresh]);
+    fetchData();
+  }, [fetchData]);
 
   // Automatic refresh logic
   useEffect(() => {
@@ -92,7 +88,7 @@ export function useTileData<T extends TileDataType, P>(
 
         // Only refresh if enough time has passed since last fetch
         if (timeSinceLastFetch >= refreshInterval) {
-          fetchData(false);
+          fetchData();
         }
       }, refreshInterval);
     };
@@ -137,7 +133,7 @@ export function useTileData<T extends TileDataType, P>(
 
       // Refresh if the configured interval has passed since last fetch
       if (timeSinceLastFetch > refreshInterval) {
-        fetchData(false);
+        fetchData();
       }
     };
 
@@ -164,5 +160,5 @@ export function useTileData<T extends TileDataType, P>(
     }
   }
 
-  return { data, status, lastUpdated, manualRefresh: () => fetchData(true), isLoading };
+  return { data, status, lastUpdated, manualRefresh: () => fetchData(), isLoading };
 }

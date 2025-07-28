@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useFederalFundsApi } from './useFederalFundsApi';
 import type { FederalFundsRateTileData, TimeRange } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, memo } from 'react';
 import type { FredParams } from '../../../services/apiEndpoints';
@@ -68,7 +67,6 @@ export const FederalFundsRateTile = ({
   meta: TileMeta;
 }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
-  const isForceRefresh = useForceRefreshFromKey();
   const { getFederalFundsRate } = useFederalFundsApi();
   const apiKeys = getApiKeys();
 
@@ -93,7 +91,6 @@ export const FederalFundsRateTile = ({
     getFederalFundsRate,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
 

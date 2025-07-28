@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useUraniumApi } from './useUraniumApi';
 import type { UraniumTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
@@ -27,7 +26,6 @@ export const UraniumTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getUraniumPrice } = useUraniumApi();
   const params = useMemo(() => ({ range: '1D' }), []);
   const refreshConfig = useMemo(
@@ -42,7 +40,6 @@ export const UraniumTile = ({
     getUraniumPrice,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
   return (

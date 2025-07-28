@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useEuriborApi } from './useEuriborApi';
 import type { EuriborRateTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
@@ -27,7 +26,6 @@ export const EuriborRateTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getEuriborRate } = useEuriborApi();
   const params = useMemo(() => ({}), []);
   const refreshConfig = useMemo(
@@ -42,7 +40,6 @@ export const EuriborRateTile = ({
     getEuriborRate,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
   return (

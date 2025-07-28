@@ -9,7 +9,6 @@ import { Tile } from '../tile/Tile';
 import { Header } from '../../components/header/Header.tsx';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useStorageManager } from '../../services/storageManager';
-import { RefreshContext } from '../../contexts/RefreshContext';
 import type { DragboardTileData } from '../dragboard';
 
 function OverlayContent({
@@ -26,7 +25,6 @@ function OverlayContent({
   const { theme, toggleTheme } = useTheme();
   const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const { tiles, addTile, removeTile } = useDragboard();
 
   // Refresh all tiles function
@@ -34,7 +32,6 @@ function OverlayContent({
     if (isRefreshing) return;
     setIsRefreshing(true);
     try {
-      setRefreshKey((prev) => prev + 1);
       // TODO: hook this to loading states
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } finally {
@@ -55,55 +52,53 @@ function OverlayContent({
   );
 
   return (
-    <RefreshContext.Provider value={refreshKey}>
-      <div className="h-screen w-full flex flex-col bg-theme-primary overflow-hidden">
-        <Header
-          isLogViewOpen={isLogViewOpen}
-          toggleLogView={toggleLogView}
-          toggleTheme={toggleTheme}
-          theme={theme}
-          toggleCollapse={() => setSidebarCollapsed(tiles.map((t) => t.id))}
-          tilesCount={tiles.length}
-          refreshAllTiles={refreshAllTiles}
-          isRefreshing={isRefreshing}
+    <div className="h-screen w-full flex flex-col bg-theme-primary overflow-hidden">
+      <Header
+        isLogViewOpen={isLogViewOpen}
+        toggleLogView={toggleLogView}
+        toggleTheme={toggleTheme}
+        theme={theme}
+        toggleCollapse={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+        tilesCount={tiles.length}
+        refreshAllTiles={refreshAllTiles}
+        isRefreshing={isRefreshing}
+      />
+      <div className="flex h-full pt-16 relative">
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+          selectedIndex={sidebarSelectedIndex}
+          setSelectedIndex={setSidebarSelectedIndex}
+          tiles={tiles}
+          addTile={addTile}
+          removeTile={removeTile}
         />
-        <div className="flex h-full pt-16 relative">
-          <Sidebar
-            isCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
-            selectedIndex={sidebarSelectedIndex}
-            setSelectedIndex={setSidebarSelectedIndex}
-            tiles={tiles}
-            addTile={addTile}
-            removeTile={removeTile}
-          />
-          <main
-            className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out"
-            style={{
-              width: isSidebarCollapsed ? '100%' : 'calc(100% - 256px)',
-              marginLeft: 0,
-              transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-          >
-            <DragboardGrid>
-              {tiles.map((tile) => (
-                <DragboardTile
-                  key={tile.id}
-                  id={tile.id}
-                  position={tile.position || { x: 0, y: 0 }}
-                  size={typeof tile.size === 'string' ? tile.size : 'medium'}
-                >
-                  <Tile tile={tile} />
-                </DragboardTile>
-              ))}
-            </DragboardGrid>
-            <Suspense fallback={null}>
-              <LogView isOpen={isLogViewOpen} onClose={closeLogView} />
-            </Suspense>
-          </main>
-        </div>
+        <main
+          className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out"
+          style={{
+            width: isSidebarCollapsed ? '100%' : 'calc(100% - 256px)',
+            marginLeft: 0,
+            transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        >
+          <DragboardGrid>
+            {tiles.map((tile) => (
+              <DragboardTile
+                key={tile.id}
+                id={tile.id}
+                position={tile.position || { x: 0, y: 0 }}
+                size={typeof tile.size === 'string' ? tile.size : 'medium'}
+              >
+                <Tile tile={tile} />
+              </DragboardTile>
+            ))}
+          </DragboardGrid>
+          <Suspense fallback={null}>
+            {isLogViewOpen && <LogView isOpen={isLogViewOpen} onClose={closeLogView} />}
+          </Suspense>
+        </main>
       </div>
-    </RefreshContext.Provider>
+    </div>
   );
 }
 

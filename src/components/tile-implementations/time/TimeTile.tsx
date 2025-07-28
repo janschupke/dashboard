@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useTimeApi } from './useTimeApi';
 import type { TimeTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { getApiKeys } from '../../../services/apiConfig';
@@ -66,7 +65,6 @@ const TimeTileContent = ({ data, city }: { data: TimeTileData | null; city: stri
 };
 
 export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getTime } = useTimeApi();
   const apiKeys = getApiKeys();
   const cityConfig =
@@ -85,7 +83,6 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
     getTime,
     tile.id,
     params,
-    isForceRefresh,
   );
   return (
     <GenericTile

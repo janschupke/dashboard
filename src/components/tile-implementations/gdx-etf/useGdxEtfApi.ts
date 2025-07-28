@@ -10,11 +10,7 @@ import { fetchWithError } from '../../../services/fetchWithError';
 export function useGdxEtfApi() {
   const { dataFetcher } = useDataServices();
   const getGdxEtf = useCallback(
-    async (
-      tileId: string,
-      params: AlphaVantageParams,
-      forceRefresh = false,
-    ): Promise<TileConfig<GdxEtfTileData>> => {
+    async (tileId: string, params: AlphaVantageParams): Promise<TileConfig<GdxEtfTileData>> => {
       const url = buildApiUrl<AlphaVantageParams>(ALPHA_VANTAGE_GDX_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
         async () => {
@@ -24,7 +20,7 @@ export function useGdxEtfApi() {
         },
         tileId,
         TileType.GDX_ETF,
-        { apiCall: TileApiCallTitle.GDX_ETF, forceRefresh },
+        { apiCall: TileApiCallTitle.GDX_ETF },
         url,
       );
     },

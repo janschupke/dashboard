@@ -2,7 +2,6 @@ import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useGdxEtfApi } from './useGdxEtfApi';
 import type { GdxEtfTileData } from './types';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import type { AlphaVantageParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
@@ -56,7 +55,6 @@ export const GdxEtfTile = ({
   tile: DragboardTileData;
   meta: TileMeta;
 }) => {
-  const isForceRefresh = useForceRefreshFromKey();
   const { getGdxEtf } = useGdxEtfApi();
   const apiKeys = getApiKeys();
 
@@ -81,7 +79,6 @@ export const GdxEtfTile = ({
     getGdxEtf,
     tile.id,
     params,
-    isForceRefresh,
     refreshConfig,
   );
 

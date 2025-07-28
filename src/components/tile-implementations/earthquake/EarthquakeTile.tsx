@@ -1,10 +1,10 @@
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useEarthquakeApi } from './useEarthquakeApi';
-import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, useCallback, memo } from 'react';
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
+import type { UsgsEarthquakeParams } from '../../../services/apiEndpoints';
 
 const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data,
@@ -115,21 +115,27 @@ export const EarthquakeTile = ({
   meta: TileMeta;
 }) => {
   const [magnitudeThreshold, setMagnitudeThreshold] = useState(4.0);
-  const isForceRefresh = useForceRefreshFromKey();
   const { getEarthquakes } = useEarthquakeApi();
 
-  const params = useMemo(
-    () => ({
-      days: 7, // 7 days of data
-    }),
-    [],
-  );
+  const params = useMemo<UsgsEarthquakeParams>(() => {
+    // Calculate start/end time for the last 7 days
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 7);
+    const starttime = start.toISOString().slice(0, 10);
+    const endtime = end.toISOString().slice(0, 10);
+
+    return {
+      format: 'geojson',
+      starttime,
+      endtime,
+    };
+  }, []);
 
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEarthquakes,
     tile.id,
     params,
-    isForceRefresh,
   );
 
   const handleThresholdChange = useCallback((value: number) => {

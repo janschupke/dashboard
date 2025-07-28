@@ -10,11 +10,7 @@ import { fetchWithError } from '../../../services/fetchWithError';
 export function useWeatherAlertsApi() {
   const { dataFetcher } = useDataServices();
   const getWeatherAlerts = useCallback(
-    async (
-      tileId: string,
-      params: WeatherParams,
-      forceRefresh = false,
-    ): Promise<TileConfig<WeatherAlertsTileData>> => {
+    async (tileId: string, params: WeatherParams): Promise<TileConfig<WeatherAlertsTileData>> => {
       const url = buildApiUrl<WeatherParams>(OPENWEATHERMAP_ALERTS_ENDPOINT, params);
       return dataFetcher.fetchAndMap(
         async () => {
@@ -24,7 +20,7 @@ export function useWeatherAlertsApi() {
         },
         tileId,
         TileType.WEATHER_ALERTS,
-        { apiCall: TileApiCallTitle.WEATHER_ALERTS, forceRefresh },
+        { apiCall: TileApiCallTitle.WEATHER_ALERTS },
         url,
       );
     },
