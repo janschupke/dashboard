@@ -34,7 +34,6 @@ describe('useFederalFundsApi', () => {
   const mockParams: FredParams = {
     series_id: 'FEDFUNDS',
     file_type: 'json',
-    api_key: 'test-api-key',
   };
 
   describe('getFederalFundsRate - Success Scenarios', () => {
@@ -137,9 +136,9 @@ describe('useFederalFundsApi', () => {
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const testParams: FredParams[] = [
-        { series_id: 'FEDFUNDS', file_type: 'json', api_key: 'test-api-key' },
-        { series_id: 'DFF', file_type: 'json', api_key: 'test-api-key' },
-        { series_id: 'EFFR', file_type: 'json', api_key: 'test-api-key' },
+        { series_id: 'FEDFUNDS', file_type: 'json' },
+        { series_id: 'DFF', file_type: 'json' },
+        { series_id: 'EFFR', file_type: 'json' },
       ];
       for (const params of testParams) {
         const fetchResult = await result.current.getFederalFundsRate(mockTileId, params);

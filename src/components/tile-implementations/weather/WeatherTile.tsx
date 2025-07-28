@@ -5,7 +5,6 @@ import type { WeatherTileData } from './types';
 import { useTileData } from '../../tile/useTileData';
 import type { WeatherParams } from '../../../services/apiEndpoints';
 import { useMemo, useState, useCallback, memo } from 'react';
-import { getApiKeys } from '../../../services/apiConfig';
 import { format } from 'date-fns';
 import { getWeatherCityConfig } from './config';
 
@@ -227,7 +226,6 @@ export const WeatherTile = ({
 }) => {
   const [showForecast, setShowForecast] = useState(false);
   const { getWeather } = useWeatherApi();
-  const apiKeys = getApiKeys();
 
   // Get city configuration based on tile type
   const cityConfig = getWeatherCityConfig(tile.type);
@@ -236,10 +234,9 @@ export const WeatherTile = ({
     () => ({
       lat: cityConfig.lat,
       lon: cityConfig.lon,
-      ...(apiKeys.openWeatherMap && { appid: apiKeys.openWeatherMap }),
       units: 'metric',
     }),
-    [apiKeys.openWeatherMap, cityConfig],
+    [cityConfig],
   );
 
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(

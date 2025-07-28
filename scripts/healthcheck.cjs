@@ -56,11 +56,10 @@ const endpoints = [
     queryParams: {
       lat: '60.1699',
       lon: '24.9384',
-      appid: process.env.OPENWEATHERMAP_API_KEY,
     },
     baseUrl: `${BASE_URL}/api/openweathermap/data/3.0/onecall`,
-    key: 'OPENWEATHERMAP_API_KEY',
-    required: true,
+    key: null,
+    required: false,
   },
   {
     name: 'Alpha Vantage GDX',
@@ -68,23 +67,21 @@ const endpoints = [
     queryParams: {
       function: 'GLOBAL_QUOTE',
       symbol: 'GDX',
-      apikey: process.env.ALPHA_VANTAGE_API_KEY,
     },
     baseUrl: `${BASE_URL}/api/alpha-vantage/query`,
-    key: 'ALPHA_VANTAGE_API_KEY',
-    required: true,
+    key: null,
+    required: false,
   },
   {
     name: 'FRED Series Observations',
     pathParams: {},
     queryParams: {
       series_id: 'FEDFUNDS',
-      api_key: process.env.FRED_API_KEY,
       file_type: 'json',
     },
     baseUrl: `${BASE_URL}/api/fred/fred/series/observations`,
-    key: 'FRED_API_KEY',
-    required: true,
+    key: null,
+    required: false,
   },
   // Precious Metals API
   {
@@ -113,15 +110,14 @@ const endpoints = [
     name: 'TimeZoneDB',
     pathParams: {},
     queryParams: {
-      key: process.env.TIMEZONEDB_API_KEY,
       lat: '60.1699',
       lng: '24.9384',
       format: 'json',
       by: 'position',
     },
-    baseUrl: `${BASE_URL}/api/timezonedb`,
-    key: 'TIMEZONEDB_API_KEY',
-    required: true,
+    baseUrl: `${BASE_URL}/api/timezonedb/v2.1/get-time-zone`,
+    key: null,
+    required: false,
   },
   {
     name: 'ECB Euribor 12M',

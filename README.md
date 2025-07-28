@@ -194,15 +194,7 @@ node scripts/healthcheck.cjs  # Test API endpoints health
    # Edit .env and add your API keys
    ```
 
-3. **(Development only)**: Create `.env.local` for Vite client-side API keys:
-
-   ```sh
-   npm run env
-   ```
-
-   This script will create or update `.env.local` with all keys from `.env`, prefixed with `VITE_`. This ensures Vite can access the necessary keys on localhost only. Do not commit `.env.local` to version control.
-
-4. Start the development server:
+3. Start the development server:
 
    ```sh
    vercel dev
@@ -210,7 +202,9 @@ node scripts/healthcheck.cjs  # Test API endpoints health
 
    **Note**: Use `vercel dev` for local development to enable both frontend and API functions.
 
-5. For production, only `.env` is required. API keys are never exposed to the client in production.
+4. For production, only `.env` is required. API keys are handled by the proxy functions and never exposed to the client.
+
+**Note**: API keys are now handled exclusively by the proxy functions and are never exposed to the frontend. The frontend is completely agnostic of API keys.
 
 External API:
 
