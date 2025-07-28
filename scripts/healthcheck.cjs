@@ -21,9 +21,9 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 function buildUrl(baseUrl, pathParams = {}, queryParams = {}) {
   let url = baseUrl;
 
-  // Replace path parameters
+  // Replace path parameters - use :param format
   Object.entries(pathParams).forEach(([key, value]) => {
-    url = url.replace(`{${key}}`, value);
+    url = url.replace(`:${key}`, value);
   });
 
   // Add query parameters
@@ -82,7 +82,7 @@ const endpoints = [
       symbol: 'XAU',
     },
     queryParams: {},
-    baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
+    baseUrl: `${BASE_URL}/api/precious-metals/price/:symbol`,
   },
   {
     name: 'USGS Earthquake',
@@ -107,13 +107,11 @@ const endpoints = [
   },
   {
     name: 'ECB Euribor 12M',
-    pathParams: {
-      series: 'BSI.M.U2.EUR.R.IR12MM.R.A',
-    },
+    pathParams: {},
     queryParams: {
       format: 'json',
     },
-    baseUrl: `${BASE_URL}/api/ecb/service/data/:series`,
+    baseUrl: `${BASE_URL}/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A`,
   },
 ];
 

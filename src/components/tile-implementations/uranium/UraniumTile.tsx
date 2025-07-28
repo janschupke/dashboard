@@ -27,7 +27,8 @@ export const UraniumTile = ({
   meta: TileMeta;
 }) => {
   const { getUraniumPrice } = useUraniumApi();
-  const params = useMemo(() => ({ range: '1D' }), []);
+  const pathParams = useMemo(() => ({}), []);
+  const queryParams = useMemo(() => ({ range: '1D' }), []);
   const refreshConfig = useMemo(
     () => ({
       refreshInterval: REFRESH_INTERVALS.TILES.URANIUM,
@@ -39,7 +40,8 @@ export const UraniumTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getUraniumPrice,
     tile.id,
-    params,
+    pathParams,
+    queryParams,
     refreshConfig,
   );
   return (

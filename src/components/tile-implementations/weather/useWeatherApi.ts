@@ -1,7 +1,7 @@
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { OPENWEATHERMAP_ONECALL_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { WeatherParams } from '../../../services/apiEndpoints';
+import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { WeatherTileData } from './types';
 import type { TileConfig } from '../../../services/storageManager';
@@ -10,8 +10,12 @@ import { fetchWithError } from '../../../services/fetchWithError';
 export function useWeatherApi() {
   const { dataFetcher } = useDataServices();
   const getWeather = useCallback(
-    async (tileId: string, params: WeatherParams): Promise<TileConfig<WeatherTileData>> => {
-      const url = buildApiUrl<WeatherParams>(OPENWEATHERMAP_ONECALL_ENDPOINT, params);
+    async (
+      tileId: string,
+      pathParams: PathParams,
+      queryParams: WeatherQueryParams,
+    ): Promise<TileConfig<WeatherTileData>> => {
+      const url = buildApiUrl(OPENWEATHERMAP_ONECALL_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await fetchWithError(url);

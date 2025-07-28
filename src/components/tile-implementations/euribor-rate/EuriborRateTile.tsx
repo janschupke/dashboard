@@ -27,7 +27,8 @@ export const EuriborRateTile = ({
   meta: TileMeta;
 }) => {
   const { getEuriborRate } = useEuriborApi();
-  const params = useMemo(() => ({}), []);
+  const pathParams = useMemo(() => ({}), []);
+  const queryParams = useMemo(() => ({}), []);
   const refreshConfig = useMemo(
     () => ({
       refreshInterval: REFRESH_INTERVALS.TILES.EURIBOR_RATE,
@@ -39,7 +40,8 @@ export const EuriborRateTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEuriborRate,
     tile.id,
-    params,
+    pathParams,
+    queryParams,
     refreshConfig,
   );
   return (

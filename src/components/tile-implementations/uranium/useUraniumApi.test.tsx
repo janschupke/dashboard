@@ -4,7 +4,7 @@ import { useUraniumApi } from './useUraniumApi';
 import { UraniumHtmlDataParser } from './dataParser';
 import { TileType } from '../../../types/tile';
 import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
-import type { UraniumHtmlParams } from '../../../services/apiEndpoints';
+import type { UraniumHtmlQueryParams } from '../../../services/apiEndpoints';
 import type { UraniumTileData } from './types';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
@@ -20,7 +20,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('useUraniumApi', () => {
   const mockTileId = 'test-uranium-tile';
-  const mockParams: UraniumHtmlParams = {
+  const mockParams: UraniumHtmlQueryParams = {
     range: '1Y',
   };
   const mockHtml = '<span id="spot-price">85.5</span>';
@@ -43,7 +43,7 @@ describe('useUraniumApi', () => {
 
   it('should successfully fetch uranium data (HTML scraping)', async () => {
     const { result } = renderHook(() => useUraniumApi(), { wrapper });
-    const fetchResult = await result.current.getUraniumPrice(mockTileId, mockParams);
+    const fetchResult = await result.current.getUraniumPrice(mockTileId, {}, mockParams);
     expect(fetchResult).toBeDefined();
     expect(fetchResult).toHaveProperty('data');
     expect(fetchResult).toHaveProperty('lastDataRequest');

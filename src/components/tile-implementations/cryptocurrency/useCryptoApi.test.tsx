@@ -13,7 +13,7 @@ import {
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
-import type { CryptoMarketsParams } from '../../../services/apiEndpoints';
+import type { CryptoMarketsQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
 beforeAll(() => {
@@ -22,7 +22,7 @@ beforeAll(() => {
 
 describe('useCryptoApi', () => {
   const mockTileId = 'test-crypto-tile';
-  const mockParams: CryptoMarketsParams = {
+  const mockParams: CryptoMarketsQueryParams = {
     vs_currency: 'usd',
     ids: 'bitcoin,ethereum',
     order: 'market_cap_desc',
@@ -49,7 +49,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
 
       // Assert
       expect(fetchResult).toBeDefined();
@@ -86,7 +86,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
 
       // Assert
       const data = fetchResult.data;
@@ -105,7 +105,11 @@ describe('useCryptoApi', () => {
 
       // Act & Assert
       await waitFor(async () => {
-        const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+        const fetchResult = await result.current.getCryptocurrencyMarkets(
+          mockTileId,
+          {},
+          mockParams,
+        );
         const data = fetchResult.data;
         expect(data?.coins).toEqual(MockResponseData.getCryptocurrencyData());
       });
@@ -120,7 +124,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       // expect(fetchResult.lastDataRequest).toContain('Network error: Failed to fetch'); // Removed
     });
@@ -132,7 +136,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       // expect(fetchResult.lastDataRequest).toContain('Request timeout'); // Removed
     });
@@ -144,7 +148,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       // expect(fetchResult.lastDataRequest).toContain('API error: 500 Internal Server Error'); // Removed
     });
@@ -156,7 +160,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       // expect(fetchResult.lastDataRequest).toContain('Invalid JSON response'); // Removed
     });
@@ -170,7 +174,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Only test the default params that are actually mocked
-      const testParams: CryptoMarketsParams[] = [
+      const testParams: CryptoMarketsQueryParams[] = [
         {
           vs_currency: 'usd',
           ids: 'bitcoin,ethereum',
@@ -183,7 +187,7 @@ describe('useCryptoApi', () => {
 
       // Act & Assert
       for (const params of testParams) {
-        const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, params);
+        const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, params);
         const data = fetchResult.data;
         expect(data?.coins).toEqual(MockResponseData.getCryptocurrencyData());
       }
@@ -196,7 +200,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
 
       // Assert
       expect(fetchResult.data).toBeNull();
@@ -212,7 +216,7 @@ describe('useCryptoApi', () => {
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, mockParams);
+      const fetchResult = await result.current.getCryptocurrencyMarkets(mockTileId, {}, mockParams);
 
       // Assert
       const data = fetchResult.data;

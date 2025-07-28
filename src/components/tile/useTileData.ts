@@ -20,10 +20,15 @@ export interface TileRefreshConfig {
   refreshOnFocus?: boolean;
 }
 
-export function useTileData<T extends TileDataType, P>(
-  apiFn: (tileId: string, params: P) => Promise<TileConfig<T>>,
+export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
+  apiFn: (
+    tileId: string,
+    pathParams: TPathParams,
+    queryParams: TQueryParams,
+  ) => Promise<TileConfig<T>>,
   tileId: string,
-  params: P,
+  pathParams: TPathParams,
+  queryParams: TQueryParams,
   refreshConfig?: TileRefreshConfig,
 ): {
   data: T | null;
@@ -39,14 +44,16 @@ export function useTileData<T extends TileDataType, P>(
   const refreshIntervalRef = useRef<number>(REFRESH_INTERVALS.TILE_DATA);
   const apiFnRef = useRef(apiFn);
   const tileIdRef = useRef(tileId);
-  const paramsRef = useRef(params);
+  const pathParamsRef = useRef(pathParams);
+  const queryParamsRef = useRef(queryParams);
 
   // Update refs when props change
   useEffect(() => {
     apiFnRef.current = apiFn;
     tileIdRef.current = tileId;
-    paramsRef.current = params;
-  }, [apiFn, tileId, params]);
+    pathParamsRef.current = pathParams;
+    queryParamsRef.current = queryParams;
+  }, [apiFn, tileId, pathParams, queryParams]);
 
   // Get refresh configuration with defaults
   const {
@@ -90,7 +97,11 @@ export function useTileData<T extends TileDataType, P>(
         }
 
         // Make API call if data is stale or we're forcing a refresh
-        const tileConfig = await apiFnRef.current(tileIdRef.current, paramsRef.current);
+        const tileConfig = await apiFnRef.current(
+          tileIdRef.current,
+          pathParamsRef.current,
+          queryParamsRef.current,
+        );
         if (!cancelled) {
           setResult(tileConfig);
           setIsLoading(false);

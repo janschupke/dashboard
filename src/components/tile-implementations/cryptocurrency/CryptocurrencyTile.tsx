@@ -43,7 +43,8 @@ export const CryptocurrencyTile = ({
   meta: TileMeta;
 }) => {
   const { getCryptocurrencyMarkets } = useCryptoApi();
-  const params = useMemo(
+  const pathParams = useMemo(() => ({}), []);
+  const queryParams = useMemo(
     () => ({
       vs_currency: 'usd',
       per_page: 5,
@@ -62,7 +63,8 @@ export const CryptocurrencyTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getCryptocurrencyMarkets,
     tile.id,
-    params,
+    pathParams,
+    queryParams,
     refreshConfig,
   );
 

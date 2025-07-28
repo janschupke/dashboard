@@ -10,7 +10,7 @@ import {
   setupDelayedMock,
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
-import type { TimeParams } from '../../../services/apiEndpoints';
+import type { TimeQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { TimeDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
@@ -31,25 +31,25 @@ beforeAll(() => {
 
 describe('useTimeApi', () => {
   const mockTileId = 'test-time-tile';
-  const berlinParams: TimeParams = {
+  const berlinParams: TimeQueryParams = {
     lat: 52.52,
     lng: 13.405,
     by: 'position',
     format: 'json',
   };
-  const newYorkParams: TimeParams = {
+  const newYorkParams: TimeQueryParams = {
     lat: 40.7128,
     lng: -74.006,
     by: 'position',
     format: 'json',
   };
-  const londonParams: TimeParams = {
+  const londonParams: TimeQueryParams = {
     lat: 51.5074,
     lng: -0.1278,
     by: 'position',
     format: 'json',
   };
-  const chicagoParams: TimeParams = {
+  const chicagoParams: TimeQueryParams = {
     lat: 41.8781,
     lng: -87.6298,
     by: 'position',
@@ -64,7 +64,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
 
       // Assert
       expect(fetchResult).toBeDefined();
@@ -100,7 +100,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act & Assert
       await waitFor(async () => {
-        const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+        const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
         expect(fetchResult).toBeDefined();
         const data = fetchResult.data;
         expect(data).toBeDefined();
@@ -120,7 +120,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -134,7 +134,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -148,7 +148,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -162,7 +162,7 @@ describe('useTimeApi', () => {
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getTime(mockTileId, berlinParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, berlinParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -188,7 +188,7 @@ describe('useTimeApi', () => {
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', businessHoursApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, newYorkParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, newYorkParams);
       const data = fetchResult.data;
       // Assert
       expect(data).toBeDefined();
@@ -215,7 +215,7 @@ describe('useTimeApi', () => {
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timeApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, londonParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, londonParams);
       const data = fetchResult.data;
       // Assert
       expect(data).toBeDefined();
@@ -241,7 +241,7 @@ describe('useTimeApi', () => {
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timezoneApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act
-      const fetchResult = await result.current.getTime(mockTileId, chicagoParams);
+      const fetchResult = await result.current.getTime(mockTileId, {}, chicagoParams);
       const data = fetchResult.data;
       // Assert
       expect(data).toBeDefined();

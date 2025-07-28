@@ -172,14 +172,27 @@ export const setupAllFailureMocks = (
   });
 };
 
-// Utility for building test URLs with query parameters
+// Utility for building test URLs with path and query parameters
 export const buildTestUrl = (
   baseUrl: string,
-  params: Record<string, string | number | boolean>,
+  pathParams: Record<string, string | number> = {},
+  queryParams: Record<string, string | number | boolean> = {},
 ): string => {
-  const queryString = Object.entries(params)
+  let url = baseUrl;
+
+  // Handle path parameters - replace :param with actual values
+  for (const [paramName, value] of Object.entries(pathParams)) {
+    if (value !== undefined && value !== null) {
+      const placeholder = `:${paramName}`;
+      url = url.replace(placeholder, String(value));
+    }
+  }
+
+  // Handle query parameters
+  const queryString = Object.entries(queryParams)
+    .filter((entry) => entry[1] !== undefined && entry[1] !== null)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
     .join('&');
 
-  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+  return queryString ? `${url}?${queryString}` : url;
 };

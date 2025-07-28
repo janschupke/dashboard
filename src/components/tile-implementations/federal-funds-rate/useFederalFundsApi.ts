@@ -1,7 +1,7 @@
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { FRED_SERIES_OBSERVATIONS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { FredParams } from '../../../services/apiEndpoints';
+import type { FredQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { FederalFundsRateTileData } from './types';
 import type { TileConfig } from '../../../services/storageManager';
@@ -13,11 +13,16 @@ export function useFederalFundsApi() {
     /**
      * Fetches Federal Funds Rate data from FRED API
      * @param tileId - Unique identifier for the tile
-     * @param params - FRED API parameters
+     * @param pathParams - Path parameters for the API call
+     * @param queryParams - Query parameters for the API call
      * @returns Promise resolving to tile configuration with Federal Funds Rate data
      */
-    async (tileId: string, params: FredParams): Promise<TileConfig<FederalFundsRateTileData>> => {
-      const url = buildApiUrl<FredParams>(FRED_SERIES_OBSERVATIONS_ENDPOINT, params);
+    async (
+      tileId: string,
+      pathParams: PathParams,
+      queryParams: FredQueryParams,
+    ): Promise<TileConfig<FederalFundsRateTileData>> => {
+      const url = buildApiUrl(FRED_SERIES_OBSERVATIONS_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await fetchWithError(url);
