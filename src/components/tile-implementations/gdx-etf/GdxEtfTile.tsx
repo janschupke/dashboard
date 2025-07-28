@@ -76,7 +76,7 @@ export const GdxEtfTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh } = useTileData(
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getGdxEtf,
     tile.id,
     params,
@@ -92,6 +92,7 @@ export const GdxEtfTile = ({
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <GdxEtfTileContent data={data} />

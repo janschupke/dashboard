@@ -34,6 +34,7 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
     success: '✓',
     check: '✓',
     loading: '⟳',
+    hourglass: '⏳',
     sun: '☀',
     moon: '🌙',
     chart: '📊',

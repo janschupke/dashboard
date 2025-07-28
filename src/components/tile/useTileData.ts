@@ -25,7 +25,13 @@ export function useTileData<T extends TileDataType, P>(
   params: P,
   forceRefresh: boolean,
   refreshConfig?: TileRefreshConfig,
-): { data: T | null; status: TileStatus; lastUpdated: Date | null; manualRefresh: () => void } {
+): {
+  data: T | null;
+  status: TileStatus;
+  lastUpdated: Date | null;
+  manualRefresh: () => void;
+  isLoading: boolean;
+} {
   const [result, setResult] = useState<TileConfig<T> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -113,15 +119,15 @@ export function useTileData<T extends TileDataType, P>(
       const now = Date.now();
       const timeSinceLastFetch = now - lastFetchTimeRef.current;
 
-      // Refresh if more than 30 seconds have passed since last fetch
-      if (timeSinceLastFetch > 30000) {
+      // Refresh if the configured interval has passed since last fetch
+      if (timeSinceLastFetch > refreshInterval) {
         fetchData(false);
       }
     };
 
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, [refreshOnFocus, enableAutoRefresh, fetchData]);
+  }, [refreshOnFocus, enableAutoRefresh, fetchData, refreshInterval]);
 
   // Calculate status
   let status: TileStatus = TileStatus.Loading;
@@ -142,5 +148,5 @@ export function useTileData<T extends TileDataType, P>(
     }
   }
 
-  return { data, status, lastUpdated, manualRefresh: () => fetchData(true) };
+  return { data, status, lastUpdated, manualRefresh: () => fetchData(true), isLoading };
 }

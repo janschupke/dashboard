@@ -88,7 +88,7 @@ export const FederalFundsRateTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh } = useTileData(
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getFederalFundsRate,
     tile.id,
     params,
@@ -104,6 +104,7 @@ export const FederalFundsRateTile = ({
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <FederalFundsRateTileContent

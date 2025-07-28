@@ -21,6 +21,7 @@ export interface GenericTileProps extends DraggableTileProps {
   lastUpdate?: string;
   data: TileDataType | null;
   onManualRefresh?: () => void;
+  isLoading?: boolean;
 }
 
 const StatusBar = ({
@@ -28,11 +29,13 @@ const StatusBar = ({
   status,
   lastUpdate,
   onManualRefresh,
+  isLoading,
 }: {
   data: TileDataType | null;
   status?: TileStatus;
   lastUpdate?: string;
   onManualRefresh?: () => void;
+  isLoading?: boolean;
 }) => {
   // Determine status icon and color
   const getStatusIcon = () => {
@@ -81,7 +84,7 @@ const StatusBar = ({
             aria-label="Refresh data"
             title="Refresh data"
           >
-            <Icon name="refresh" size="sm" />
+            <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
           </button>
         )}
         <span>Last request: {formatLastUpdate(lastUpdate)}</span>
@@ -115,6 +118,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       lastUpdate,
       data,
       onManualRefresh,
+      isLoading,
     },
     ref,
   ) => {
@@ -219,6 +223,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             status={status}
             lastUpdate={lastUpdate}
             onManualRefresh={onManualRefresh}
+            isLoading={isLoading}
           />
         </div>
       </TileErrorBoundary>

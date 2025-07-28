@@ -125,7 +125,7 @@ export const EarthquakeTile = ({
     [],
   );
 
-  const { data, status, lastUpdated, manualRefresh } = useTileData(
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEarthquakes,
     tile.id,
     params,
@@ -144,6 +144,7 @@ export const EarthquakeTile = ({
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <EarthquakeTileContent

@@ -37,7 +37,7 @@ export const EuriborRateTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh } = useTileData(
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEuriborRate,
     tile.id,
     params,
@@ -52,6 +52,7 @@ export const EuriborRateTile = ({
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <EuriborRateTileContent data={data} />

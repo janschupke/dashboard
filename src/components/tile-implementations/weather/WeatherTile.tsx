@@ -244,7 +244,7 @@ export const WeatherTile = ({
     [apiKeys.openWeatherMap, cityConfig],
   );
 
-  const { data, status, lastUpdated, manualRefresh } = useTileData(
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getWeather,
     tile.id,
     params,
@@ -263,6 +263,7 @@ export const WeatherTile = ({
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
       onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <WeatherTileContent

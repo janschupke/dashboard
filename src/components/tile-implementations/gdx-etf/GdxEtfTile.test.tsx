@@ -68,6 +68,7 @@ describe('GdxEtfTile', () => {
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
       manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -101,6 +102,7 @@ describe('GdxEtfTile', () => {
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
       manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -129,6 +131,7 @@ describe('GdxEtfTile', () => {
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
       manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -143,6 +146,7 @@ describe('GdxEtfTile', () => {
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
       manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
