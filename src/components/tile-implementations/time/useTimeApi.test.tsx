@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useTimeApi } from './useTimeApi';
-import './dataMapper';
+import { describe, it, expect, beforeAll } from 'vitest';
+
+import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import {
   EndpointTestUtils,
   API_ENDPOINTS,
@@ -10,10 +10,12 @@ import {
   setupDelayedMock,
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
-import type { TimeQueryParams } from '../../../services/apiEndpoints';
-import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { TimeDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
+
+import { TimeDataMapper } from './dataMapper';
+import { useTimeApi } from './useTimeApi';
+
+import type { TimeQueryParams } from '../../../services/apiEndpoints';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider

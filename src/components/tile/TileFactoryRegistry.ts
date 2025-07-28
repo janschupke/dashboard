@@ -1,17 +1,19 @@
 import React from 'react';
+
 import { TileType } from '../../types/tile';
-import type { DragboardTileData } from '../dragboard/dragboardTypes';
-import type { TileMeta } from './GenericTile';
 import { cryptocurrencyTileMeta } from '../tile-implementations/cryptocurrency/meta';
-import { preciousMetalsTileMeta } from '../tile-implementations/precious-metals/meta';
+import { earthquakeTileMeta } from '../tile-implementations/earthquake/meta';
+import { euriborRateTileMeta } from '../tile-implementations/euribor-rate/meta';
 import { federalFundsRateTileMeta } from '../tile-implementations/federal-funds-rate/meta';
 import { gdxEtfTileMeta } from '../tile-implementations/gdx-etf/meta';
-import { uraniumTileMeta } from '../tile-implementations/uranium/meta';
+import { preciousMetalsTileMeta } from '../tile-implementations/precious-metals/meta';
 import { timeTileMeta } from '../tile-implementations/time/meta';
+import { uraniumTileMeta } from '../tile-implementations/uranium/meta';
 import { weatherTileMeta } from '../tile-implementations/weather/meta';
-import { euriborRateTileMeta } from '../tile-implementations/euribor-rate/meta';
-import { earthquakeTileMeta } from '../tile-implementations/earthquake/meta';
 import { weatherAlertsTileMeta } from '../tile-implementations/weather-alerts/meta';
+
+import type { TileMeta } from './GenericTile';
+import type { DragboardTileData } from '../dragboard/dragboardTypes';
 
 export interface TileCatalogEntry {
   type: TileType;

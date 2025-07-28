@@ -1,10 +1,13 @@
-import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useWeatherAlertsApi } from './useWeatherAlertsApi';
+import { describe, it, expect } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import type { WeatherQueryParams } from '../../../services/apiEndpoints';
-import { WeatherAlertsDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
+
+import { WeatherAlertsDataMapper } from './dataMapper';
+import { useWeatherAlertsApi } from './useWeatherAlertsApi';
+
+import type { WeatherQueryParams } from '../../../services/apiEndpoints';
 
 const mockApiResponse = {
   alerts: [

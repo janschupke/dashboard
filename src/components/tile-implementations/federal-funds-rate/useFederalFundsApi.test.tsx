@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useFederalFundsApi } from './useFederalFundsApi';
-import './dataMapper';
-import { FederalFundsRateDataMapper } from './dataMapper';
-import { TileType } from '../../../types/tile';
+import { describe, it, expect, beforeAll } from 'vitest';
+
+import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
   EndpointTestUtils,
   API_ENDPOINTS,
@@ -11,9 +10,12 @@ import {
   setupDelayedMock,
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
-import { MockResponseData } from '../../../test/mocks/endpointMocks';
+import { TileType } from '../../../types/tile';
+
+import { FederalFundsRateDataMapper } from './dataMapper';
+import { useFederalFundsApi } from './useFederalFundsApi';
+
 import type { FredQueryParams } from '../../../services/apiEndpoints';
-import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider

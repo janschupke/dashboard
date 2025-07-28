@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { Icon } from '../ui/Icon.tsx';
-import { useLogContext } from './useLogContext.ts';
+
 import {
   type APILogEntry,
   APILogLevel,
   type APILogLevelType,
 } from '../../services/storageManager.ts';
+import { Icon } from '../ui/Icon.tsx';
+
+import { useLogContext } from './useLogContext.ts';
 
 interface LogViewProps {
   isOpen: boolean;

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { PriceDisplay } from './PriceDisplay';
 
 export interface DataRowProps {

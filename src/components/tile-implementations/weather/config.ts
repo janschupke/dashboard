@@ -1,5 +1,6 @@
-import type { TileType } from '../../../types/tile';
 import { TileType as TileTypeEnum } from '../../../types/tile';
+
+import type { TileType } from '../../../types/tile';
 
 export interface WeatherCityConfig {
   lat: number;

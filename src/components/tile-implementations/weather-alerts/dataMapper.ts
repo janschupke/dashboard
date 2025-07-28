@@ -1,4 +1,5 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
+
 import type { WeatherAlertsApiResponse, WeatherAlertsTileData } from './types';
 
 export class WeatherAlertsDataMapper extends BaseDataMapper<

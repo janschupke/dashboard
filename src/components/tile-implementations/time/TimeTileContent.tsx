@@ -1,5 +1,6 @@
-import type { TimeTileData } from './types';
 import { BusinessStatus } from './constants';
+
+import type { TimeTileData } from './types';
 
 export interface TimeTileContentProps {
   data: TimeTileData | null;

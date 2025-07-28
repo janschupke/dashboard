@@ -1,11 +1,13 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { usePreciousMetalsApi } from './usePreciousMetalsApi';
-import { PreciousMetalsDataMapper } from './dataMapper';
-import { TileType } from '../../../types/tile';
-import type { QueryParams } from '../../../services/apiEndpoints';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { TileType } from '../../../types/tile';
+
+import { PreciousMetalsDataMapper } from './dataMapper';
+import { usePreciousMetalsApi } from './usePreciousMetalsApi';
+
+import type { QueryParams } from '../../../services/apiEndpoints';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider

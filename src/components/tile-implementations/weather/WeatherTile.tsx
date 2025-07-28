@@ -1,12 +1,16 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useWeatherApi } from './useWeatherApi';
-import type { WeatherTileData } from './types';
-import { useTileData } from '../../tile/useTileData';
-import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { useMemo, useState, useCallback, memo } from 'react';
+
 import { format } from 'date-fns';
+
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+
 import { getWeatherCityConfig } from './config';
+import { useWeatherApi } from './useWeatherApi';
+
+import type { WeatherTileData } from './types';
+import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const WeatherIcon = memo(function WeatherIcon({
   icon,

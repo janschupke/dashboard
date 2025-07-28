@@ -1,13 +1,15 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useGdxEtfApi } from './useGdxEtfApi';
-import './dataMapper';
-import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+
 import { ALPHA_VANTAGE_GDX_ENDPOINT } from '../../../services/apiEndpoints';
-import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { gdxEtfDataMapper } from './dataMapper';
+import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
 import { TileType } from '../../../types/tile';
+
+import { gdxEtfDataMapper } from './dataMapper';
+import { useGdxEtfApi } from './useGdxEtfApi';
+
+import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
 
 global.fetch = vi.fn();
 

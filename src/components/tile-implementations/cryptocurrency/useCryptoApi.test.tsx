@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useCryptoApi } from './useCryptoApi';
-import './dataMapper';
-import { CryptocurrencyDataMapper } from './dataMapper';
-import { TileType } from '../../../types/tile';
+import { describe, it, expect, beforeAll } from 'vitest';
+
+import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
   EndpointTestUtils,
   API_ENDPOINTS,
@@ -12,9 +11,12 @@ import {
   setupDelayedMock,
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
-import { MockResponseData } from '../../../test/mocks/endpointMocks';
+import { TileType } from '../../../types/tile';
+
+import { CryptocurrencyDataMapper } from './dataMapper';
+import { useCryptoApi } from './useCryptoApi';
+
 import type { CryptoMarketsQueryParams } from '../../../services/apiEndpoints';
-import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
 beforeAll(() => {
   // Removed: registerCryptocurrencyDataMapper();

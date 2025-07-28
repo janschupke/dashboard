@@ -1,13 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { GdxEtfTile } from './GdxEtfTile';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { gdxEtfDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
+import * as useTileDataModule from '../../tile/useTileData';
+
+import { gdxEtfDataMapper } from './dataMapper';
+import { GdxEtfTile } from './GdxEtfTile';
+
+import type { GdxEtfTileData } from './types';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import type { TileMeta } from '../../tile/GenericTile';
-import type { GdxEtfTileData } from './types';
-import * as useTileDataModule from '../../tile/useTileData';
 
 vi.mock('../../tile/useTileData', () => ({
   useTileData: vi.fn(),

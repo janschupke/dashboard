@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useTileData } from '../../tile/useTileData';
-import { useTimeApi } from './useTimeApi';
-import { TimeTileContent } from './TimeTileContent';
-import { CITY_CONFIG } from './config';
+
 import { TileType } from '../../../types/tile';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+
+import { CITY_CONFIG } from './config';
+import { TimeTileContent } from './TimeTileContent';
+import { useTimeApi } from './useTimeApi';
+
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
   const { getTime } = useTimeApi();

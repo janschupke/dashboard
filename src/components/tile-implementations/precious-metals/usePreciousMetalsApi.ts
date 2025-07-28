@@ -1,11 +1,13 @@
-import type { PreciousMetalsTileData } from './types';
-import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
-import type { TileConfig } from '../../../services/storageManager';
-import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import { useDataServices } from '../../../contexts/DataServicesContext';
 import { PRECIOUS_METALS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
 import { fetchWithError } from '../../../services/fetchWithError';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import type { PreciousMetalsTileData } from './types';
+import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
+import type { TileConfig } from '../../../services/storageManager';
 
 export function usePreciousMetalsApi() {
   const { dataFetcher } = useDataServices();

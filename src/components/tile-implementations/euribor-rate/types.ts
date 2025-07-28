@@ -1,5 +1,5 @@
-import type { TileDataType } from '../../../services/storageManager';
 import type { BaseApiResponse } from '../../../services/dataMapper';
+import type { TileDataType } from '../../../services/storageManager';
 
 export interface EuriborRateTileData extends TileDataType {
   currentRate: number;

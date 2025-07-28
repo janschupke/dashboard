@@ -1,5 +1,7 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
+
 import { StorageManager, STORAGE_KEYS, DEFAULT_APPCONFIG } from './storageManager';
+
 import type { AppConfig, DashboardState, SidebarState, TileState } from './storageManager';
 
 describe('StorageManager', () => {

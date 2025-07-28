@@ -1,11 +1,13 @@
-import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
+
+import { useDataServices } from '../../../contexts/DataServicesContext';
 import { OPENWEATHERMAP_ALERTS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
-import { TileType, TileApiCallTitle } from '../../../types/tile';
-import type { WeatherAlertsTileData, WeatherAlertsApiResponse } from './types';
-import type { TileConfig } from '../../../services/storageManager';
 import { fetchWithError } from '../../../services/fetchWithError';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import type { WeatherAlertsTileData, WeatherAlertsApiResponse } from './types';
+import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
+import type { TileConfig } from '../../../services/storageManager';
 
 export function useWeatherAlertsApi() {
   const { dataFetcher } = useDataServices();

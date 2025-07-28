@@ -1,7 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useTileData } from './useTileData';
+
 import { storageManager } from '../../services/storageManager';
+
+import { useTileData } from './useTileData';
 
 // Mock the storage manager
 vi.mock('../../services/storageManager', () => ({

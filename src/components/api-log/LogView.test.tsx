@@ -1,10 +1,13 @@
 import React from 'react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 import { render, screen, fireEvent } from '@testing-library/react';
-import { LogProvider } from './LogContext';
-import { LogView } from './LogView';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 import { storageManager } from '../../services/storageManager';
+
+import { LogProvider } from './LogContext';
 import { LogContext } from './LogContextDef';
+import { LogView } from './LogView';
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(<LogProvider>{ui}</LogProvider>);

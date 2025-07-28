@@ -1,11 +1,13 @@
-import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
+
+import { useDataServices } from '../../../contexts/DataServicesContext';
 import { FRED_SERIES_OBSERVATIONS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { FredQueryParams, PathParams } from '../../../services/apiEndpoints';
-import { TileType, TileApiCallTitle } from '../../../types/tile';
-import type { FederalFundsRateTileData } from './types';
-import type { TileConfig } from '../../../services/storageManager';
 import { fetchWithError } from '../../../services/fetchWithError';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import type { FederalFundsRateTileData } from './types';
+import type { FredQueryParams, PathParams } from '../../../services/apiEndpoints';
+import type { TileConfig } from '../../../services/storageManager';
 
 export function useFederalFundsApi() {
   const { dataFetcher } = useDataServices();

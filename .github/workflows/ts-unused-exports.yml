@@ -1,6 +1,9 @@
 name: TS Unused Exports
 
 on:
+  push:
+    branches:
+      - '**'
   pull_request:
     branches:
       - '**'

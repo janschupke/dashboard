@@ -1,3 +1,5 @@
+import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
+import { DataParserRegistry } from './dataParser';
 import {
   APILogLevel,
   storageManager,
@@ -6,8 +8,6 @@ import {
   type TileConfig,
   type TileState,
 } from './storageManager';
-import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
-import { DataParserRegistry } from './dataParser';
 
 export const DATA_FETCH_TIMEOUT_MS = 15 * 1000;
 

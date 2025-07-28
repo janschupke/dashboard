@@ -1,24 +1,28 @@
 import './index.css';
 import './theme-init';
+
 import React from 'react';
+
 import ReactDOM from 'react-dom/client';
+
 import App from './App';
+import { CryptocurrencyDataMapper } from './components/tile-implementations/cryptocurrency/dataMapper';
+import { earthquakeDataMapper } from './components/tile-implementations/earthquake/dataMapper';
+import { ecbEuriborDataMapper } from './components/tile-implementations/euribor-rate/dataMapper';
+import { FederalFundsRateDataMapper } from './components/tile-implementations/federal-funds-rate/dataMapper';
+import { gdxEtfDataMapper } from './components/tile-implementations/gdx-etf/dataMapper';
+import { PreciousMetalsDataMapper } from './components/tile-implementations/precious-metals/dataMapper';
+import { TimeDataMapper } from './components/tile-implementations/time/dataMapper';
+import { UraniumHtmlDataParser } from './components/tile-implementations/uranium/dataParser';
+import { WeatherDataMapper } from './components/tile-implementations/weather/dataMapper';
+import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
+import { DataServicesContext } from './contexts/DataServicesContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
-import { DataServicesContext } from './contexts/DataServicesContext';
-import { DataParserRegistry } from './services/dataParser';
-import { DataMapperRegistry } from './services/dataMapper';
 import { DataFetcher } from './services/dataFetcher';
+import { DataMapperRegistry } from './services/dataMapper';
+import { DataParserRegistry } from './services/dataParser';
 import { TileType } from './types/tile';
-import { CryptocurrencyDataMapper } from './components/tile-implementations/cryptocurrency/dataMapper';
-import { PreciousMetalsDataMapper } from './components/tile-implementations/precious-metals/dataMapper';
-import { FederalFundsRateDataMapper } from './components/tile-implementations/federal-funds-rate/dataMapper';
-import { TimeDataMapper } from './components/tile-implementations/time/dataMapper';
-import { WeatherDataMapper } from './components/tile-implementations/weather/dataMapper';
-import { gdxEtfDataMapper } from './components/tile-implementations/gdx-etf/dataMapper';
-import { ecbEuriborDataMapper } from './components/tile-implementations/euribor-rate/dataMapper';
-import { earthquakeDataMapper } from './components/tile-implementations/earthquake/dataMapper';
-import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
 
 setupGlobalErrorHandling();
 
@@ -41,6 +45,9 @@ mapperRegistry.register(TileType.GDX_ETF, gdxEtfDataMapper);
 mapperRegistry.register(TileType.EURIBOR_RATE, ecbEuriborDataMapper);
 mapperRegistry.register(TileType.EARTHQUAKE, earthquakeDataMapper);
 mapperRegistry.register(TileType.WEATHER_ALERTS, new WeatherAlertsDataMapper());
+
+// Register all parsers
+parserRegistry.register(TileType.URANIUM, new UraniumHtmlDataParser());
 
 const dataServices = { parserRegistry, mapperRegistry, dataFetcher };
 

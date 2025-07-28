@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { Overlay } from './components/overlay/Overlay';
+
 import { LogProvider } from './components/api-log/LogContext';
+import { Overlay } from './components/overlay/Overlay';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
 
 function App() {

@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useTileData } from '../../tile/useTileData';
-import { useGdxEtfApi } from './useGdxEtfApi';
+
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
-import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
-import type { GdxEtfTileData } from './types';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
 import { DataRow } from '../../ui/DataRow';
+
+import { useGdxEtfApi } from './useGdxEtfApi';
+
+import type { GdxEtfTileData } from './types';
+import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   // Check if data is null or contains only default/empty values

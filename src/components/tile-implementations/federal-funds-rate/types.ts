@@ -1,6 +1,6 @@
-import type { TileSize } from '../../../types/tile';
-import type { TileDataType } from '../../../services/storageManager';
 import type { BaseApiResponse } from '../../../services/dataMapper';
+import type { TileDataType } from '../../../services/storageManager';
+import type { TileSize } from '../../../types/tile';
 
 export interface FederalFundsRateTileData extends TileDataType {
   currentRate: number;

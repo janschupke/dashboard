@@ -1,5 +1,5 @@
-import React from 'react';
 import { LogButton } from '../api-log/LogButton';
+
 import { CollapseButton } from './CollapseButton';
 import { RefreshButton } from './RefreshButton';
 import { ThemeButton } from './ThemeButton';

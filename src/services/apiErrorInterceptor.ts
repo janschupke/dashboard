@@ -1,4 +1,5 @@
 import { storageManager } from './storageManager';
+
 import type { APILogDetails } from './storageManager';
 
 export interface APIError {

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+
 import { useLogContext } from './useLogContext';
 
 export const useLogManager = () => {

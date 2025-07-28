@@ -1,6 +1,9 @@
 name: Depcheck
 
 on:
+  push:
+    branches:
+      - '**'
   pull_request:
     branches:
       - '**'

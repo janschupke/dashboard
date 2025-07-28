@@ -1,11 +1,14 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useCryptoApi } from './useCryptoApi';
-import type { CryptocurrencyTileData } from './types';
-import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
-import { DataRow } from '../../ui/DataRow';
+
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+import { DataRow } from '../../ui/DataRow';
+
+import { useCryptoApi } from './useCryptoApi';
+
+import type { CryptocurrencyTileData } from './types';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
   if (data && data.coins.length > 0) {
