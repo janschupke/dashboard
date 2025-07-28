@@ -9,6 +9,7 @@ import type { FredParams } from '../../../services/apiEndpoints';
 import { getApiKeys } from '../../../services/apiConfig';
 import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
 import { format } from 'date-fns';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
   data,
@@ -82,7 +83,7 @@ export const FederalFundsRateTile = ({
 
   const refreshConfig = useMemo(
     () => ({
-      refreshInterval: 60 * 60 * 1000, // 1 hour
+      refreshInterval: REFRESH_INTERVALS.TILES.FEDERAL_FUNDS_RATE,
       enableAutoRefresh: true,
       refreshOnFocus: true,
     }),

@@ -6,6 +6,7 @@ import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
   if (data && data.coins.length > 0) {
@@ -54,7 +55,7 @@ export const CryptocurrencyTile = ({
   );
   const refreshConfig = useMemo(
     () => ({
-      refreshInterval: 2 * 60 * 1000, // 2 minutes
+      refreshInterval: REFRESH_INTERVALS.TILES.CRYPTOCURRENCY,
       enableAutoRefresh: true,
       refreshOnFocus: true,
     }),

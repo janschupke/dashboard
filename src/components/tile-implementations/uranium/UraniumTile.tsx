@@ -5,6 +5,7 @@ import type { UraniumTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const UraniumTileContent = ({ data }: { data: UraniumTileData | null }) => {
   if (data) {
@@ -31,7 +32,7 @@ export const UraniumTile = ({
   const params = useMemo(() => ({ range: '1D' }), []);
   const refreshConfig = useMemo(
     () => ({
-      refreshInterval: 60 * 60 * 1000, // 1 hour
+      refreshInterval: REFRESH_INTERVALS.TILES.URANIUM,
       enableAutoRefresh: true,
       refreshOnFocus: true,
     }),

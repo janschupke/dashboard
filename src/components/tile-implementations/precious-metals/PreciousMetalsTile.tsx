@@ -6,6 +6,7 @@ import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const PreciousMetalsTileContent = ({ data }: { data: PreciousMetalsTileData | null }) => {
   if (data) {
@@ -50,7 +51,7 @@ export const PreciousMetalsTile = ({
   const params = useMemo(() => ({ symbol: 'XAU' as const }), []);
   const refreshConfig = useMemo(
     () => ({
-      refreshInterval: 1 * 60 * 1000, // 1 minute
+      refreshInterval: REFRESH_INTERVALS.TILES.PRECIOUS_METALS,
       enableAutoRefresh: true,
       refreshOnFocus: true,
     }),

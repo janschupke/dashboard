@@ -8,6 +8,7 @@ import type { AlphaVantageParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
 import { getApiKeys } from '../../../services/apiConfig';
 import { DataRow } from '../../ui/DataRow';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   // Check if data is null or contains only default/empty values
@@ -70,7 +71,7 @@ export const GdxEtfTile = ({
 
   const refreshConfig = useMemo(
     () => ({
-      refreshInterval: 60 * 60 * 1000, // 1 hour
+      refreshInterval: REFRESH_INTERVALS.TILES.GDX_ETF,
       enableAutoRefresh: true,
       refreshOnFocus: true,
     }),
