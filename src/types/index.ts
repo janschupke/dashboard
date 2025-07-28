@@ -1,5 +1,5 @@
 export * from './tile';
-export * from './animations';
+
 export * from './errors';
 
 // Common types
