@@ -8,6 +8,7 @@ import type { AlphaVantageParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
 import { getApiKeys } from '../../../services/apiConfig';
 import { DataRow } from '../../ui/DataRow';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   // Check if data is null or contains only default/empty values
@@ -68,7 +69,21 @@ export const GdxEtfTile = ({
     [apiKeys.alphaVantage],
   );
 
-  const { data, status, lastUpdated } = useTileData(getGdxEtf, tile.id, params, isForceRefresh);
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: REFRESH_INTERVALS.TILES.GDX_ETF,
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+    getGdxEtf,
+    tile.id,
+    params,
+    isForceRefresh,
+    refreshConfig,
+  );
 
   return (
     <GenericTile
@@ -77,6 +92,8 @@ export const GdxEtfTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <GdxEtfTileContent data={data} />

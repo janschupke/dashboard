@@ -5,6 +5,7 @@ import type { UraniumTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const UraniumTileContent = ({ data }: { data: UraniumTileData | null }) => {
   if (data) {
@@ -29,11 +30,20 @@ export const UraniumTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getUraniumPrice } = useUraniumApi();
   const params = useMemo(() => ({ range: '1D' }), []);
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: REFRESH_INTERVALS.TILES.URANIUM,
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getUraniumPrice,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
   return (
     <GenericTile
@@ -42,6 +52,8 @@ export const UraniumTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <UraniumTileContent data={data} />

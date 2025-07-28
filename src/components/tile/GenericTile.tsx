@@ -20,16 +20,22 @@ export interface GenericTileProps extends DraggableTileProps {
   status?: TileStatus;
   lastUpdate?: string;
   data: TileDataType | null;
+  onManualRefresh?: () => void;
+  isLoading?: boolean;
 }
 
 const StatusBar = ({
   data,
   status,
   lastUpdate,
+  onManualRefresh,
+  isLoading,
 }: {
   data: TileDataType | null;
   status?: TileStatus;
   lastUpdate?: string;
+  onManualRefresh?: () => void;
+  isLoading?: boolean;
 }) => {
   // Determine status icon and color
   const getStatusIcon = () => {
@@ -70,7 +76,19 @@ const StatusBar = ({
 
   return (
     <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-surface-primary bg-surface-secondary text-secondary rounded-b-xl">
-      <span>Last request: {formatLastUpdate(lastUpdate)}</span>
+      <div className="flex items-center space-x-2">
+        {onManualRefresh && (
+          <button
+            onClick={onManualRefresh}
+            className="p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer"
+            aria-label="Refresh data"
+            title="Refresh data"
+          >
+            <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
+          </button>
+        )}
+        <span>Last request: {formatLastUpdate(lastUpdate)}</span>
+      </div>
       {statusIcon && (
         <span onClick={logTileState} className="cursor-pointer">
           <Icon name={statusIcon.name} size="sm" className={statusIcon.className} />
@@ -89,7 +107,19 @@ const ErrorContent = React.memo(() => (
 
 export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
   (
-    { tile, meta, onRemove, dragHandleProps, className, children, status, lastUpdate, data },
+    {
+      tile,
+      meta,
+      onRemove,
+      dragHandleProps,
+      className,
+      children,
+      status,
+      lastUpdate,
+      data,
+      onManualRefresh,
+      isLoading,
+    },
     ref,
   ) => {
     const handleRemove = useCallback(async () => {
@@ -188,7 +218,13 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           </div>
 
           {/* Status Bar */}
-          <StatusBar data={data} status={status} lastUpdate={lastUpdate} />
+          <StatusBar
+            data={data}
+            status={status}
+            lastUpdate={lastUpdate}
+            onManualRefresh={onManualRefresh}
+            isLoading={isLoading}
+          />
         </div>
       </TileErrorBoundary>
     );

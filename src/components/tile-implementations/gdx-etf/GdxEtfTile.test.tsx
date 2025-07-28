@@ -9,6 +9,16 @@ import type { TileMeta } from '../../tile/GenericTile';
 import type { GdxEtfTileData } from './types';
 import * as useTileDataModule from '../../tile/useTileData';
 
+vi.mock('../../tile/useTileData', () => ({
+  useTileData: vi.fn(),
+  TileStatus: {
+    Loading: 'loading',
+    Success: 'success',
+    Error: 'error',
+    Stale: 'stale',
+  },
+}));
+
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider
     setup={({ mapperRegistry }) => {
@@ -57,6 +67,8 @@ describe('GdxEtfTile', () => {
       } as GdxEtfTileData,
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
+      manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -89,6 +101,8 @@ describe('GdxEtfTile', () => {
       } as unknown as GdxEtfTileData,
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
+      manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -116,6 +130,8 @@ describe('GdxEtfTile', () => {
       } as GdxEtfTileData,
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
+      manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
@@ -129,6 +145,8 @@ describe('GdxEtfTile', () => {
       data: null,
       status: 'success',
       lastUpdated: new Date('2024-06-01T16:00:00Z'),
+      manualRefresh: () => {},
+      isLoading: false,
     });
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });

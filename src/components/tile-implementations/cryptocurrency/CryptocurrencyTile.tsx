@@ -6,6 +6,7 @@ import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
   if (data && data.coins.length > 0) {
@@ -52,11 +53,20 @@ export const CryptocurrencyTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: REFRESH_INTERVALS.TILES.CRYPTOCURRENCY,
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getCryptocurrencyMarkets,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
 
   // TODO: fix the undefined update
@@ -67,6 +77,8 @@ export const CryptocurrencyTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <CryptocurrencyTileContent data={data} />

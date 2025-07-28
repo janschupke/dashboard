@@ -5,6 +5,7 @@ import type { EuriborRateTileData } from './types';
 import { useForceRefreshFromKey } from '../../../contexts/RefreshContext';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+import { REFRESH_INTERVALS } from '../../../contexts/constants';
 
 const EuriborRateTileContent = ({ data }: { data: EuriborRateTileData | null }) => {
   if (data) {
@@ -29,11 +30,20 @@ export const EuriborRateTile = ({
   const isForceRefresh = useForceRefreshFromKey();
   const { getEuriborRate } = useEuriborApi();
   const params = useMemo(() => ({}), []);
-  const { data, status, lastUpdated } = useTileData(
+  const refreshConfig = useMemo(
+    () => ({
+      refreshInterval: REFRESH_INTERVALS.TILES.EURIBOR_RATE,
+      enableAutoRefresh: true,
+      refreshOnFocus: true,
+    }),
+    [],
+  );
+  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEuriborRate,
     tile.id,
     params,
     isForceRefresh,
+    refreshConfig,
   );
   return (
     <GenericTile
@@ -42,6 +52,8 @@ export const EuriborRateTile = ({
       status={status}
       lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
       data={data}
+      onManualRefresh={manualRefresh}
+      isLoading={isLoading}
       {...rest}
     >
       <EuriborRateTileContent data={data} />
