@@ -4,7 +4,7 @@ import { renderHook } from '@testing-library/react';
 import { usePreciousMetalsApi } from './usePreciousMetalsApi';
 import { PreciousMetalsDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
-import type { GoldApiParams } from '../../../services/apiEndpoints';
+import type { QueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -23,7 +23,7 @@ beforeAll(() => {
 
 describe('usePreciousMetalsApi', () => {
   const mockTileId = 'test-precious-metals-tile';
-  const mockParams: GoldApiParams = { symbol: 'XAU' };
+  const mockParams: QueryParams = { symbol: 'XAU' };
 
   it('should successfully fetch precious metals data', async () => {
     // Mock the gold API response (current actual behavior)
@@ -42,7 +42,11 @@ describe('usePreciousMetalsApi', () => {
     });
 
     const { result } = renderHook(() => usePreciousMetalsApi(), { wrapper });
-    const fetchResult = await result.current.getPreciousMetals(mockTileId, mockParams);
+    const fetchResult = await result.current.getPreciousMetals(
+      mockTileId,
+      { symbol: 'XAU' },
+      mockParams,
+    );
     expect(fetchResult).toBeDefined();
     expect(fetchResult).toHaveProperty('data');
     expect(fetchResult).toHaveProperty('lastDataRequest');

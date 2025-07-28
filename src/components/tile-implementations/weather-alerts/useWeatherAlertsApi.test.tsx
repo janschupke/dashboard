@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useWeatherAlertsApi } from './useWeatherAlertsApi';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import type { WeatherParams } from '../../../services/apiEndpoints';
+import type { WeatherQueryParams } from '../../../services/apiEndpoints';
 import { WeatherAlertsDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
 
@@ -40,8 +40,8 @@ describe('useWeatherAlertsApi', () => {
       status: 200,
     });
     const { result } = renderHook(() => useWeatherAlertsApi(), { wrapper });
-    const params: WeatherParams = { lat: 23.7, lon: 121.0 };
-    const fetchResult = await result.current.getWeatherAlerts('test-tile', params);
+    const params: WeatherQueryParams = { lat: 23.7, lon: 121.0 };
+    const fetchResult = await result.current.getWeatherAlerts('test-tile', {}, params);
     expect(fetchResult).toBeDefined();
     expect(fetchResult).toHaveProperty('data');
     if (fetchResult.data) {

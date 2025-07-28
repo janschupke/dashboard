@@ -12,7 +12,7 @@ import {
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
-import type { FredParams } from '../../../services/apiEndpoints';
+import type { FredQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -31,7 +31,7 @@ beforeAll(() => {
 
 describe('useFederalFundsApi', () => {
   const mockTileId = 'test-federal-funds-tile';
-  const mockParams: FredParams = {
+  const mockParams: FredQueryParams = {
     series_id: 'FEDFUNDS',
     file_type: 'json',
   };
@@ -41,7 +41,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('data');
       expect(fetchResult).toHaveProperty('lastDataRequest');
@@ -73,7 +73,7 @@ describe('useFederalFundsApi', () => {
       );
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       await waitFor(async () => {
-        const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+        const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
         expect(fetchResult).toBeDefined();
         const data = fetchResult.data;
         expect(data).toBeDefined();
@@ -89,7 +89,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'network');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -100,7 +100,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'timeout');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -111,7 +111,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'api');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -122,7 +122,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'malformed');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('lastDataRequestSuccessful', false);
       expect(fetchResult.lastDataRequest).toBeDefined();
@@ -135,13 +135,13 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const testParams: FredParams[] = [
+      const testParams: FredQueryParams[] = [
         { series_id: 'FEDFUNDS', file_type: 'json' },
         { series_id: 'DFF', file_type: 'json' },
         { series_id: 'EFFR', file_type: 'json' },
       ];
       for (const params of testParams) {
-        const fetchResult = await result.current.getFederalFundsRate(mockTileId, params);
+        const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, params);
         expect(fetchResult).toBeDefined();
         const data = fetchResult.data;
         expect(data).toBeDefined();
@@ -157,7 +157,7 @@ describe('useFederalFundsApi', () => {
       EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
-      const fetchResult = await result.current.getFederalFundsRate(mockTileId, mockParams);
+      const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
       const data = fetchResult.data;
       expect(data).toMatchObject({
         currentRate: expect.any(Number),

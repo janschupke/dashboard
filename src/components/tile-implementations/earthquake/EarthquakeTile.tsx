@@ -4,7 +4,7 @@ import { useEarthquakeApi } from './useEarthquakeApi';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, useCallback, memo } from 'react';
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
-import type { UsgsEarthquakeParams } from '../../../services/apiEndpoints';
+import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
 
 const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data,
@@ -117,7 +117,7 @@ export const EarthquakeTile = ({
   const [magnitudeThreshold, setMagnitudeThreshold] = useState(4.0);
   const { getEarthquakes } = useEarthquakeApi();
 
-  const params = useMemo<UsgsEarthquakeParams>(() => {
+  const params = useMemo<UsgsEarthquakeQueryParams>(() => {
     // Calculate start/end time for the last 7 days
     const end = new Date();
     const start = new Date();
@@ -135,6 +135,7 @@ export const EarthquakeTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getEarthquakes,
     tile.id,
+    {},
     params,
   );
 

@@ -25,6 +25,7 @@ export const WeatherAlertsTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getWeatherAlerts,
     tile.id,
+    {},
     params,
   );
 

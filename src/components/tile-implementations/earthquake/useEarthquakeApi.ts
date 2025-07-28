@@ -1,7 +1,7 @@
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { USGS_EARTHQUAKE_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { UsgsEarthquakeParams } from '../../../services/apiEndpoints';
+import type { UsgsEarthquakeQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { EarthquakeTileData } from './types';
 import type { TileConfig, TileDataType } from '../../../services/storageManager';
@@ -17,9 +17,10 @@ export function useEarthquakeApi() {
   const getEarthquakes = useCallback(
     async (
       tileId: string,
-      params: UsgsEarthquakeParams,
+      pathParams: PathParams,
+      queryParams: UsgsEarthquakeQueryParams,
     ): Promise<TileConfig<EarthquakeTileDataArray>> => {
-      const url = buildApiUrl<UsgsEarthquakeParams>(USGS_EARTHQUAKE_ENDPOINT, params);
+      const url = buildApiUrl(USGS_EARTHQUAKE_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await fetchWithError(url);

@@ -36,7 +36,7 @@ describe('useEuriborApi', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
     await act(async () => {
-      fetchResult = await result.current.getEuriborRate(mockTileId, mockParams);
+      fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
     });
     expect(fetchResult).not.toBeNull();
     if (fetchResult) {
@@ -61,7 +61,7 @@ describe('useEuriborApi', () => {
       responseData: { error: 'API error' },
     });
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
-    const fetchResult = await result.current.getEuriborRate(mockTileId, mockParams);
+    const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });
@@ -72,7 +72,7 @@ describe('useEuriborApi', () => {
       errorType: 'network',
     });
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
-    const fetchResult = await result.current.getEuriborRate(mockTileId, mockParams);
+    const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });

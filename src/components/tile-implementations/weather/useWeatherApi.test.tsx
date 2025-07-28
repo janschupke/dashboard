@@ -11,7 +11,7 @@ import {
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
-import type { WeatherParams } from '../../../services/apiEndpoints';
+import type { WeatherQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { WeatherDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
@@ -32,7 +32,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('useWeatherApi', () => {
   const mockTileId = 'test-weather-tile';
-  const mockParams: WeatherParams = {
+  const mockParams: WeatherQueryParams = {
     lat: 52.52,
     lon: 13.405,
   };
@@ -42,7 +42,7 @@ describe('useWeatherApi', () => {
       EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       expect(fetchResult).toBeDefined();
       expect(fetchResult).toHaveProperty('data');
       expect(fetchResult).toHaveProperty('lastDataRequest');
@@ -85,7 +85,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
 
       // Assert
       expect(fetchResult.data).toBeNull();
@@ -97,7 +97,7 @@ describe('useWeatherApi', () => {
       setupDelayedMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, MockResponseData.getWeatherData(), 50);
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
       await waitFor(async () => {
-        const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+        const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
         expect(fetchResult).toBeDefined();
         const data = fetchResult.data;
         expect(data).toBeDefined();
@@ -114,7 +114,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       expect(fetchResult.data).toBeNull();
     });
@@ -126,7 +126,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       expect(fetchResult.data).toBeNull();
     });
@@ -138,7 +138,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       expect(fetchResult.data).toBeNull();
     });
@@ -150,7 +150,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act & Assert
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       expect(fetchResult.lastDataRequestSuccessful).toBe(false);
       expect(fetchResult.data).toBeNull();
     });
@@ -161,9 +161,9 @@ describe('useWeatherApi', () => {
       EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
-      const testParams: WeatherParams[] = [{ lat: 52.52, lon: 13.405 }];
+      const testParams: WeatherQueryParams[] = [{ lat: 52.52, lon: 13.405 }];
       for (const params of testParams) {
-        const fetchResult = await result.current.getWeather(mockTileId, params);
+        const fetchResult = await result.current.getWeather(mockTileId, {}, params);
         const data = fetchResult.data;
         expect(typeof data?.temperature?.current).toBe('number');
       }
@@ -175,7 +175,7 @@ describe('useWeatherApi', () => {
       EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       const data = fetchResult.data;
       expect(data).toEqual(
         expect.objectContaining({
@@ -247,7 +247,7 @@ describe('useWeatherApi', () => {
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
       // Act
-      const fetchResult = await result.current.getWeather(mockTileId, mockParams);
+      const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
       const data = fetchResult.data;
 
       // Assert

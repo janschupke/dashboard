@@ -3,7 +3,7 @@ import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useWeatherApi } from './useWeatherApi';
 import type { WeatherTileData } from './types';
 import { useTileData } from '../../tile/useTileData';
-import type { WeatherParams } from '../../../services/apiEndpoints';
+import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { useMemo, useState, useCallback, memo } from 'react';
 import { format } from 'date-fns';
 import { getWeatherCityConfig } from './config';
@@ -230,7 +230,8 @@ export const WeatherTile = ({
   // Get city configuration based on tile type
   const cityConfig = getWeatherCityConfig(tile.type);
 
-  const params = useMemo<WeatherParams>(
+  const pathParams = useMemo<PathParams>(() => ({}), []);
+  const queryParams = useMemo<WeatherQueryParams>(
     () => ({
       lat: cityConfig.lat,
       lon: cityConfig.lon,
@@ -242,7 +243,8 @@ export const WeatherTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getWeather,
     tile.id,
-    params,
+    pathParams,
+    queryParams,
   );
 
   const handleToggleForecast = useCallback(() => {

@@ -3,6 +3,7 @@ import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { usePreciousMetalsApi } from './usePreciousMetalsApi';
 import type { PreciousMetalsTileData } from './types';
 import { useTileData } from '../../tile/useTileData';
+import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
 import { DataRow } from '../../ui/DataRow';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
@@ -46,7 +47,8 @@ export const PreciousMetalsTile = ({
   meta: TileMeta;
 }) => {
   const { getPreciousMetals } = usePreciousMetalsApi();
-  const params = useMemo(() => ({ symbol: 'XAU' as const }), []);
+  const pathParams = useMemo<GoldApiPathParams>(() => ({ symbol: 'XAU' }), []);
+  const queryParams = useMemo<QueryParams>(() => ({}), []);
   const refreshConfig = useMemo(
     () => ({
       refreshInterval: REFRESH_INTERVALS.TILES.PRECIOUS_METALS,
@@ -58,7 +60,8 @@ export const PreciousMetalsTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getPreciousMetals,
     tile.id,
-    params,
+    pathParams,
+    queryParams,
     refreshConfig,
   );
 

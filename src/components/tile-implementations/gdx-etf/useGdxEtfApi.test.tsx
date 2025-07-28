@@ -4,7 +4,7 @@ import { useGdxEtfApi } from './useGdxEtfApi';
 import './dataMapper';
 import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
 import { ALPHA_VANTAGE_GDX_ENDPOINT } from '../../../services/apiEndpoints';
-import type { AlphaVantageParams } from '../../../services/apiEndpoints';
+import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { gdxEtfDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
@@ -27,7 +27,7 @@ beforeAll(() => {
 
 describe('useGdxEtfApi', () => {
   const mockTileId = 'test-gdx-tile';
-  const mockParams: AlphaVantageParams = {
+  const mockParams: AlphaVantageQueryParams = {
     function: 'GLOBAL_QUOTE',
     symbol: 'GDX',
   };
@@ -60,7 +60,7 @@ describe('useGdxEtfApi', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
     await act(async () => {
-      fetchResult = await result.current.getGdxEtf(mockTileId, mockParams);
+      fetchResult = await result.current.getGdxEtf(mockTileId, {}, mockParams);
     });
     expect(fetchResult).not.toBeNull();
     if (fetchResult) {
@@ -85,7 +85,7 @@ describe('useGdxEtfApi', () => {
       responseData: { error: 'API error' },
     });
     const { result } = renderHook(() => useGdxEtfApi(), { wrapper });
-    const fetchResult = await result.current.getGdxEtf(mockTileId, mockParams);
+    const fetchResult = await result.current.getGdxEtf(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });
@@ -96,7 +96,7 @@ describe('useGdxEtfApi', () => {
       errorType: 'network',
     });
     const { result } = renderHook(() => useGdxEtfApi(), { wrapper });
-    const fetchResult = await result.current.getGdxEtf(mockTileId, mockParams);
+    const fetchResult = await result.current.getGdxEtf(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });

@@ -23,6 +23,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getTime,
     tile.id,
+    {},
     params,
   );
   return (

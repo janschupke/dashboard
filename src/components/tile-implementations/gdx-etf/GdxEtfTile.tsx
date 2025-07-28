@@ -4,7 +4,7 @@ import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useTileData } from '../../tile/useTileData';
 import { useGdxEtfApi } from './useGdxEtfApi';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
-import type { AlphaVantageParams } from '../../../services/apiEndpoints';
+import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
 import type { GdxEtfTileData } from './types';
 import { DataRow } from '../../ui/DataRow';
 
@@ -56,7 +56,7 @@ export const GdxEtfTile = ({
 }) => {
   const { getGdxEtf } = useGdxEtfApi();
 
-  const params = useMemo<AlphaVantageParams>(
+  const params = useMemo<AlphaVantageQueryParams>(
     () => ({
       function: 'GLOBAL_QUOTE',
       symbol: 'GDX',
@@ -75,6 +75,7 @@ export const GdxEtfTile = ({
   const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
     getGdxEtf,
     tile.id,
+    {},
     params,
     refreshConfig,
   );

@@ -21,7 +21,8 @@ vi.mock('../../contexts/constants', () => ({
 describe('useTileData', () => {
   const mockApiFn = vi.fn();
   const tileId = 'test-tile';
-  const params = { test: 'param' };
+  const pathParams = {};
+  const queryParams = { test: 'param' };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +45,7 @@ describe('useTileData', () => {
     vi.mocked(storageManager.getTileState).mockReturnValue(freshData);
 
     const { result } = renderHook(() =>
-      useTileData(mockApiFn, tileId, params, {
+      useTileData(mockApiFn, tileId, pathParams, queryParams, {
         refreshInterval: 60000,
         enableAutoRefresh: false, // Disable auto refresh to avoid interval issues
       }),
@@ -85,7 +86,7 @@ describe('useTileData', () => {
     mockApiFn.mockResolvedValue(newData);
 
     const { result } = renderHook(() =>
-      useTileData(mockApiFn, tileId, params, {
+      useTileData(mockApiFn, tileId, pathParams, queryParams, {
         refreshInterval: 60000,
         enableAutoRefresh: false, // Disable auto refresh to avoid interval issues
       }),
@@ -97,7 +98,7 @@ describe('useTileData', () => {
     });
 
     // Should call the API function since data is stale
-    expect(mockApiFn).toHaveBeenCalledWith(tileId, params);
+    expect(mockApiFn).toHaveBeenCalledWith(tileId, pathParams, queryParams);
 
     // Should return the new data
     expect(result.current.data).toEqual({ test: 'new-data' });
@@ -120,7 +121,7 @@ describe('useTileData', () => {
     mockApiFn.mockResolvedValue(newData);
 
     const { result } = renderHook(() =>
-      useTileData(mockApiFn, tileId, params, {
+      useTileData(mockApiFn, tileId, pathParams, queryParams, {
         refreshInterval: 60000,
         enableAutoRefresh: false, // Disable auto refresh to avoid interval issues
       }),
@@ -132,7 +133,7 @@ describe('useTileData', () => {
     });
 
     // Should call the API function since no cached data exists
-    expect(mockApiFn).toHaveBeenCalledWith(tileId, params);
+    expect(mockApiFn).toHaveBeenCalledWith(tileId, pathParams, queryParams);
 
     // Should return the new data
     expect(result.current.data).toEqual({ test: 'new-data' });
@@ -161,7 +162,7 @@ describe('useTileData', () => {
     mockApiFn.mockResolvedValue(newData);
 
     const { result } = renderHook(() =>
-      useTileData(mockApiFn, tileId, params, {
+      useTileData(mockApiFn, tileId, pathParams, queryParams, {
         refreshInterval: 60000,
         enableAutoRefresh: false, // Disable auto refresh to avoid interval issues
       }),
@@ -182,7 +183,7 @@ describe('useTileData', () => {
     });
 
     // Should call the API function when manual refresh is triggered
-    expect(mockApiFn).toHaveBeenCalledWith(tileId, params);
+    expect(mockApiFn).toHaveBeenCalledWith(tileId, pathParams, queryParams);
 
     // Should return the new data
     expect(result.current.data).toEqual({ test: 'new-data' });

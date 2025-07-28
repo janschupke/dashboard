@@ -1,7 +1,7 @@
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
 import { ECB_EURIBOR_12M_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { EuriborParams } from '../../../services/apiEndpoints';
+import type { EuriborQueryParams, PathParams } from '../../../services/apiEndpoints';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 import type { EuriborRateTileData } from './types';
 import type { TileConfig } from '../../../services/storageManager';
@@ -10,8 +10,12 @@ import { fetchWithError } from '../../../services/fetchWithError';
 export function useEuriborApi() {
   const { dataFetcher } = useDataServices();
   const getEuriborRate = useCallback(
-    async (tileId: string, params: EuriborParams): Promise<TileConfig<EuriborRateTileData>> => {
-      const url = buildApiUrl<EuriborParams>(ECB_EURIBOR_12M_ENDPOINT, params);
+    async (
+      tileId: string,
+      pathParams: PathParams,
+      queryParams: EuriborQueryParams,
+    ): Promise<TileConfig<EuriborRateTileData>> => {
+      const url = buildApiUrl(ECB_EURIBOR_12M_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await fetchWithError(url);
