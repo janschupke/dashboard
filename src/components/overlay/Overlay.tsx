@@ -19,7 +19,7 @@ function OverlayContent({
   setSidebarSelectedIndex,
 }: {
   isSidebarCollapsed: boolean;
-  setSidebarCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  setSidebarCollapsed: () => void;
   sidebarSelectedIndex: number;
   setSidebarSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
 }) {
@@ -62,7 +62,7 @@ function OverlayContent({
           toggleLogView={toggleLogView}
           toggleTheme={toggleTheme}
           theme={theme}
-          toggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
+          toggleCollapse={setSidebarCollapsed}
           tilesCount={tiles.length}
           refreshAllTiles={refreshAllTiles}
           isRefreshing={isRefreshing}
@@ -70,7 +70,7 @@ function OverlayContent({
         <div className="flex h-full pt-16 relative">
           <Sidebar
             isCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() => setSidebarCollapsed((prev) => !prev)}
+            onSidebarToggle={setSidebarCollapsed}
             selectedIndex={sidebarSelectedIndex}
             setSelectedIndex={setSidebarSelectedIndex}
             tiles={tiles}
@@ -173,15 +173,34 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
 
 export function Overlay() {
   const { initialTiles, storage } = useTileStorage();
-  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Load initial sidebar state from storage
+    const sidebarState = storage.getSidebarState();
+    return sidebarState?.isCollapsed ?? false;
+  });
   const [sidebarSelectedIndex, setSidebarSelectedIndex] = useState(0);
+
+  // Save sidebar state when it changes
+  const handleSidebarToggle = useCallback(() => {
+    setSidebarCollapsed((prev) => {
+      const newState = !prev;
+      // Save to storage
+      storage.setSidebarState({
+        activeTiles: [], // We'll update this if needed
+        isCollapsed: newState,
+        lastUpdated: Date.now(),
+      });
+      return newState;
+    });
+  }, [storage]);
+
   return (
     <ErrorBoundary variant="app">
       <DragboardProvider config={DASHBOARD_GRID_CONFIG} initialTiles={initialTiles}>
         <TilePersistenceListener storage={storage} />
         <OverlayContent
           isSidebarCollapsed={isSidebarCollapsed}
-          setSidebarCollapsed={setSidebarCollapsed}
+          setSidebarCollapsed={handleSidebarToggle}
           sidebarSelectedIndex={sidebarSelectedIndex}
           setSidebarSelectedIndex={setSidebarSelectedIndex}
         />

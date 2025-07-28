@@ -35,7 +35,7 @@ describe('RefreshButton', () => {
     expect(button).toHaveClass('opacity-50', 'cursor-not-allowed');
 
     // Check that loading icon is shown
-    expect(button).toHaveTextContent('⟳');
+    expect(button).toHaveTextContent('⏳');
   });
 
   it('shows refresh icon when not refreshing', () => {
