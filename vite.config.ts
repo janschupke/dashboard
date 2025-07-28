@@ -11,4 +11,10 @@ export default defineConfig({
     host: true,
   },
   publicDir: 'public',
+  build: {
+    target: 'esnext',
+    modulePreload: {
+      polyfill: false,
+    },
+  },
 });

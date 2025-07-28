@@ -1,14 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-interface GoldApiResponse {
-  name: string;
-  price: number;
-  symbol: string;
-  updatedAt: string;
-  updatedAtReadable: string;
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async (req, res) => {
   try {
     // Extract symbol from path like /api/precious-metals/XAU
     const path = req.url || '';
@@ -32,11 +22,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error(`Failed to fetch ${symbol} data: ${response.status}`);
     }
 
-    const data: GoldApiResponse = await response.json();
+    const data = await response.json();
 
     res.status(200).json(data);
   } catch (error) {
     console.error('Error fetching precious metals data:', error);
     res.status(500).json({ error: 'Failed to fetch precious metals data' });
   }
-}
+};
+
+module.exports = handler;
