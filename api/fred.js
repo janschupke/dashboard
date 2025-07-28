@@ -1,6 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const handler = async (req, res) => {
   // Parse the URL and query params
   const urlObj = new URL(`https://api.stlouisfed.org${req.url?.replace(/^\/api\/fred/, '')}`);
 
@@ -12,7 +10,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = urlObj.toString();
 
   // Create headers object, filtering out problematic headers
-  const headers: Record<string, string> = {};
+  const headers = {};
   Object.entries(req.headers).forEach(([key, value]) => {
     if (key.toLowerCase() !== 'host' && value !== undefined) {
       headers[key] = Array.isArray(value) ? value[0] : value;
@@ -28,4 +26,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.status(apiRes.status);
   apiRes.headers.forEach((value, key) => res.setHeader(key, value));
   res.send(Buffer.from(data));
-}
+};
+
+module.exports = handler;

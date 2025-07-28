@@ -1,7 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = `https://api.coingecko.com${req.url?.replace(/^\/api\/coingecko/, '')}`;
+const handler = async (req, res) => {
+  const url = `https://sdw-wsrest.ecb.europa.eu${req.url?.replace(/^\/api\/ecb/, '')}`;
 
   try {
     const apiRes = await fetch(url, {
@@ -11,7 +9,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         Accept: 'application/json',
         ...(req.headers.authorization && { Authorization: req.headers.authorization }),
         ...(req.headers['content-type'] && {
-          'Content-Type': req.headers['content-type'] as string,
+          'Content-Type': req.headers['content-type'],
         }),
       },
       body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
@@ -29,4 +27,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
+module.exports = handler;
