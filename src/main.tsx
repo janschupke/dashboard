@@ -13,6 +13,7 @@ import { FederalFundsRateDataMapper } from './components/tile-implementations/fe
 import { gdxEtfDataMapper } from './components/tile-implementations/gdx-etf/dataMapper';
 import { PreciousMetalsDataMapper } from './components/tile-implementations/precious-metals/dataMapper';
 import { TimeDataMapper } from './components/tile-implementations/time/dataMapper';
+import { UraniumHtmlDataParser } from './components/tile-implementations/uranium/dataParser';
 import { WeatherDataMapper } from './components/tile-implementations/weather/dataMapper';
 import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
 import { DataServicesContext } from './contexts/DataServicesContext';
@@ -44,6 +45,9 @@ mapperRegistry.register(TileType.GDX_ETF, gdxEtfDataMapper);
 mapperRegistry.register(TileType.EURIBOR_RATE, ecbEuriborDataMapper);
 mapperRegistry.register(TileType.EARTHQUAKE, earthquakeDataMapper);
 mapperRegistry.register(TileType.WEATHER_ALERTS, new WeatherAlertsDataMapper());
+
+// Register all parsers
+parserRegistry.register(TileType.URANIUM, new UraniumHtmlDataParser());
 
 const dataServices = { parserRegistry, mapperRegistry, dataFetcher };
 
