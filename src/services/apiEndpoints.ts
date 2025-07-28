@@ -1,11 +1,9 @@
-// Base interfaces for API parameters
-export interface PathParams {
-  [key: string]: string | number;
-}
+// Base interfaces for API parameters - no index signatures to prevent invalid parameters
+// This ensures that only explicitly defined properties are allowed in parameter objects.
+// Invalid properties will cause TypeScript compilation errors.
+export type PathParams = Record<never, never>;
 
-export interface QueryParams {
-  [key: string]: string | number | boolean | undefined;
-}
+export type QueryParams = Record<never, never>;
 
 export interface ApiEndpoint<
   TPathParams extends PathParams = PathParams,
@@ -95,8 +93,6 @@ export const ECB_EURIBOR_12M_ENDPOINT: ApiEndpoint<PathParams, EuriborQueryParam
 // --- Uranium Price (HTML Scraping) ---
 export interface UraniumHtmlQueryParams extends QueryParams {
   range?: string; // optional, e.g. '1Y'
-  // TODO: completely useless...
-  [key: string]: string | number | boolean | undefined;
 }
 
 export const URANIUM_HTML_ENDPOINT: ApiEndpoint<PathParams, UraniumHtmlQueryParams> = {
