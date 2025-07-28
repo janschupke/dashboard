@@ -47,8 +47,6 @@ const endpoints = [
       vs_currency: 'usd',
     },
     baseUrl: `${BASE_URL}/api/coingecko/api/v3/coins/markets`,
-    key: null,
-    required: false,
   },
   {
     name: 'OpenWeatherMap',
@@ -58,8 +56,6 @@ const endpoints = [
       lon: '24.9384',
     },
     baseUrl: `${BASE_URL}/api/openweathermap/data/3.0/onecall`,
-    key: null,
-    required: false,
   },
   {
     name: 'Alpha Vantage GDX',
@@ -69,8 +65,6 @@ const endpoints = [
       symbol: 'GDX',
     },
     baseUrl: `${BASE_URL}/api/alpha-vantage/query`,
-    key: null,
-    required: false,
   },
   {
     name: 'FRED Series Observations',
@@ -80,8 +74,6 @@ const endpoints = [
       file_type: 'json',
     },
     baseUrl: `${BASE_URL}/api/fred/fred/series/observations`,
-    key: null,
-    required: false,
   },
   // Precious Metals API
   {
@@ -91,8 +83,6 @@ const endpoints = [
     },
     queryParams: {},
     baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
-    key: null,
-    required: false,
   },
   {
     name: 'USGS Earthquake',
@@ -103,8 +93,6 @@ const endpoints = [
       endtime: new Date().toISOString().slice(0, 10),
     },
     baseUrl: `${BASE_URL}/api/usgs/fdsnws/event/1/query`,
-    key: null,
-    required: false,
   },
   {
     name: 'TimeZoneDB',
@@ -116,8 +104,6 @@ const endpoints = [
       by: 'position',
     },
     baseUrl: `${BASE_URL}/api/timezonedb/v2.1/get-time-zone`,
-    key: null,
-    required: false,
   },
   {
     name: 'ECB Euribor 12M',
@@ -128,8 +114,6 @@ const endpoints = [
       format: 'json',
     },
     baseUrl: `${BASE_URL}/api/ecb/service/data/:series`,
-    key: null,
-    required: false,
   },
 ];
 
@@ -138,10 +122,6 @@ function pad(str, len) {
 }
 
 async function checkEndpoint(ep) {
-  if (ep.required && (!ep.key || !process.env[ep.key])) {
-    return { name: ep.name, status: '❌', msg: `Missing API key (${ep.key})` };
-  }
-
   const url = buildUrl(ep.baseUrl, ep.pathParams, ep.queryParams);
 
   try {
