@@ -16,9 +16,9 @@
     "dotenv"
   ],
   "ignoreUnimported": [
-    "/Users/janschupke/dev/dashboard/src/test/mocks/componentMocks.tsx",
-    "/Users/janschupke/dev/dashboard/src/test/mocks/componentMocksUtils.ts",
-    "/Users/janschupke/dev/dashboard/src/test/mocks/endpointMocks.ts",
-    "/Users/janschupke/dev/dashboard/src/test/utils/endpointTestUtils.ts"
+    "src/test/mocks/componentMocks.tsx",
+    "src/test/mocks/componentMocksUtils.ts",
+    "src/test/mocks/endpointMocks.ts",
+    "src/test/utils/endpointTestUtils.ts"
   ]
 }
