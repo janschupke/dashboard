@@ -1,4 +1,5 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
+
 import type { FederalFundsRateTileData, FederalFundsRateApiResponse } from './types';
 
 export interface FederalFundsRateApiResponseWithIndex extends FederalFundsRateApiResponse {

@@ -1,12 +1,15 @@
 import React from 'react';
+
 import { render, act } from '@testing-library/react';
-import { DragboardProvider } from './DragboardProvider';
-import { DragboardGrid } from './DragboardGrid';
-import { DragboardTile } from './DragboardTile';
-import { useDragboard } from './DragboardContext';
-import type { DragboardTileData } from './dragboardTypes';
-import type { DragboardConfig, DragboardContextValue } from './DragboardContext';
 import { describe, it, expect } from 'vitest';
+
+import { useDragboard } from './DragboardContext';
+import { DragboardGrid } from './DragboardGrid';
+import { DragboardProvider } from './DragboardProvider';
+import { DragboardTile } from './DragboardTile';
+
+import type { DragboardConfig, DragboardContextValue } from './DragboardContext';
+import type { DragboardTileData } from './dragboardTypes';
 
 const makeTile = (id: string, y = 0): DragboardTileData => ({
   id,

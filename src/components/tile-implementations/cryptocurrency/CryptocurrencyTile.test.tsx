@@ -1,13 +1,16 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { CryptocurrencyTile } from './CryptocurrencyTile';
+import { describe, it, expect, vi } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks';
-import { CryptocurrencyDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
+
+import { CryptocurrencyTile } from './CryptocurrencyTile';
+import { CryptocurrencyDataMapper } from './dataMapper';
+
 import type { CryptocurrencyTileData } from './types';
+import type { TileCategory } from '../../../types/tileCategories';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import type { TileMeta } from '../../tile/GenericTile';
-import type { TileCategory } from '../../../types/tileCategories';
 
 // Mock data for testing
 const mockCryptocurrencyData: CryptocurrencyTileData = {

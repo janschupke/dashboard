@@ -1,6 +1,8 @@
-import { BaseDataMapper } from '../../../services/dataMapper';
-import type { TimeTileData, TimeApiResponse } from './types';
 import { DateTime } from 'luxon';
+
+import { BaseDataMapper } from '../../../services/dataMapper';
+
+import type { TimeTileData, TimeApiResponse } from './types';
 
 export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData> {
   map(apiResponse: TimeApiResponse): TimeTileData {

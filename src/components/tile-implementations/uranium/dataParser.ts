@@ -1,4 +1,5 @@
 import { BaseDataParser } from '../../../services/dataParser';
+
 import type { UraniumTileData } from './types';
 
 /**

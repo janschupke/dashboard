@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useWeatherApi } from './useWeatherApi';
-import './dataMapper';
+import { describe, it, expect, beforeAll } from 'vitest';
+
+import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
   EndpointTestUtils,
   API_ENDPOINTS,
@@ -10,11 +11,12 @@ import {
   setupDelayedMock,
   setupFailureMock,
 } from '../../../test/utils/endpointTestUtils';
-import { MockResponseData } from '../../../test/mocks/endpointMocks';
-import type { WeatherQueryParams } from '../../../services/apiEndpoints';
-import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { WeatherDataMapper } from './dataMapper';
 import { TileType } from '../../../types/tile';
+
+import { WeatherDataMapper } from './dataMapper';
+import { useWeatherApi } from './useWeatherApi';
+
+import type { WeatherQueryParams } from '../../../services/apiEndpoints';
 
 beforeAll(() => {
   // registerWeatherDataMapper(); // This line is removed as per the edit hint

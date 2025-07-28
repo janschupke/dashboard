@@ -1,10 +1,13 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useEarthquakeApi } from './useEarthquakeApi';
-import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, useCallback, memo } from 'react';
+
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+
+import { useEarthquakeApi } from './useEarthquakeApi';
+
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
 import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data,

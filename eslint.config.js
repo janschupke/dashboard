@@ -1,10 +1,11 @@
 import js from '@eslint/js';
-import globals from 'globals';
+import { globalIgnores } from 'eslint/config';
+import importOrder from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
-import { globalIgnores } from 'eslint/config';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default [
   globalIgnores(['dist']),
@@ -17,6 +18,7 @@ export default [
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       'unused-imports': unusedImports,
+      import: importOrder,
     },
     languageOptions: {
       ecmaVersion: 2020,
@@ -29,6 +31,47 @@ export default [
         'warn',
         { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
       ],
+      // Import order rules
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+            'object',
+            'type',
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: '@/**',
+              group: 'internal',
+              position: 'after',
+            },
+            {
+              pattern: '**/*.css',
+              group: 'object',
+              position: 'after',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['react'],
+        },
+      ],
+      'import/no-duplicates': 'error',
+      'import/no-unresolved': 'off', // Let TypeScript handle this
     },
   },
   {

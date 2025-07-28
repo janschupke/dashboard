@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
+
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import { useTileData } from '../../tile/useTileData';
+
 import { useWeatherAlertsApi } from './useWeatherAlertsApi';
 import { WeatherAlertsTileContent } from './WeatherAlertsTileContent';
+
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 export const WeatherAlertsTile = ({
   tile,

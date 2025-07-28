@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+
 import { LogContext } from './LogContextDef';
 
 export const useLogContext = () => {

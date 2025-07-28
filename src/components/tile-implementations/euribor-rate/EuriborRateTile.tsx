@@ -1,10 +1,13 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useEuriborApi } from './useEuriborApi';
-import type { EuriborRateTileData } from './types';
-import { useTileData } from '../../tile/useTileData';
 import { useMemo } from 'react';
+
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+
+import { useEuriborApi } from './useEuriborApi';
+
+import type { EuriborRateTileData } from './types';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const EuriborRateTileContent = ({ data }: { data: EuriborRateTileData | null }) => {
   if (data) {

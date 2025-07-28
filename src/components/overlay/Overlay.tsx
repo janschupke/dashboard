@@ -1,14 +1,17 @@
 import React, { Suspense, useState, useCallback } from 'react';
-import { Sidebar } from '../sidebar/Sidebar';
-import { ErrorBoundary } from './ErrorBoundary';
-import { useTheme } from '../../hooks/useTheme';
-import { useLogManager } from '../api-log/useLogManager';
-import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
-import { DASHBOARD_GRID_CONFIG } from './gridConfig';
-import { Tile } from '../tile/Tile';
+
 import { Header } from '../../components/header/Header.tsx';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { useTheme } from '../../hooks/useTheme';
 import { useStorageManager } from '../../services/storageManager';
+import { useLogManager } from '../api-log/useLogManager';
+import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
+import { Sidebar } from '../sidebar/Sidebar';
+import { Tile } from '../tile/Tile';
+
+import { ErrorBoundary } from './ErrorBoundary';
+import { DASHBOARD_GRID_CONFIG } from './gridConfig';
+
 import type { DragboardTileData } from '../dragboard';
 
 function OverlayContent({

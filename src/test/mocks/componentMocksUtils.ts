@@ -1,9 +1,11 @@
-import { vi } from 'vitest';
-import { AppTheme } from '../../services/storageManager';
-import { DataParserRegistry } from '../../services/dataParser';
-import { DataMapperRegistry } from '../../services/dataMapper';
-import { DataFetcher } from '../../services/dataFetcher';
 import React from 'react';
+
+import { vi } from 'vitest';
+
+import { DataFetcher } from '../../services/dataFetcher';
+import { DataMapperRegistry } from '../../services/dataMapper';
+import { DataParserRegistry } from '../../services/dataParser';
+import { AppTheme } from '../../services/storageManager';
 
 export function createMockDataServices() {
   const parserRegistry = new DataParserRegistry();

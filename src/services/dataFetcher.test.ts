@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { DataFetcher } from './dataFetcher';
-import { storageManager } from './storageManager';
-import { DataParserRegistry, BaseDataParser } from './dataParser';
 import { DataMapperRegistry } from './dataMapper';
+import { DataParserRegistry, BaseDataParser } from './dataParser';
+import { storageManager } from './storageManager';
 
 // Mock fetch globally, allow any return type for test mocks
 global.fetch = vi.fn() as unknown as typeof fetch;

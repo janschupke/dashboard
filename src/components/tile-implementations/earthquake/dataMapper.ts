@@ -1,6 +1,6 @@
 import type { EarthquakeApiResponse } from './types';
-import type { DataMapper } from '../../../services/dataMapper';
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
+import type { DataMapper } from '../../../services/dataMapper';
 
 /**
  * Maps USGS Earthquake API response to EarthquakeTileDataArray for the tile.

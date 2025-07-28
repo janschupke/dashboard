@@ -1,13 +1,16 @@
-import type { TileType } from '../../types/tile';
-import { SidebarItem } from './SidebarItem';
-import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useEffect, useMemo, useCallback } from 'react';
-import { TILE_CATALOG } from '../tile/TileFactoryRegistry';
-import type { DragboardTileData } from '../dragboard';
+
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
+import { TILE_CATEGORIES } from '../../types/tileCategories';
 import { findNextFreePosition } from '../dragboard';
 import { DASHBOARD_GRID_CONFIG } from '../overlay/gridConfig';
-import { TILE_CATEGORIES } from '../../types/tileCategories';
+import { TILE_CATALOG } from '../tile/TileFactoryRegistry';
+
+import { SidebarItem } from './SidebarItem';
+
+import type { TileType } from '../../types/tile';
 import type { TileCategory } from '../../types/tileCategories';
+import type { DragboardTileData } from '../dragboard';
 
 interface SidebarProps {
   isCollapsed: boolean;

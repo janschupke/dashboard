@@ -1,16 +1,19 @@
-// Setup mocks before any imports
-import { vi } from 'vitest';
-import { setupComponentMocks } from '../../test/mocks/componentMocksUtils';
+import { render, screen, act } from '@testing-library/react';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
+
+import { StorageManagerContext, AppTheme } from '../../services/storageManager';
+import {
+  setupComponentMocks,
+  resetComponentMocks,
+  headerMock,
+} from '../../test/mocks/componentMocksUtils';
+
+import { Overlay } from './Overlay';
+
+import type { StorageManager } from '../../services/storageManager';
 
 // Setup all component mocks
 setupComponentMocks();
-
-import { render, screen, act } from '@testing-library/react';
-import { Overlay } from './Overlay';
-import { StorageManagerContext, AppTheme } from '../../services/storageManager';
-import type { StorageManager } from '../../services/storageManager';
-import { describe, it, beforeEach, expect } from 'vitest';
-import { resetComponentMocks, headerMock } from '../../test/mocks/componentMocksUtils';
 
 const mockTiles = [
   {

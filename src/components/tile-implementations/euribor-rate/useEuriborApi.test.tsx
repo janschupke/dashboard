@@ -1,12 +1,16 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useEuriborApi } from './useEuriborApi';
-import './dataMapper';
-import { ecbEuriborDataMapper } from './dataMapper';
-import { TileType } from '../../../types/tile';
-import { setupEuriborRateSuccessMock } from '../../../test/utils/endpointTestUtils';
-import { EndpointTestUtils, API_ENDPOINTS } from '../../../test/utils/endpointTestUtils';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import {
+  setupEuriborRateSuccessMock,
+  EndpointTestUtils,
+  API_ENDPOINTS,
+} from '../../../test/utils/endpointTestUtils';
+import { TileType } from '../../../types/tile';
+
+import { ecbEuriborDataMapper } from './dataMapper';
+import { useEuriborApi } from './useEuriborApi';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider

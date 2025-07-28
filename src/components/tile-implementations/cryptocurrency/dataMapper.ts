@@ -1,4 +1,5 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
+
 import type { CryptocurrencyApiResponse, CryptocurrencyTileData } from './types';
 
 export class CryptocurrencyDataMapper extends BaseDataMapper<

@@ -1,4 +1,5 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
+
 import type { WeatherTileData, WeatherApiResponse, WeatherForecast } from './types';
 
 // Relax the constraint for WeatherApiResponse

@@ -1,8 +1,11 @@
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Header } from './Header';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import { LogProvider } from '../api-log/LogContext';
+
+import { Header } from './Header';
 
 function renderWithLogProvider(ui: React.ReactElement) {
   return render(<LogProvider>{ui}</LogProvider>);

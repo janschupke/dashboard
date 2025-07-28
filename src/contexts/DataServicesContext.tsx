@@ -1,7 +1,8 @@
 import { createContext, useContext } from 'react';
-import { DataParserRegistry } from '../services/dataParser';
-import { DataMapperRegistry } from '../services/dataMapper';
+
 import { DataFetcher } from '../services/dataFetcher';
+import { DataMapperRegistry } from '../services/dataMapper';
+import { DataParserRegistry } from '../services/dataParser';
 
 export interface DataServices {
   parserRegistry: DataParserRegistry;

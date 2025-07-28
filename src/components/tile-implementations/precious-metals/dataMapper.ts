@@ -1,6 +1,7 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
-import type { BaseApiResponse } from '../../../services/dataMapper';
+
 import type { PreciousMetalsTileData } from './types';
+import type { BaseApiResponse } from '../../../services/dataMapper';
 
 interface GoldApiResponse extends BaseApiResponse {
   name: string;

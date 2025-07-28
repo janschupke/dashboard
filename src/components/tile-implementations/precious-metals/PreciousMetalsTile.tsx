@@ -1,12 +1,15 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { usePreciousMetalsApi } from './usePreciousMetalsApi';
-import type { PreciousMetalsTileData } from './types';
-import { useTileData } from '../../tile/useTileData';
-import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
 import { useMemo } from 'react';
-import { DataRow } from '../../ui/DataRow';
+
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+import { DataRow } from '../../ui/DataRow';
+
+import { usePreciousMetalsApi } from './usePreciousMetalsApi';
+
+import type { PreciousMetalsTileData } from './types';
+import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const PreciousMetalsTileContent = ({ data }: { data: PreciousMetalsTileData | null }) => {
   if (data) {

@@ -1,11 +1,11 @@
 import type { CryptocurrencyApiResponse } from '../../components/tile-implementations/cryptocurrency/types';
-import type { WeatherApiResponse } from '../../components/tile-implementations/weather/types';
+import type { EuriborRateApiResponse } from '../../components/tile-implementations/euribor-rate/types';
 import type { FederalFundsRateApiResponse } from '../../components/tile-implementations/federal-funds-rate/types';
+import type { GdxEtfApiResponse } from '../../components/tile-implementations/gdx-etf/types';
+import type { PreciousMetalsApiResponse } from '../../components/tile-implementations/precious-metals/types';
 import type { TimeApiResponse } from '../../components/tile-implementations/time/types';
 import type { UraniumApiResponse } from '../../components/tile-implementations/uranium/types';
-import type { PreciousMetalsApiResponse } from '../../components/tile-implementations/precious-metals/types';
-import type { GdxEtfApiResponse } from '../../components/tile-implementations/gdx-etf/types';
-import type { EuriborRateApiResponse } from '../../components/tile-implementations/euribor-rate/types';
+import type { WeatherApiResponse } from '../../components/tile-implementations/weather/types';
 
 export type MockApiErrorType = 'network' | 'timeout' | 'api' | 'malformed';
 

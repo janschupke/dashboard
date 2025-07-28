@@ -1,11 +1,13 @@
-import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
+
+import { useDataServices } from '../../../contexts/DataServicesContext';
 import { ECB_EURIBOR_12M_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { EuriborQueryParams, PathParams } from '../../../services/apiEndpoints';
-import { TileType, TileApiCallTitle } from '../../../types/tile';
-import type { EuriborRateTileData } from './types';
-import type { TileConfig } from '../../../services/storageManager';
 import { fetchWithError } from '../../../services/fetchWithError';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import type { EuriborRateTileData } from './types';
+import type { EuriborQueryParams, PathParams } from '../../../services/apiEndpoints';
+import type { TileConfig } from '../../../services/storageManager';
 
 export function useEuriborApi() {
   const { dataFetcher } = useDataServices();

@@ -1,11 +1,14 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useEarthquakeApi } from './useEarthquakeApi';
-import { earthquakeDataMapper } from './dataMapper';
-import type { EarthquakeApiResponse } from './types';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+
 import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { TileType } from '../../../types/tile';
+
+import { earthquakeDataMapper } from './dataMapper';
+import { useEarthquakeApi } from './useEarthquakeApi';
+
+import type { EarthquakeApiResponse } from './types';
 import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
 
 const mockApiResponse: EarthquakeApiResponse = {

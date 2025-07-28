@@ -1,13 +1,17 @@
-import { GenericTile, type TileMeta } from '../../tile/GenericTile';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useFederalFundsApi } from './useFederalFundsApi';
-import type { FederalFundsRateTileData, TimeRange } from './types';
-import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, memo } from 'react';
-import type { FredQueryParams } from '../../../services/apiEndpoints';
-import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
+
 import { format } from 'date-fns';
+
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { GenericTile, type TileMeta } from '../../tile/GenericTile';
+import { useTileData } from '../../tile/useTileData';
+import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
+
+import { useFederalFundsApi } from './useFederalFundsApi';
+
+import type { FederalFundsRateTileData, TimeRange } from './types';
+import type { FredQueryParams } from '../../../services/apiEndpoints';
+import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 
 const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
   data,

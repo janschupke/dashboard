@@ -1,11 +1,14 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
-import type { DragboardTileData, DraggableTileProps } from '../dragboard';
+
 import { Icon } from '../ui/Icon';
-import { TileErrorBoundary } from './TileErrorBoundary';
+
 import { LoadingComponent } from './LoadingComponent';
-import type { TileCategory } from '../../types/tileCategories';
+import { TileErrorBoundary } from './TileErrorBoundary';
 import { TileStatus } from './useTileData';
+
 import type { TileDataType } from '../../services/storageManager';
+import type { TileCategory } from '../../types/tileCategories';
+import type { DragboardTileData, DraggableTileProps } from '../dragboard';
 
 export interface TileMeta {
   title: string;

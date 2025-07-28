@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { TileConfig, TileDataType } from '../../services/storageManager';
-import { storageManager } from '../../services/storageManager';
+
 import { REFRESH_INTERVALS } from '../../contexts/constants';
+import { storageManager } from '../../services/storageManager';
+
+import type { TileConfig, TileDataType } from '../../services/storageManager';
 
 export const TileStatus = {
   Loading: 'loading',

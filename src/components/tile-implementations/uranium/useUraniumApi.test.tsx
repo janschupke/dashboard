@@ -1,12 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useUraniumApi } from './useUraniumApi';
-import { UraniumHtmlDataParser } from './dataParser';
-import { TileType } from '../../../types/tile';
-import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
-import type { UraniumHtmlQueryParams } from '../../../services/apiEndpoints';
-import type { UraniumTileData } from './types';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
+import { TileType } from '../../../types/tile';
+
+import { UraniumHtmlDataParser } from './dataParser';
+import { useUraniumApi } from './useUraniumApi';
+
+import type { UraniumTileData } from './types';
+import type { UraniumHtmlQueryParams } from '../../../services/apiEndpoints';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider

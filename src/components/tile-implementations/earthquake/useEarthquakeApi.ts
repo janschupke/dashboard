@@ -1,11 +1,13 @@
-import { useDataServices } from '../../../contexts/DataServicesContext';
 import { useCallback } from 'react';
+
+import { useDataServices } from '../../../contexts/DataServicesContext';
 import { USGS_EARTHQUAKE_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import type { UsgsEarthquakeQueryParams, PathParams } from '../../../services/apiEndpoints';
-import { TileType, TileApiCallTitle } from '../../../types/tile';
-import type { EarthquakeTileData } from './types';
-import type { TileConfig, TileDataType } from '../../../services/storageManager';
 import { fetchWithError } from '../../../services/fetchWithError';
+import { TileType, TileApiCallTitle } from '../../../types/tile';
+
+import type { EarthquakeTileData } from './types';
+import type { UsgsEarthquakeQueryParams, PathParams } from '../../../services/apiEndpoints';
+import type { TileConfig, TileDataType } from '../../../services/storageManager';
 
 // Wrapper type for array
 export interface EarthquakeTileDataArray extends TileDataType {

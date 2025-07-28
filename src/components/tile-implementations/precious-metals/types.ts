@@ -1,5 +1,5 @@
-import type { TileSize } from '../../../types/tile';
 import type { TileDataType } from '../../../services/storageManager';
+import type { TileSize } from '../../../types/tile';
 
 // Gold and silver prices are now fetched from gold-api.com spot price endpoints.
 // The tile expects a PreciousMetalsTileData object with gold and silver fields, each with price, change_24h, change_percentage_24h.

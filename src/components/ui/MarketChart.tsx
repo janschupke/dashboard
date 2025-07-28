@@ -1,4 +1,6 @@
 import { useMemo, memo } from 'react';
+
+import { format } from 'date-fns';
 import {
   LineChart,
   Line,
@@ -8,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { format } from 'date-fns';
 
 export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '5Y' | 'Max';
 

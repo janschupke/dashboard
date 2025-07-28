@@ -1,8 +1,10 @@
 import React, { Suspense, memo } from 'react';
-import type { DragboardTileData } from '../dragboard';
-import { getLazyTileComponent, getTileMeta } from './TileFactoryRegistry';
+
 import { GenericTile } from './GenericTile';
 import { LoadingComponent } from './LoadingComponent';
+import { getLazyTileComponent, getTileMeta } from './TileFactoryRegistry';
+
+import type { DragboardTileData } from '../dragboard';
 
 export interface TileProps {
   tile: DragboardTileData;

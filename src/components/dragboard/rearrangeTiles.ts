@@ -1,7 +1,7 @@
-import type { DragboardTileData } from './dragboardTypes';
-import { getTileSpan } from '../overlay/gridConfig';
+import { getTileSpan, DASHBOARD_GRID_CONFIG } from '../overlay/gridConfig';
+
 import type { DragboardConfig } from './DragboardContext';
-import { DASHBOARD_GRID_CONFIG } from '../overlay/gridConfig';
+import type { DragboardTileData } from './dragboardTypes';
 
 export function rearrangeTiles(tiles: DragboardTileData[]): DragboardTileData[] {
   if (tiles.length === 0) return tiles;

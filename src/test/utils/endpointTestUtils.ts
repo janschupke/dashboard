@@ -1,7 +1,9 @@
 import { beforeEach, afterEach } from 'vitest';
-import { EndpointMockService, MockResponseData } from '../mocks/endpointMocks';
-import type { MockApiConfig } from '../mocks/endpointMocks';
+
 import { storageManager } from '../../services/storageManager';
+import { EndpointMockService, MockResponseData } from '../mocks/endpointMocks';
+
+import type { MockApiConfig } from '../mocks/endpointMocks';
 
 // API endpoint URLs from apiEndpoints.ts
 export const API_ENDPOINTS = {

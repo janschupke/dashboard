@@ -1,12 +1,14 @@
 import React, { useCallback, useMemo, useState, useRef } from 'react';
+
 import { DragboardContext, DragboardDragContext } from './DragboardContext';
+import { findNextFreePosition, rearrangeTiles } from './rearrangeTiles';
+
 import type {
   DragboardConfig,
   DragboardDragState,
   DragboardContextValue,
 } from './DragboardContext';
 import type { DragboardTileData, TileType } from './dragboardTypes';
-import { findNextFreePosition, rearrangeTiles } from './rearrangeTiles';
 
 interface DragboardProviderProps {
   config: DragboardConfig;
