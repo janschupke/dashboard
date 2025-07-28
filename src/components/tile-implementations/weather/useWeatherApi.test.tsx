@@ -35,7 +35,6 @@ describe('useWeatherApi', () => {
   const mockParams: WeatherParams = {
     lat: 52.52,
     lon: 13.405,
-    appid: 'test-api-key',
   };
 
   describe('getWeather - Success Scenarios', () => {
@@ -162,7 +161,7 @@ describe('useWeatherApi', () => {
       EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
-      const testParams: WeatherParams[] = [{ lat: 52.52, lon: 13.405, appid: 'test-api-key' }];
+      const testParams: WeatherParams[] = [{ lat: 52.52, lon: 13.405 }];
       for (const params of testParams) {
         const fetchResult = await result.current.getWeather(mockTileId, params);
         const data = fetchResult.data;

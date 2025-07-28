@@ -1,13 +1,12 @@
+import { useMemo } from 'react';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import type { DragboardTileData } from '../../dragboard/dragboardTypes';
-import { useGdxEtfApi } from './useGdxEtfApi';
-import type { GdxEtfTileData } from './types';
 import { useTileData } from '../../tile/useTileData';
-import type { AlphaVantageParams } from '../../../services/apiEndpoints';
-import { useMemo } from 'react';
-import { getApiKeys } from '../../../services/apiConfig';
-import { DataRow } from '../../ui/DataRow';
+import { useGdxEtfApi } from './useGdxEtfApi';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import type { AlphaVantageParams } from '../../../services/apiEndpoints';
+import type { GdxEtfTileData } from './types';
+import { DataRow } from '../../ui/DataRow';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   // Check if data is null or contains only default/empty values
@@ -56,15 +55,13 @@ export const GdxEtfTile = ({
   meta: TileMeta;
 }) => {
   const { getGdxEtf } = useGdxEtfApi();
-  const apiKeys = getApiKeys();
 
   const params = useMemo<AlphaVantageParams>(
     () => ({
       function: 'GLOBAL_QUOTE',
       symbol: 'GDX',
-      ...(apiKeys.alphaVantage && { apikey: apiKeys.alphaVantage }),
     }),
-    [apiKeys.alphaVantage],
+    [],
   );
 
   const refreshConfig = useMemo(

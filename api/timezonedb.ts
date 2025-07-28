@@ -1,7 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = `https://api.timezonedb.com${req.url?.replace(/^\/api\/timezonedb/, '')}`;
+  // Parse the URL and query params
+  const urlObj = new URL(`https://api.timezonedb.com${req.url?.replace(/^\/api\/timezonedb/, '')}`);
+
+  // If key is missing, inject from process.env
+  if (!urlObj.searchParams.get('key') && process.env.TIMEZONEDB_API_KEY) {
+    urlObj.searchParams.set('key', process.env.TIMEZONEDB_API_KEY);
+  }
+
+  const url = urlObj.toString();
 
   // Create headers object, filtering out problematic headers
   const headers: Record<string, string> = {};

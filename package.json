@@ -19,8 +19,7 @@
     "clean:unimported": "npx unimported --silent --list-unimported | xargs rm -f",
     "types": "tsc --noEmit",
     "check:all": "npm run test:run && npm run build && npm run lint && npm run ts-unused-exports && npm run depcheck && npm run types && npm run prettier:write",
-    "healthcheck": "node scripts/healthcheck.cjs",
-    "env": "node scripts/copy-env-to-local.cjs"
+    "healthcheck": "node scripts/healthcheck.cjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

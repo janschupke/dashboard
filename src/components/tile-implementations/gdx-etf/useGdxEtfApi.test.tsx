@@ -30,7 +30,6 @@ describe('useGdxEtfApi', () => {
   const mockParams: AlphaVantageParams = {
     function: 'GLOBAL_QUOTE',
     symbol: 'GDX',
-    apikey: 'demo',
   };
 
   beforeEach(() => {

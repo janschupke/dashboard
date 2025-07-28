@@ -5,7 +5,6 @@ import type { FederalFundsRateTileData, TimeRange } from './types';
 import { useTileData } from '../../tile/useTileData';
 import { useMemo, useState, memo } from 'react';
 import type { FredParams } from '../../../services/apiEndpoints';
-import { getApiKeys } from '../../../services/apiConfig';
 import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
 import { format } from 'date-fns';
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
@@ -68,15 +67,13 @@ export const FederalFundsRateTile = ({
 }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
   const { getFederalFundsRate } = useFederalFundsApi();
-  const apiKeys = getApiKeys();
 
   const params = useMemo<FredParams>(
     () => ({
       series_id: 'FEDFUNDS',
       file_type: 'json',
-      ...(apiKeys.fred && { api_key: apiKeys.fred }),
     }),
-    [apiKeys.fred],
+    [],
   );
 
   const refreshConfig = useMemo(

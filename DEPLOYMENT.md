@@ -68,11 +68,14 @@ vercel --prod
 Set these in your Vercel project settings:
 
 ```bash
-# Optional: API keys for enhanced functionality
-VITE_FRED_API_KEY=your_fred_api_key
-VITE_OPENWEATHERMAP_API_KEY=your_openweathermap_key
-VITE_ALPHA_VANTAGE_API_KEY=your_alphavantage_key
+# API keys for enhanced functionality (handled by proxy functions)
+OPENWEATHERMAP_API_KEY=your_openweathermap_key
+ALPHA_VANTAGE_API_KEY=your_alphavantage_key
+FRED_API_KEY=your_fred_api_key
+TIMEZONEDB_API_KEY=your_timezonedb_key
 ```
+
+**Note**: API keys are now handled exclusively by the proxy functions and are never exposed to the frontend. The frontend is completely agnostic of API keys.
 
 ### Serverless Functions
 

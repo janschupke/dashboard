@@ -47,8 +47,6 @@ const endpoints = [
       vs_currency: 'usd',
     },
     baseUrl: `${BASE_URL}/api/coingecko/api/v3/coins/markets`,
-    key: null,
-    required: false,
   },
   {
     name: 'OpenWeatherMap',
@@ -56,11 +54,8 @@ const endpoints = [
     queryParams: {
       lat: '60.1699',
       lon: '24.9384',
-      appid: process.env.OPENWEATHERMAP_API_KEY,
     },
     baseUrl: `${BASE_URL}/api/openweathermap/data/3.0/onecall`,
-    key: 'OPENWEATHERMAP_API_KEY',
-    required: true,
   },
   {
     name: 'Alpha Vantage GDX',
@@ -68,23 +63,17 @@ const endpoints = [
     queryParams: {
       function: 'GLOBAL_QUOTE',
       symbol: 'GDX',
-      apikey: process.env.ALPHA_VANTAGE_API_KEY,
     },
     baseUrl: `${BASE_URL}/api/alpha-vantage/query`,
-    key: 'ALPHA_VANTAGE_API_KEY',
-    required: true,
   },
   {
     name: 'FRED Series Observations',
     pathParams: {},
     queryParams: {
       series_id: 'FEDFUNDS',
-      api_key: process.env.FRED_API_KEY,
       file_type: 'json',
     },
     baseUrl: `${BASE_URL}/api/fred/fred/series/observations`,
-    key: 'FRED_API_KEY',
-    required: true,
   },
   // Precious Metals API
   {
@@ -94,8 +83,6 @@ const endpoints = [
     },
     queryParams: {},
     baseUrl: `${BASE_URL}/api/precious-metals/price/{symbol}`,
-    key: null,
-    required: false,
   },
   {
     name: 'USGS Earthquake',
@@ -106,22 +93,17 @@ const endpoints = [
       endtime: new Date().toISOString().slice(0, 10),
     },
     baseUrl: `${BASE_URL}/api/usgs/fdsnws/event/1/query`,
-    key: null,
-    required: false,
   },
   {
     name: 'TimeZoneDB',
     pathParams: {},
     queryParams: {
-      key: process.env.TIMEZONEDB_API_KEY,
       lat: '60.1699',
       lng: '24.9384',
       format: 'json',
       by: 'position',
     },
-    baseUrl: `${BASE_URL}/api/timezonedb`,
-    key: 'TIMEZONEDB_API_KEY',
-    required: true,
+    baseUrl: `${BASE_URL}/api/timezonedb/v2.1/get-time-zone`,
   },
   {
     name: 'ECB Euribor 12M',
@@ -132,8 +114,6 @@ const endpoints = [
       format: 'json',
     },
     baseUrl: `${BASE_URL}/api/ecb/service/data/:series`,
-    key: null,
-    required: false,
   },
 ];
 
@@ -142,10 +122,6 @@ function pad(str, len) {
 }
 
 async function checkEndpoint(ep) {
-  if (ep.required && (!ep.key || !process.env[ep.key])) {
-    return { name: ep.name, status: '❌', msg: `Missing API key (${ep.key})` };
-  }
-
   const url = buildUrl(ep.baseUrl, ep.pathParams, ep.queryParams);
 
   try {
