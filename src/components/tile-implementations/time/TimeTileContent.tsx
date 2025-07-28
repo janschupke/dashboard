@@ -1,6 +1,12 @@
 import type { TimeTileData } from './types';
+import { BusinessStatus } from './constants';
 
-export const TimeTileContent = ({ data, city }: { data: TimeTileData | null; city: string }) => {
+export interface TimeTileContentProps {
+  data: TimeTileData | null;
+  city: string;
+}
+
+export const TimeTileContent = ({ data, city }: TimeTileContentProps) => {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -37,9 +43,9 @@ export const TimeTileContent = ({ data, city }: { data: TimeTileData | null; cit
         <span className="text-xs text-theme-tertiary">Business Hours</span>
         <span
           className={
-            data.businessStatus === 'open'
+            data.businessStatus === BusinessStatus.OPEN
               ? 'text-xs font-semibold text-status-success'
-              : data.businessStatus === 'closed'
+              : data.businessStatus === BusinessStatus.CLOSED
                 ? 'text-xs font-semibold text-status-error'
                 : 'text-xs font-semibold text-status-warning'
           }
