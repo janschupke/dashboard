@@ -82,7 +82,7 @@ const endpoints = [
       symbol: 'XAU',
     },
     queryParams: {},
-    baseUrl: `${BASE_URL}/api/precious-metals/price/:symbol`,
+    baseUrl: `${BASE_URL}/api/precious-metals/:symbol`,
   },
   {
     name: 'USGS Earthquake',
@@ -107,11 +107,14 @@ const endpoints = [
   },
   {
     name: 'ECB Euribor 12M',
-    pathParams: {},
-    queryParams: {
-      format: 'json',
+    pathParams: {
+      flowRed: 'BSI',
+      key: 'M.U2.EUR.R.IR12MM.R.A',
     },
-    baseUrl: `${BASE_URL}/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A`,
+    queryParams: {
+      format: 'jsondata',
+    },
+    baseUrl: `${BASE_URL}/api/ecb/service/data/:flowRef.:key`,
   },
 ];
 
@@ -181,7 +184,9 @@ async function checkEndpoint(ep) {
     return trimmedUrl.length;
   })) + 1;
 
-  console.log(`${pad('Status', 8)} ${pad('Endpoint', namePad)} ${pad('API Path', baseUrlPad)}`);
+  const statusColumnLength = 11;
+
+  console.log(`${pad('Status', statusColumnLength)} ${pad('Endpoint', namePad)} ${pad('API Path', baseUrlPad)}`);
   console.log('-'.repeat(8 + namePad + baseUrlPad + 4));
 
   results.forEach((r) => {
@@ -191,7 +196,7 @@ async function checkEndpoint(ep) {
       ? endpoint.baseUrl.split('/api/')[1] 
       : endpoint.baseUrl;
     console.log(
-      `${pad(r.status + ' ' + r.msg, 8)} ${pad(r.name, namePad)} ${pad(trimmedUrl, baseUrlPad)}`,
+      `${pad(r.status + ' ' + r.msg, statusColumnLength)} ${pad(r.name, namePad)} ${pad(trimmedUrl, baseUrlPad)}`,
     );
   });
 
@@ -202,11 +207,11 @@ async function checkEndpoint(ep) {
     console.log('\nAll endpoints are healthy!');
   }
 
-  console.log('\nEnvironment Information:');
-  console.log(`- Base URL: ${BASE_URL}`);
-  console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log('- API Functions: Vercel serverless functions');
-  console.log('- CORS: Handled by serverless functions');
+  // console.log('\nEnvironment Information:');
+  // console.log(`- Base URL: ${BASE_URL}`);
+  // console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
+  // console.log('- API Functions: Vercel serverless functions');
+  // console.log('- CORS: Handled by serverless functions');
 
   if (BASE_URL.includes('localhost')) {
     console.log('\n💡 Local Development Tips:');
