@@ -1,12 +1,73 @@
-import { render } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 
 import App from './App';
+import { AuthContext, type AuthContextType } from './contexts/AuthContextDef';
+
+// Mock the AuthProvider to control authentication state
+const createMockAuthProvider = (authState: Partial<AuthContextType>) => {
+  const defaultAuthState: AuthContextType = {
+    isAuthenticated: false,
+    isLoading: false,
+    login: vi.fn().mockResolvedValue(false),
+    logout: vi.fn().mockResolvedValue(undefined),
+    checkAuth: vi.fn().mockResolvedValue(undefined),
+    ...authState,
+  };
+
+  return ({ children }: { children: React.ReactNode }) => (
+    <AuthContext.Provider value={defaultAuthState}>{children}</AuthContext.Provider>
+  );
+};
+
+// Mock the AuthProvider module
+vi.mock('./contexts/AuthContext', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 describe('App', () => {
-  it('renders without crashing', () => {
-    const { getByTestId } = render(<App />);
-    // You may need to add data-testid="app-root" to your App root element for this to work
-    expect(getByTestId('app-root')).toBeInTheDocument();
+  it('renders login form when unauthenticated', () => {
+    const MockAuthProvider = createMockAuthProvider({
+      isAuthenticated: false,
+      isLoading: false,
+    });
+
+    render(
+      <MockAuthProvider>
+        <App />
+      </MockAuthProvider>,
+    );
+
+    // The app should show login form in test environment
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Enter your password to continue')).toBeInTheDocument();
+  });
+
+  it('renders loading spinner when authentication is loading', () => {
+    const MockAuthProvider = createMockAuthProvider({ isLoading: true });
+
+    render(
+      <MockAuthProvider>
+        <App />
+      </MockAuthProvider>,
+    );
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  it('renders authenticated app when user is authenticated', () => {
+    const MockAuthProvider = createMockAuthProvider({
+      isAuthenticated: true,
+      isLoading: false,
+    });
+
+    render(
+      <MockAuthProvider>
+        <App />
+      </MockAuthProvider>,
+    );
+
+    // Check for the authenticated app root element
+    expect(screen.getByTestId('app-root')).toBeInTheDocument();
   });
 });

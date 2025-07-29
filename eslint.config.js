@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 
 export default [
   globalIgnores(['dist']),
-  { ignores: ['coverage', 'api'] },
+  { ignores: ['coverage', 'api', 'scripts'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs['recommended-latest'],

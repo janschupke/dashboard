@@ -1,6 +1,6 @@
 # Dashboard
 
-A modern, extensible dashboard application built with React 19, TypeScript, and Vite. Dashboard displays real-time market, financial, and weather data in an interactive, accessible, and highly customizable interface.
+A modern, extensible dashboard application built with React 19, TypeScript, and Vite. Dashboard displays real-time market, financial, and weather data in an interactive, accessible, and highly customizable interface with password-protected access.
 
 ## Tech Stack
 
@@ -29,6 +29,7 @@ A modern, extensible dashboard application built with React 19, TypeScript, and 
 - **Theme Support**: Light and dark themes with custom Tailwind configuration.
 - **Performance**: Optimized components, memoization, code splitting, and lazy loading.
 - **Sidebar State Persistence**: Sidebar saves active tiles and collapse state to local storage, restores preferences, and displays total tile count.
+- **Authentication**: Simple password-only authentication with JWT tokens and HTTP-only cookies.
 
 ## Module Responsibilities
 
@@ -205,6 +206,53 @@ node scripts/healthcheck.cjs  # Test API endpoints health
 4. For production, only `.env` is required. API keys are handled by the proxy functions and never exposed to the client.
 
 **Note**: API keys are now handled exclusively by the proxy functions and are never exposed to the frontend. The frontend is completely agnostic of API keys.
+
+## Authentication
+
+The dashboard includes a simple password-only authentication system for secure access.
+
+### Setup
+
+1. **Generate a hashed password:**
+
+   ```bash
+   node scripts/generate-password.js
+   ```
+
+   Enter your desired password when prompted.
+
+2. **Set environment variables:**
+   Add to your `.env` file:
+
+   ```
+   PASSWORD=<hashed-password-from-step-1>
+   JWT_SECRET=<your-secret-key>
+   ```
+
+3. **Deploy to Vercel:**
+   Make sure to add the environment variables in your Vercel project settings.
+
+### Features
+
+- **Password-only login:** Single password field with secure hashing
+- **JWT-based authentication:** 7-day token expiration
+- **HTTP-only cookies:** Secure cookie storage
+- **Logout functionality:** Door icon in the header
+- **Responsive design:** Matches the app's theme and styling
+
+### API Endpoints
+
+- `POST /api/login` - Authenticate with password
+- `POST /api/logout` - Clear authentication
+- `GET /api/auth` - Check authentication status
+
+### Security
+
+- Passwords are hashed using bcrypt
+- JWT tokens are stored in HTTP-only cookies
+- 7-day token expiration
+- Secure cookie settings in production
+- No hardcoded secrets - proper environment variable validation
 
 External API:
 
