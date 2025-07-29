@@ -3,12 +3,20 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import { AuthProvider } from '../../contexts/AuthContext';
+import { MockToastProvider } from '../../test/mocks/componentMocks';
 import { LogProvider } from '../api-log/LogContext';
 
 import { Header } from './Header';
 
-function renderWithLogProvider(ui: React.ReactElement) {
-  return render(<LogProvider>{ui}</LogProvider>);
+function renderWithProviders(ui: React.ReactElement) {
+  return render(
+    <AuthProvider>
+      <LogProvider>
+        <MockToastProvider>{ui}</MockToastProvider>
+      </LogProvider>
+    </AuthProvider>,
+  );
 }
 
 describe('Header', () => {
@@ -25,7 +33,7 @@ describe('Header', () => {
   });
 
   it('renders header with all buttons', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -46,7 +54,7 @@ describe('Header', () => {
   });
 
   it('renders refresh button when refreshAllTiles is provided', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -66,7 +74,7 @@ describe('Header', () => {
   });
 
   it('calls refreshAllTiles when refresh button is clicked', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -86,7 +94,7 @@ describe('Header', () => {
   });
 
   it('shows loading state when refreshing', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -105,7 +113,7 @@ describe('Header', () => {
   });
 
   it('calls toggleCollapse when collapse button is clicked', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -125,7 +133,7 @@ describe('Header', () => {
   });
 
   it('calls toggleTheme when theme button is clicked', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -145,7 +153,7 @@ describe('Header', () => {
   });
 
   it('shows correct theme icon based on theme prop', () => {
-    const { rerender } = renderWithLogProvider(
+    const { rerender } = renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}
@@ -164,18 +172,22 @@ describe('Header', () => {
 
     // Rerender with dark theme
     rerender(
-      <LogProvider>
-        <Header
-          isLogViewOpen={false}
-          toggleLogView={mockToggleLogView}
-          toggleTheme={mockToggleTheme}
-          theme="dark"
-          toggleCollapse={mockToggleCollapse}
-          tilesCount={3}
-          refreshAllTiles={mockRefreshAllTiles}
-          isRefreshing={false}
-        />
-      </LogProvider>,
+      <AuthProvider>
+        <LogProvider>
+          <MockToastProvider>
+            <Header
+              isLogViewOpen={false}
+              toggleLogView={mockToggleLogView}
+              toggleTheme={mockToggleTheme}
+              theme="dark"
+              toggleCollapse={mockToggleCollapse}
+              tilesCount={3}
+              refreshAllTiles={mockRefreshAllTiles}
+              isRefreshing={false}
+            />
+          </MockToastProvider>
+        </LogProvider>
+      </AuthProvider>,
     );
 
     // Dark theme should show sun icon
@@ -183,7 +195,7 @@ describe('Header', () => {
   });
 
   it('handles missing refreshAllTiles gracefully', () => {
-    renderWithLogProvider(
+    renderWithProviders(
       <Header
         isLogViewOpen={false}
         toggleLogView={mockToggleLogView}

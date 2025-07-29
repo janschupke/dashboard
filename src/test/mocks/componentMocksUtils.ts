@@ -56,14 +56,46 @@ export const mockHeaderComponent = () => {
 
       console.log('MOCK HEADER RENDERED', props);
       return React.createElement('div', { 'data-testid': 'mock-header' }, [
-        'MockHeader',
+        React.createElement('h1', { key: 'title' }, 'Dashboard'),
+        React.createElement('span', { key: 'tiles-count' }, `${props.tilesCount} tiles`),
         React.createElement(
           'button',
           {
-            'data-testid': 'toggle-sidebar',
+            key: 'collapse',
+            'data-testid': 'collapse-button',
             onClick: props.toggleCollapse as () => void,
           },
-          'ToggleSidebar',
+          'Collapse',
+        ),
+        React.createElement(
+          'button',
+          {
+            key: 'refresh',
+            'data-testid': 'refresh-button',
+            'aria-label': 'Refresh all tiles',
+            title: 'Refresh all tiles (R)',
+            onClick: props.refreshAllTiles as () => void,
+            disabled: props.isRefreshing as boolean,
+            className: props.isRefreshing ? 'opacity-50 cursor-not-allowed' : '',
+          },
+          'Refresh',
+        ),
+        React.createElement(
+          'button',
+          {
+            key: 'theme',
+            'data-testid': 'theme-button',
+            onClick: props.toggleTheme as () => void,
+          },
+          props.theme === 'light' ? '🌙' : '☀',
+        ),
+        React.createElement(
+          'button',
+          {
+            key: 'logout',
+            'data-testid': 'logout-button',
+          },
+          'Logout',
         ),
       ]);
     },

@@ -1,6 +1,7 @@
 import { LogButton } from '../api-log/LogButton';
 
 import { CollapseButton } from './CollapseButton';
+import { LogoutButton } from './LogoutButton';
 import { RefreshButton } from './RefreshButton';
 import { ThemeButton } from './ThemeButton';
 
@@ -34,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
       <LogButton isOpen={isLogViewOpen} onToggle={toggleLogView} />
       <RefreshButton onRefresh={refreshAllTiles || (() => {})} isRefreshing={isRefreshing} />
       <ThemeButton theme={theme} onToggle={toggleTheme} />
+      <LogoutButton />
       <span className="text-sm text-theme-secondary">{tilesCount} tiles</span>
     </div>
   </header>

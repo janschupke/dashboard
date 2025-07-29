@@ -144,6 +144,29 @@ export const USGS_EARTHQUAKE_ENDPOINT: ApiEndpoint<PathParams, UsgsEarthquakeQue
   queryParams: {} as UsgsEarthquakeQueryParams,
 };
 
+// --- Auth Endpoints ---
+export interface AuthLoginBodyParams {
+  password: string;
+}
+
+export const AUTH_LOGIN_ENDPOINT: ApiEndpoint<PathParams, QueryParams> = {
+  url: '/api/login',
+  pathParams: {},
+  queryParams: {},
+};
+
+export const AUTH_CHECK_ENDPOINT: ApiEndpoint<PathParams, QueryParams> = {
+  url: '/api/auth',
+  pathParams: {},
+  queryParams: {},
+};
+
+export const AUTH_LOGOUT_ENDPOINT: ApiEndpoint<PathParams, QueryParams> = {
+  url: '/api/logout',
+  pathParams: {},
+  queryParams: {},
+};
+
 // Union types for all parameter types
 export type TileApiPathParams = PathParams | GoldApiPathParams;
 
