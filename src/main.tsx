@@ -18,6 +18,7 @@ import { WeatherDataMapper } from './components/tile-implementations/weather/dat
 import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
 import { DataServicesContext } from './contexts/DataServicesContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
 import { DataFetcher } from './services/dataFetcher';
 import { DataMapperRegistry } from './services/dataMapper';
@@ -55,7 +56,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
       <DataServicesContext.Provider value={dataServices}>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </DataServicesContext.Provider>
     </ThemeProvider>
   </React.StrictMode>,

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { AuthenticatedApp } from './components/auth/AuthenticatedApp';
 import { LoginForm } from './components/auth/LoginForm';
+import { ToastContainer } from './components/ui/Toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
@@ -33,6 +34,7 @@ function App() {
   return (
     <AuthProvider>
       <AppContent />
+      <ToastContainer />
     </AuthProvider>
   );
 }

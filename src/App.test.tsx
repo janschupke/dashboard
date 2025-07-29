@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 import App from './App';
 import { AuthContext, type AuthContextType } from './contexts/AuthContextDef';
+import { MockToastProvider } from './test/mocks/componentMocks';
 
 // Mock the AuthProvider to control authentication state
 const createMockAuthProvider = (authState: Partial<AuthContextType>) => {
@@ -34,7 +35,9 @@ describe('App', () => {
 
     render(
       <MockAuthProvider>
-        <App />
+        <MockToastProvider>
+          <App />
+        </MockToastProvider>
       </MockAuthProvider>,
     );
 
@@ -48,7 +51,9 @@ describe('App', () => {
 
     render(
       <MockAuthProvider>
-        <App />
+        <MockToastProvider>
+          <App />
+        </MockToastProvider>
       </MockAuthProvider>,
     );
 
@@ -63,7 +68,9 @@ describe('App', () => {
 
     render(
       <MockAuthProvider>
-        <App />
+        <MockToastProvider>
+          <App />
+        </MockToastProvider>
       </MockAuthProvider>,
     );
 

@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { AuthProvider } from '../../contexts/AuthContext';
+import { MockToastProvider } from '../../test/mocks/componentMocks';
 import { LogProvider } from '../api-log/LogContext';
 
 import { Header } from './Header';
@@ -11,7 +12,9 @@ import { Header } from './Header';
 function renderWithProviders(ui: React.ReactElement) {
   return render(
     <AuthProvider>
-      <LogProvider>{ui}</LogProvider>
+      <LogProvider>
+        <MockToastProvider>{ui}</MockToastProvider>
+      </LogProvider>
     </AuthProvider>,
   );
 }
@@ -171,16 +174,18 @@ describe('Header', () => {
     rerender(
       <AuthProvider>
         <LogProvider>
-          <Header
-            isLogViewOpen={false}
-            toggleLogView={mockToggleLogView}
-            toggleTheme={mockToggleTheme}
-            theme="dark"
-            toggleCollapse={mockToggleCollapse}
-            tilesCount={3}
-            refreshAllTiles={mockRefreshAllTiles}
-            isRefreshing={false}
-          />
+          <MockToastProvider>
+            <Header
+              isLogViewOpen={false}
+              toggleLogView={mockToggleLogView}
+              toggleTheme={mockToggleTheme}
+              theme="dark"
+              toggleCollapse={mockToggleCollapse}
+              tilesCount={3}
+              refreshAllTiles={mockRefreshAllTiles}
+              isRefreshing={false}
+            />
+          </MockToastProvider>
         </LogProvider>
       </AuthProvider>,
     );

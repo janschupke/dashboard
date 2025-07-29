@@ -1,12 +1,20 @@
 import React from 'react';
 
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 
 export const LogoutButton: React.FC = () => {
   const { logout } = useAuth();
+  const { addToast } = useToast();
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      await logout();
+      addToast('Successfully logged out', 'success');
+    } catch (error) {
+      console.error('Logout error:', error);
+      addToast('Failed to logout. Please try again.', 'error');
+    }
   };
 
   return (
