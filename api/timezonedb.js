@@ -9,13 +9,16 @@ const handler = async (req, res) => {
   }
 
   try {
-    const apiRes = await fetch(`https://api.timezonedb.com/v2.1/get-time-zone?${new URLSearchParams(queryParams)}`, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Dashboard/1.0)',
-        Accept: 'application/json',
+    const apiRes = await fetch(
+      `https://api.timezonedb.com/v2.1/get-time-zone?${new URLSearchParams(queryParams)}`,
+      {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; Dashboard/1.0)',
+          Accept: 'application/json',
+        },
       },
-    });
+    );
 
     const data = await apiRes.text();
 

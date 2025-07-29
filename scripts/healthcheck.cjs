@@ -133,22 +133,22 @@ async function checkEndpoint(ep) {
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Dashboard-Healthcheck/1.0'
-      }
+        'User-Agent': 'Dashboard-Healthcheck/1.0',
+      },
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     if (!res.ok) {
       return { name: ep.name, status: '❌', msg: `HTTP ${res.status}` };
     }
-    
+
     // Check content length to avoid parsing very large responses
     const contentLength = res.headers.get('content-length');
     if (contentLength && parseInt(contentLength) > 50000) {
       return { name: ep.name, status: '✅', msg: 'OK' };
     }
-    
+
     const data = await res.json().catch(() => null);
     if (data && (data.error || data['Error Message'])) {
       return { name: ep.name, status: '⚠️', msg: data.error || data['Error Message'] };
@@ -165,7 +165,7 @@ async function checkEndpoint(ep) {
 (async () => {
   console.log('\nAPI Endpoint Healthcheck\n------------------------');
   console.log(`Testing ${endpoints.length} endpoints...`);
-  
+
   // Test endpoints one by one
   const results = [];
   for (let i = 0; i < endpoints.length; i++) {
@@ -173,27 +173,30 @@ async function checkEndpoint(ep) {
     const result = await checkEndpoint(endpoint);
     results.push(result);
   }
-  
+
   console.log('Results received:', results.length);
 
   const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 1;
-  const baseUrlPad = Math.max(...endpoints.map((e) => {
-    const trimmedUrl = e.baseUrl.includes('/api/') 
-      ? e.baseUrl.split('/api/')[1] 
-      : e.baseUrl;
-    return trimmedUrl.length;
-  })) + 1;
+  const baseUrlPad =
+    Math.max(
+      ...endpoints.map((e) => {
+        const trimmedUrl = e.baseUrl.includes('/api/') ? e.baseUrl.split('/api/')[1] : e.baseUrl;
+        return trimmedUrl.length;
+      }),
+    ) + 1;
 
   const statusColumnLength = 11;
 
-  console.log(`${pad('Status', statusColumnLength)} ${pad('Endpoint', namePad)} ${pad('API Path', baseUrlPad)}`);
+  console.log(
+    `${pad('Status', statusColumnLength)} ${pad('Endpoint', namePad)} ${pad('API Path', baseUrlPad)}`,
+  );
   console.log('-'.repeat(8 + namePad + baseUrlPad + 4));
 
   results.forEach((r) => {
     const endpoint = endpoints.find((e) => e.name === r.name);
     // Trim baseUrl to only show the part after /api/
-    const trimmedUrl = endpoint.baseUrl.includes('/api/') 
-      ? endpoint.baseUrl.split('/api/')[1] 
+    const trimmedUrl = endpoint.baseUrl.includes('/api/')
+      ? endpoint.baseUrl.split('/api/')[1]
       : endpoint.baseUrl;
     console.log(
       `${pad(r.status + ' ' + r.msg, statusColumnLength)} ${pad(r.name, namePad)} ${pad(trimmedUrl, baseUrlPad)}`,
@@ -206,12 +209,6 @@ async function checkEndpoint(ep) {
   } else {
     console.log('\nAll endpoints are healthy!');
   }
-
-  // console.log('\nEnvironment Information:');
-  // console.log(`- Base URL: ${BASE_URL}`);
-  // console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
-  // console.log('- API Functions: Vercel serverless functions');
-  // console.log('- CORS: Handled by serverless functions');
 
   if (BASE_URL.includes('localhost')) {
     console.log('\n💡 Local Development Tips:');
