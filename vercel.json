@@ -16,6 +16,7 @@
   ],
   "routes": [
     { "src": "/api/([^/]+)/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api/([^/]+)", "dest": "/api/$1.js" },
     { "src": "/@vite/(.*)", "dest": "/@vite/$1" },
     { "src": "/@react-refresh", "dest": "/@react-refresh" },
     { "src": "/src/(.*)", "dest": "/src/$1" },

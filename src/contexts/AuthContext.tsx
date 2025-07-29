@@ -20,6 +20,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const response = await fetch('/api/auth');
+
+      // Check if response is JSON (API endpoint) or HTML (dev server fallback)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('Auth check failed: API endpoint not available');
+        setIsAuthenticated(false);
+        return;
+      }
+
       const data = await response.json();
       setIsAuthenticated(data.authenticated);
     } catch (error) {
@@ -40,9 +49,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         body: JSON.stringify({ password }),
       });
 
+      // Check if response is JSON (API endpoint) or HTML (dev server fallback)
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('Login failed: API endpoint not available');
+        return false;
+      }
+
       if (response.ok) {
-        setIsAuthenticated(true);
-        return true;
+        const data = await response.json();
+        if (data.success) {
+          setIsAuthenticated(true);
+          return true;
+        } else {
+          console.error('Login failed:', data.error);
+          return false;
+        }
       } else {
         const error = await response.json();
         console.error('Login failed:', error);

@@ -19,7 +19,8 @@
     "clean:unimported": "npx unimported --silent --list-unimported | xargs rm -f",
     "types": "tsc --noEmit",
     "check": "npm run test:run && npm run build && npm run lint && npm run unimported && npm run ts-unused-exports && npm run depcheck && npm run types && npm run prettier:write",
-    "healthcheck": "node scripts/healthcheck.cjs"
+    "healthcheck": "node scripts/healthcheck.cjs",
+    "password": "node scripts/generate-password.js"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.2",
