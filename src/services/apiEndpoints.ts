@@ -107,7 +107,7 @@ export interface GoldApiPathParams extends PathParams {
 }
 
 export const PRECIOUS_METALS_ENDPOINT: ApiEndpoint<GoldApiPathParams, QueryParams> = {
-  url: '/api/precious-metals/price/:symbol',
+  url: '/api/precious-metals/:symbol',
   pathParams: { symbol: 'XAU' },
   queryParams: {},
 };

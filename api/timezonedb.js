@@ -1,19 +1,24 @@
 const handler = async (req, res) => {
-  const url = `https://timezoneapi.io${req.url?.replace(/^\/api\/timezonedb/, '')}`;
+  // Extract query parameters from the request
+  const urlObj = new URL(`https://api.timezonedb.com${req.url?.replace(/^\/api\/timezonedb/, '')}`);
+  const queryParams = Object.fromEntries(urlObj.searchParams.entries());
+
+  // Add API key if not present
+  if (!queryParams.key && process.env.TIMEZONEDB_API_KEY) {
+    queryParams.key = process.env.TIMEZONEDB_API_KEY;
+  }
 
   try {
-    const apiRes = await fetch(url, {
-      method: req.method,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Dashboard/1.0)',
-        Accept: 'application/json',
-        ...(req.headers.authorization && { Authorization: req.headers.authorization }),
-        ...(req.headers['content-type'] && {
-          'Content-Type': req.headers['content-type'],
-        }),
+    const apiRes = await fetch(
+      `https://api.timezonedb.com/v2.1/get-time-zone?${new URLSearchParams(queryParams)}`,
+      {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; Dashboard/1.0)',
+          Accept: 'application/json',
+        },
       },
-      body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-    });
+    );
 
     const data = await apiRes.text();
 

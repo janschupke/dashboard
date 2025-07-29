@@ -82,7 +82,7 @@ const endpoints = [
       symbol: 'XAU',
     },
     queryParams: {},
-    baseUrl: `${BASE_URL}/api/precious-metals/price/:symbol`,
+    baseUrl: `${BASE_URL}/api/precious-metals/:symbol`,
   },
   {
     name: 'USGS Earthquake',
@@ -107,11 +107,14 @@ const endpoints = [
   },
   {
     name: 'ECB Euribor 12M',
-    pathParams: {},
-    queryParams: {
-      format: 'json',
+    pathParams: {
+      flowRef: 'BSI',
+      key: 'M.U2.EUR.R.IR12MM.R.A',
     },
-    baseUrl: `${BASE_URL}/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A`,
+    queryParams: {
+      format: 'jsondata',
+    },
+    baseUrl: `${BASE_URL}/api/ecb/service/data/:flowRef.:key`,
   },
 ];
 
@@ -123,16 +126,38 @@ async function checkEndpoint(ep) {
   const url = buildUrl(ep.baseUrl, ep.pathParams, ep.queryParams);
 
   try {
-    const res = await fetch(url);
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Dashboard-Healthcheck/1.0',
+      },
+    });
+
+    clearTimeout(timeoutId);
+
     if (!res.ok) {
       return { name: ep.name, status: '❌', msg: `HTTP ${res.status}` };
     }
+
+    // Check content length to avoid parsing very large responses
+    const contentLength = res.headers.get('content-length');
+    if (contentLength && parseInt(contentLength) > 50000) {
+      return { name: ep.name, status: '✅', msg: 'OK' };
+    }
+
     const data = await res.json().catch(() => null);
     if (data && (data.error || data['Error Message'])) {
       return { name: ep.name, status: '⚠️', msg: data.error || data['Error Message'] };
     }
     return { name: ep.name, status: '✅', msg: 'OK' };
   } catch (e) {
+    if (e.name === 'AbortError') {
+      return { name: ep.name, status: '❌', msg: 'Timeout (5s)' };
+    }
     return { name: ep.name, status: '❌', msg: e.message };
   }
 }
@@ -140,19 +165,41 @@ async function checkEndpoint(ep) {
 (async () => {
   console.log('\nAPI Endpoint Healthcheck\n------------------------');
   console.log(`Testing ${endpoints.length} endpoints...`);
-  const results = await Promise.all(endpoints.map(checkEndpoint));
+
+  // Test endpoints one by one
+  const results = [];
+  for (let i = 0; i < endpoints.length; i++) {
+    const endpoint = endpoints[i];
+    const result = await checkEndpoint(endpoint);
+    results.push(result);
+  }
+
   console.log('Results received:', results.length);
 
-  const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 2;
-  const baseUrlPad = Math.max(...endpoints.map((e) => e.baseUrl.length)) + 2;
+  const namePad = Math.max(...endpoints.map((e) => e.name.length)) + 1;
+  const baseUrlPad =
+    Math.max(
+      ...endpoints.map((e) => {
+        const trimmedUrl = e.baseUrl.includes('/api/') ? e.baseUrl.split('/api/')[1] : e.baseUrl;
+        return trimmedUrl.length;
+      }),
+    ) + 1;
 
-  console.log(`${pad('Endpoint', namePad)} ${pad('Base URL', baseUrlPad)} Status`);
-  console.log('-'.repeat(namePad + baseUrlPad + 10));
+  const statusColumnLength = 11;
+
+  console.log(
+    `${pad('Status', statusColumnLength)} ${pad('Endpoint', namePad)} ${pad('API Path', baseUrlPad)}`,
+  );
+  console.log('-'.repeat(8 + namePad + baseUrlPad + 4));
 
   results.forEach((r) => {
     const endpoint = endpoints.find((e) => e.name === r.name);
+    // Trim baseUrl to only show the part after /api/
+    const trimmedUrl = endpoint.baseUrl.includes('/api/')
+      ? endpoint.baseUrl.split('/api/')[1]
+      : endpoint.baseUrl;
     console.log(
-      `${pad(r.name, namePad)} ${pad(endpoint.baseUrl, baseUrlPad)} ${r.status}  ${r.msg}`,
+      `${pad(r.status + ' ' + r.msg, statusColumnLength)} ${pad(r.name, namePad)} ${pad(trimmedUrl, baseUrlPad)}`,
     );
   });
 
@@ -162,12 +209,6 @@ async function checkEndpoint(ep) {
   } else {
     console.log('\nAll endpoints are healthy!');
   }
-
-  console.log('\nEnvironment Information:');
-  console.log(`- Base URL: ${BASE_URL}`);
-  console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log('- API Functions: Vercel serverless functions');
-  console.log('- CORS: Handled by serverless functions');
 
   if (BASE_URL.includes('localhost')) {
     console.log('\n💡 Local Development Tips:');

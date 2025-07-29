@@ -158,8 +158,6 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                 ))}
               </tbody>
             </table>
-            {/* Fade-out effect at the bottom, above log entries */}
-            <div className="pointer-events-none absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white/95 dark:from-gray-900/95 to-transparent z-10" />
           </div>
         )}
       </div>
