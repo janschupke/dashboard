@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAuthService } from '../services/authService';
+
 import { AuthContext, type AuthContextType } from './AuthContextDef';
 
 interface AuthProviderProps {
@@ -9,6 +11,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const authService = useAuthService();
 
   const checkAuth = useCallback(async () => {
     try {
@@ -19,17 +22,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const response = await fetch('/api/auth');
-
-      // Check if response is JSON (API endpoint) or HTML (dev server fallback)
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.error('Auth check failed: API endpoint not available');
-        setIsAuthenticated(false);
-        return;
-      }
-
-      const data = await response.json();
+      const data = await authService.checkAuth();
       setIsAuthenticated(data.authenticated);
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -37,27 +30,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [authService]);
 
-  const login = useCallback(async (password: string): Promise<boolean> => {
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      // Check if response is JSON (API endpoint) or HTML (dev server fallback)
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.error('Login failed: API endpoint not available');
-        return false;
-      }
-
-      if (response.ok) {
-        const data = await response.json();
+  const login = useCallback(
+    async (password: string): Promise<boolean> => {
+      try {
+        const data = await authService.login(password);
         if (data.success) {
           setIsAuthenticated(true);
           return true;
@@ -65,27 +43,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error('Login failed:', data.error);
           return false;
         }
-      } else {
-        const error = await response.json();
-        console.error('Login failed:', error);
+      } catch (error) {
+        console.error('Login error:', error);
         return false;
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
-    }
-  }, []);
+    },
+    [authService],
+  );
 
   const logout = useCallback(async () => {
     try {
-      await fetch('/api/logout', {
-        method: 'POST',
-      });
+      await authService.logout();
       setIsAuthenticated(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
-  }, []);
+  }, [authService]);
 
   useEffect(() => {
     checkAuth();

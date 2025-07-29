@@ -1,6 +1,14 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const TOKEN_EXPIRATION = '7d';
+
+// Cookie configuration constants
+const COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days in seconds
+const COOKIE_PATH = '/';
+const COOKIE_SAME_SITE = 'Strict';
+const COOKIE_SECURE_FLAG = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -36,12 +44,12 @@ module.exports = async (req, res) => {
     }
 
     // Create JWT token
-    const token = jwt.sign({ authenticated: true }, jwtSecret, { expiresIn: '7d' });
+    const token = jwt.sign({ authenticated: true }, jwtSecret, { expiresIn: TOKEN_EXPIRATION });
 
     // Set HTTP-only cookie
     res.setHeader(
       'Set-Cookie',
-      `auth_token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
+      `auth_token=${token}; HttpOnly; Path=${COOKIE_PATH}; Max-Age=${COOKIE_MAX_AGE_SECONDS}; SameSite=${COOKIE_SAME_SITE}${COOKIE_SECURE_FLAG}`,
     );
 
     return res.status(200).json({ success: true });
