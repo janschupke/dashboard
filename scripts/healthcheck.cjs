@@ -108,7 +108,7 @@ const endpoints = [
   {
     name: 'ECB Euribor 12M',
     pathParams: {
-      flowRed: 'BSI',
+      flowRef: 'BSI',
       key: 'M.U2.EUR.R.IR12MM.R.A',
     },
     queryParams: {
