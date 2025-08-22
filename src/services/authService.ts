@@ -1,3 +1,4 @@
+import { AUTH_API_CALL, AUTH_STORAGE_KEY } from '../contexts/constants';
 import { useDataServices } from '../contexts/DataServicesContext';
 
 import {
@@ -73,7 +74,12 @@ export function useAuthService() {
       body: JSON.stringify({ password } as AuthLoginBodyParams),
     });
 
-    const result = await handleAuthApiCall(fetchFunction, 'auth-login', 'AUTH_LOGIN', url);
+    const result = await handleAuthApiCall(
+      fetchFunction,
+      AUTH_STORAGE_KEY.LOGIN,
+      AUTH_API_CALL.LOGIN,
+      url,
+    );
 
     if (!result.success) {
       return { success: false, error: 'Login failed' };
@@ -90,7 +96,12 @@ export function useAuthService() {
     const url = buildApiUrl(AUTH_CHECK_ENDPOINT, {}, {});
 
     const fetchFunction = createAuthFetchFunction(dataFetcher, url);
-    const result = await handleAuthApiCall(fetchFunction, 'auth-check', 'AUTH_CHECK', url);
+    const result = await handleAuthApiCall(
+      fetchFunction,
+      AUTH_STORAGE_KEY.CHECK,
+      AUTH_API_CALL.CHECK,
+      url,
+    );
 
     if (!result.success) {
       return { authenticated: false };
@@ -109,7 +120,12 @@ export function useAuthService() {
       method: 'POST',
     });
 
-    const result = await handleAuthApiCall(fetchFunction, 'auth-logout', 'AUTH_LOGOUT', url);
+    const result = await handleAuthApiCall(
+      fetchFunction,
+      AUTH_STORAGE_KEY.LOGOUT,
+      AUTH_API_CALL.LOGOUT,
+      url,
+    );
 
     if (!result.success) {
       return { success: false };
