@@ -31,6 +31,13 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
     clock: '🕐',
     earthquake: '🌎',
     'weather-alerts': '🌪️',
+    logout: '🚪',
+
+    // Toast icons
+    'toast-error': '⚠',
+    'toast-success': '✓',
+    'toast-warning': '⚠',
+    'toast-info': 'ℹ',
 
     // Log view icons
     'clipboard-list': '📋',
