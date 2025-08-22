@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { URANIUM_HTML_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import { fetchWithError } from '../../../services/fetchWithError';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 
 import type { UraniumTileData } from './types';
@@ -20,7 +19,7 @@ export function useUraniumApi() {
       const url = buildApiUrl(URANIUM_HTML_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndParse(
         async () => {
-          const response = await fetchWithError(url);
+          const response = await dataFetcher.fetchWithError(url);
           const data = await response.text();
           return { data, status: response.status };
         },

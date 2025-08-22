@@ -19,7 +19,8 @@
     "clean:unimported": "npx unimported --silent --list-unimported | xargs rm -f",
     "types": "tsc --noEmit",
     "check": "npm run test:run && npm run build && npm run lint && npm run unimported && npm run ts-unused-exports && npm run depcheck && npm run types && npm run prettier:write",
-    "healthcheck": "node scripts/healthcheck.cjs"
+    "healthcheck": "node scripts/healthcheck.cjs",
+    "password": "node scripts/generate-password.js"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.2",
@@ -27,8 +28,10 @@
     "@testing-library/user-event": "^14.6.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "bcryptjs": "^3.0.2",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.0",
+    "jsonwebtoken": "^9.0.2",
     "luxon": "^3.7.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

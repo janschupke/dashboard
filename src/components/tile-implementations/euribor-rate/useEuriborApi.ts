@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { ECB_EURIBOR_12M_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import { fetchWithError } from '../../../services/fetchWithError';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 
 import type { EuriborRateTileData } from './types';
@@ -20,7 +19,7 @@ export function useEuriborApi() {
       const url = buildApiUrl(ECB_EURIBOR_12M_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetchWithError(url);
+          const response = await dataFetcher.fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },

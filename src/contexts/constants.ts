@@ -72,3 +72,23 @@ export const STORAGE_KEYS = {
   TILE_DATA_PREFIX: 'tile-data-',
   DASHBOARD_CONFIG: 'dashboard-config',
 } as const;
+
+/**
+ * Authentication API call types
+ * Contains identifiers for different authentication API operations
+ */
+export const AUTH_API_CALL = {
+  LOGIN: 'AUTH_LOGIN',
+  CHECK: 'AUTH_CHECK',
+  LOGOUT: 'AUTH_LOGOUT',
+} as const;
+
+/**
+ * Authentication storage keys
+ * Contains storage key identifiers for authentication operations
+ */
+export const AUTH_STORAGE_KEY = {
+  LOGIN: 'auth-login',
+  CHECK: 'auth-check',
+  LOGOUT: 'auth-logout',
+} as const;
