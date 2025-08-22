@@ -4,18 +4,20 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { AuthProvider } from '../../contexts/AuthContext';
-import { MockToastProvider } from '../../test/mocks/componentMocks';
+import { MockToastProvider, MockDataServicesProvider } from '../../test/mocks/componentMocks';
 import { LogProvider } from '../api-log/LogContext';
 
 import { Header } from './Header';
 
 function renderWithProviders(ui: React.ReactElement) {
   return render(
-    <AuthProvider>
-      <LogProvider>
-        <MockToastProvider>{ui}</MockToastProvider>
-      </LogProvider>
-    </AuthProvider>,
+    <MockDataServicesProvider>
+      <AuthProvider>
+        <LogProvider>
+          <MockToastProvider>{ui}</MockToastProvider>
+        </LogProvider>
+      </AuthProvider>
+    </MockDataServicesProvider>,
   );
 }
 
@@ -172,22 +174,24 @@ describe('Header', () => {
 
     // Rerender with dark theme
     rerender(
-      <AuthProvider>
-        <LogProvider>
-          <MockToastProvider>
-            <Header
-              isLogViewOpen={false}
-              toggleLogView={mockToggleLogView}
-              toggleTheme={mockToggleTheme}
-              theme="dark"
-              toggleCollapse={mockToggleCollapse}
-              tilesCount={3}
-              refreshAllTiles={mockRefreshAllTiles}
-              isRefreshing={false}
-            />
-          </MockToastProvider>
-        </LogProvider>
-      </AuthProvider>,
+      <MockDataServicesProvider>
+        <AuthProvider>
+          <LogProvider>
+            <MockToastProvider>
+              <Header
+                isLogViewOpen={false}
+                toggleLogView={mockToggleLogView}
+                toggleTheme={mockToggleTheme}
+                theme="dark"
+                toggleCollapse={mockToggleCollapse}
+                tilesCount={3}
+                refreshAllTiles={mockRefreshAllTiles}
+                isRefreshing={false}
+              />
+            </MockToastProvider>
+          </LogProvider>
+        </AuthProvider>
+      </MockDataServicesProvider>,
     );
 
     // Dark theme should show sun icon

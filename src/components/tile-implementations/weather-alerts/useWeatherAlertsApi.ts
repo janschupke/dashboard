@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { OPENWEATHERMAP_ALERTS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import { fetchWithError } from '../../../services/fetchWithError';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 
 import type { WeatherAlertsTileData, WeatherAlertsApiResponse } from './types';
@@ -20,7 +19,7 @@ export function useWeatherAlertsApi() {
       const url = buildApiUrl(OPENWEATHERMAP_ALERTS_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetchWithError(url);
+          const response = await dataFetcher.fetchWithError(url);
           const data: WeatherAlertsApiResponse = await response.json();
           return { data, status: response.status };
         },

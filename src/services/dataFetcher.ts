@@ -39,6 +39,22 @@ export class DataFetcher {
     this.parserRegistry = parserRegistry;
   }
 
+  /**
+   * Fetches a resource with error handling for non-OK responses
+   * @param input - The resource to fetch
+   * @param init - Optional init object
+   * @returns Promise that resolves to Response or throws an error for non-OK responses
+   */
+  async fetchWithError(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    const response = await fetch(input, init);
+    if (!response.ok) {
+      throw Object.assign(new Error(`HTTP ${response.status}: ${response.statusText}`), {
+        status: response.status,
+      });
+    }
+    return response;
+  }
+
   // Helper to handle fetch, status extraction, mapping/parsing, and error logging
   private async handleFetchAndTransform<TTileData extends TileDataType>(
     fetchFunction: () => Promise<FetchResponse>,

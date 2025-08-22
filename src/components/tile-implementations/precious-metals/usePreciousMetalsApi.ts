@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { PRECIOUS_METALS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import { fetchWithError } from '../../../services/fetchWithError';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 
 import type { PreciousMetalsTileData } from './types';
@@ -21,7 +20,7 @@ export function usePreciousMetalsApi() {
 
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetchWithError(url);
+          const response = await dataFetcher.fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },

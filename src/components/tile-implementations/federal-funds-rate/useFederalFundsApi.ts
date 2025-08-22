@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDataServices } from '../../../contexts/DataServicesContext';
 import { FRED_SERIES_OBSERVATIONS_ENDPOINT, buildApiUrl } from '../../../services/apiEndpoints';
-import { fetchWithError } from '../../../services/fetchWithError';
 import { TileType, TileApiCallTitle } from '../../../types/tile';
 
 import type { FederalFundsRateTileData } from './types';
@@ -27,7 +26,7 @@ export function useFederalFundsApi() {
       const url = buildApiUrl(FRED_SERIES_OBSERVATIONS_ENDPOINT, pathParams, queryParams);
       return dataFetcher.fetchAndMap(
         async () => {
-          const response = await fetchWithError(url);
+          const response = await dataFetcher.fetchWithError(url);
           const data = await response.json();
           return { data, status: response.status };
         },
