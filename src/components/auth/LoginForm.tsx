@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 
 export const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const { login } = useAuth();
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) {
-      setError('Password is required');
+      addToast('Password is required', 'error');
       return;
     }
 
     setIsLoading(true);
-    setError('');
 
     try {
       const success = await login(password);
       if (!success) {
-        setError('Invalid password');
+        addToast('Invalid password', 'error');
       }
     } catch {
-      setError('Login failed. Please try again.');
+      addToast('Login failed. Please try again.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -55,8 +55,6 @@ export const LoginForm: React.FC = () => {
               disabled={isLoading}
             />
           </div>
-
-          {error && <div className="text-status-error text-sm text-center">{error}</div>}
 
           <div>
             <button
