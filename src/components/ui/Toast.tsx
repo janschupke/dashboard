@@ -2,28 +2,30 @@ import React from 'react';
 
 import { useToast } from '../../hooks/useToast';
 
+type ToastType = 'error' | 'success' | 'warning' | 'info';
+
 export const ToastContainer: React.FC = () => {
   const { toasts, removeToast } = useToast();
 
-  const getToastStyles = (type: string) => {
+  const getToastStyles = (type: ToastType) => {
     const baseStyles =
       'fixed top-4 right-4 z-50 max-w-sm w-full p-4 rounded-lg shadow-lg transition-all duration-300 transform';
 
     switch (type) {
       case 'error':
-        return `${baseStyles} bg-status-error text-white border-l-4 border-red-600`;
+        return `${baseStyles} bg-status-error text-white border-l-4 border-status-error`;
       case 'success':
-        return `${baseStyles} bg-status-success text-white border-l-4 border-green-600`;
+        return `${baseStyles} bg-status-success text-white border-l-4 border-status-success`;
       case 'warning':
-        return `${baseStyles} bg-status-warning text-white border-l-4 border-yellow-600`;
+        return `${baseStyles} bg-status-warning text-white border-l-4 border-status-warning`;
       case 'info':
-        return `${baseStyles} bg-status-info text-white border-l-4 border-blue-600`;
+        return `${baseStyles} bg-status-info text-white border-l-4 border-status-info`;
       default:
         return `${baseStyles} bg-surface-secondary text-theme-primary border-l-4 border-theme-secondary`;
     }
   };
 
-  const getIcon = (type: string) => {
+  const getIcon = (type: ToastType) => {
     switch (type) {
       case 'error':
         return (

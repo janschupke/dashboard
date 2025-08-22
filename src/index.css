@@ -328,6 +328,12 @@
   .border-status-warning {
     border-color: var(--status-warning);
   }
+  .border-status-success {
+    border-color: var(--status-success);
+  }
+  .border-status-info {
+    border-color: var(--status-info);
+  }
 }
 
 /* Custom slider styles */
