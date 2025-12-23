@@ -10,7 +10,7 @@ import { usePreciousMetalsApi } from './usePreciousMetalsApi';
 
 import type { PreciousMetalsTileData } from './types';
 import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const PreciousMetalsTileContent = ({ data }: { data: PreciousMetalsTileData | null }) => {
   if (data) {

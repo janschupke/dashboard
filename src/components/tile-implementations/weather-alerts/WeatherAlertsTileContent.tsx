@@ -1,3 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
+import { fromUnixTimestamp, toLocaleString } from '../../../utils/luxonUtils';
+
 import type { WeatherAlertsTileData } from './types';
 
 export const WeatherAlertsTileContent = ({
@@ -29,9 +33,7 @@ export const WeatherAlertsTileContent = ({
           </div>
           <div className="text-sm mt-1">{alert.description}</div>
           {alert.tags && alert.tags.length > 0 && (
-            <div className="text-xs mt-1 text-tertiary">
-              Tags: {alert.tags.join(', ')}
-            </div>
+            <div className="text-xs mt-1 text-tertiary">Tags: {alert.tags.join(', ')}</div>
           )}
         </div>
       ))}

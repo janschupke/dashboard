@@ -13,7 +13,7 @@ import { weatherTileMeta } from '../tile-implementations/weather/meta';
 import { weatherAlertsTileMeta } from '../tile-implementations/weather-alerts/meta';
 
 import type { TileMeta } from './GenericTile';
-import type { DragboardTileData } from '../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../dragboard';
 
 export interface TileCatalogEntry {
   type: TileType;

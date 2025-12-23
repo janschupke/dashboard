@@ -8,4 +8,4 @@ export { Icon } from './Icon';
 export { DataRow } from './DataRow';
 export { MarketChart } from './MarketChart';
 export { PriceDisplay } from './PriceDisplay';
-export { Toast } from './Toast';
+export { ToastContainer } from './Toast';

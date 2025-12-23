@@ -1,38 +1,39 @@
 import React, { useMemo } from 'react';
 
 import { Icon } from '../ui/Icon';
-import { useTileById, useDragboardActions } from './DragboardProvider';
-import { DRAGBOARD_CONSTANTS } from './constants';
 
-interface DragboardTileProps {
+import { DRAGBOARD_CONSTANTS } from './constants';
+import { useTileById, useDragboardActions } from './DragboardProvider';
+
+export interface DragboardTileProps {
   id: string;
   children: React.ReactNode;
-  viewportColumns: number; // Passed from Grid component
+  viewportColumns?: number; // Passed from Grid component via cloneElement
 }
 
 const DragboardTileComponent: React.FC<DragboardTileProps> = ({
   id,
   children,
-  viewportColumns,
+  viewportColumns = 1,
 }) => {
   // Use selective hook that only re-renders when THIS tile changes
   const { tile, isDragging } = useTileById(id);
   const { startTileDrag, endTileDrag, removeTile } = useDragboardActions();
-
-  if (!tile) {
-    return null;
-  }
 
   // Calculate grid position from order
   // Order 0 = first cell, order 1 = second cell, etc.
   // Wrapping happens automatically: order 3 with 3 columns = row 2, col 1
   const { row, col } = useMemo(
     () => ({
-      row: Math.floor(tile.order / viewportColumns),
-      col: tile.order % viewportColumns,
+      row: tile ? Math.floor(tile.order / viewportColumns) : 0,
+      col: tile ? tile.order % viewportColumns : 0,
     }),
-    [tile.order, viewportColumns],
+    [tile, viewportColumns],
   );
+
+  if (!tile) {
+    return null;
+  }
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'move';

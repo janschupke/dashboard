@@ -12,6 +12,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import { fromDate, fromISO } from '../../utils/luxonUtils';
+
 export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '5Y' | 'Max';
 
 export interface ChartDataPoint {
@@ -69,19 +71,28 @@ export const MarketChart = memo<MarketChartProps>(
           break;
         case 'Max':
         default:
-          return data.map((entry) => ({
-            date: entry.label || format(DateTime.fromJSDate(entry.date).toJSDate(), 'MMM dd'),
-            value: entry.value,
-          }));
+          return data.map((entry) => {
+            const entryDate =
+              entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+            return {
+              date: entry.label ?? format(entryDate.toJSDate(), 'MMM dd'),
+              value: entry.value,
+            };
+          });
       }
 
-      const filterDateJs = filterDate.toJSDate();
       return data
-        .filter((entry) => DateTime.fromJSDate(entry.date) >= filterDate)
-        .map((entry) => ({
-          date: entry.label || format(DateTime.fromJSDate(entry.date).toJSDate(), 'MMM dd'),
-          value: entry.value,
-        }));
+        .filter((entry) => {
+          const entryDate = entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+          return entryDate >= filterDate;
+        })
+        .map((entry) => {
+          const entryDate = entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+          return {
+            date: entry.label ?? format(entryDate.toJSDate(), 'MMM dd'),
+            value: entry.value,
+          };
+        });
     }, [data, timeRange]);
 
     const CustomTooltip = ({
@@ -93,7 +104,7 @@ export const MarketChart = memo<MarketChartProps>(
       payload?: Array<{ value: number }>;
       label?: string;
     }) => {
-      if (active && payload && payload.length) {
+      if (active && payload?.length && payload[0]) {
         return (
           <div className="bg-surface-primary border border-border-primary rounded-lg p-2 shadow-lg">
             <p className="text-theme-primary font-medium">{`Date: ${label}`}</p>
@@ -109,7 +120,7 @@ export const MarketChart = memo<MarketChartProps>(
         {/* Time Range Controls */}
         {showTimeRangeControls && (
           <div className="flex items-center justify-between p-2 border-b border-border-secondary">
-            <span className="text-xs text-theme-tertiary">{title || 'Time Range'}</span>
+            <span className="text-xs text-theme-tertiary">{title ?? 'Time Range'}</span>
             <div className="flex space-x-1">
               {(['1M', '3M', '6M', '1Y', '5Y', 'Max'] as TimeRange[]).map((range) => (
                 <button

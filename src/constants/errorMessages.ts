@@ -29,4 +29,3 @@ export const ERROR_MESSAGES = {
     SIGN_IN: 'Sign in',
   },
 } as const;
-

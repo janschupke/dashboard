@@ -20,7 +20,7 @@ const createAuthFetchFunction = (dataFetcher: DataFetcher, url: string, options?
     const contentType = response.headers.get('content-type');
     let data: unknown;
 
-    if (contentType && contentType.includes('application/json')) {
+    if (contentType?.includes('application/json')) {
       data = await response.json();
     } else {
       data = await response.text();
@@ -87,7 +87,7 @@ export function useAuthService() {
 
     const data = result.data as { success?: boolean; error?: string };
     return {
-      success: data.success || false,
+      success: data.success ?? false,
       error: data.error,
     };
   };
@@ -109,7 +109,7 @@ export function useAuthService() {
 
     const data = result.data as { authenticated?: boolean };
     return {
-      authenticated: data.authenticated || false,
+      authenticated: data.authenticated ?? false,
     };
   };
 
@@ -133,7 +133,7 @@ export function useAuthService() {
 
     const data = result.data as { success?: boolean };
     return {
-      success: data.success || false,
+      success: data.success ?? false,
     };
   };
 

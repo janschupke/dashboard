@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon';
 
 import { TileStatus } from '../components/tile/useTileData';
-import type { TileConfig, TileState } from '../services/storageManager';
-import type { TileDataType } from '../services/storageManager';
+
+import { fromUnixTimestampMs } from './luxonUtils';
+
+import type { TileConfig, TileState, TileDataType } from '../services/storageManager';
 
 /**
  * Status calculation utilities
@@ -39,12 +41,12 @@ export function calculateTileStatus<T extends TileDataType>(params: {
   if (error || !result) {
     // Try to get cached data on error
     const cachedData = getCachedData(tileId);
-    if (cachedData && cachedData.data) {
+    if (cachedData?.data) {
       return {
         status: TileStatus.Stale,
         data: cachedData.data,
         lastUpdated: cachedData.lastDataRequest
-          ? DateTime.fromMillis(cachedData.lastDataRequest)
+          ? fromUnixTimestampMs(cachedData.lastDataRequest)
           : null,
       };
     }
@@ -56,9 +58,7 @@ export function calculateTileStatus<T extends TileDataType>(params: {
   }
 
   const data = result.data;
-  const lastUpdated = result.lastDataRequest
-    ? DateTime.fromMillis(result.lastDataRequest)
-    : null;
+  const lastUpdated = result.lastDataRequest ? fromUnixTimestampMs(result.lastDataRequest) : null;
 
   if (result.lastDataRequestSuccessful && data) {
     return {
@@ -80,4 +80,3 @@ export function calculateTileStatus<T extends TileDataType>(params: {
     };
   }
 }
-

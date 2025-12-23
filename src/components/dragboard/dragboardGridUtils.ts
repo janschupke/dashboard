@@ -32,7 +32,8 @@ export const calculateGridCellFromPosition = (
   viewportColumns: number,
 ): { row: number; col: number } => {
   const availableWidth = containerWidth - 32; // Account for padding
-  const cellWidth = (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
+  const cellWidth =
+    (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
   const cellHeight = DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT;
 
   // Calculate column: account for gaps between cells
@@ -64,7 +65,11 @@ export const calculateDropIndex = (row: number, col: number, viewportColumns: nu
  * @param isSidebarDrag - Whether this is a drag from sidebar
  * @returns Clamped drop index
  */
-export const clampDropIndex = (dropIndex: number, tilesCount: number, isSidebarDrag: boolean): number => {
+export const clampDropIndex = (
+  dropIndex: number,
+  tilesCount: number,
+  isSidebarDrag: boolean,
+): number => {
   // For sidebar drags: allow up to tiles.length (insert at end)
   // For tile drags: allow up to tiles.length - 1 (can't drop after removing self)
   const maxIndex = isSidebarDrag ? tilesCount : Math.max(0, tilesCount - 1);
@@ -86,4 +91,3 @@ export const calculateDropZonePosition = (
   const col = dropIndex % viewportColumns;
   return { row, col };
 };
-

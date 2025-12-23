@@ -10,14 +10,13 @@ import { DateTime } from 'luxon';
  */
 export function formatDateToISO(date: Date | null | undefined): string | undefined {
   if (!date) return undefined;
-  return DateTime.fromJSDate(date).toISO() || undefined;
+  return DateTime.fromJSDate(date).toISO() ?? undefined;
 }
 
 /**
  * Format a DateTime to ISO string
  */
 export function formatDateTimeToISO(dateTime: DateTime | null | undefined): string | undefined {
-  if (!dateTime || !dateTime.isValid) return undefined;
-  return dateTime.toISO() || undefined;
+  if (!dateTime?.isValid) return undefined;
+  return dateTime.toISO() ?? undefined;
 }
-

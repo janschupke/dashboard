@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+
 import { DateTime } from 'luxon';
 
 import { TileType } from '../../../types/tile';
 import { formatDateToISO } from '../../../utils/dateFormatters';
+import { minutesToMs } from '../../../utils/timeUtils';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 import { useTilePeriodicUpdate } from '../../tile/useTilePeriodicUpdate';
@@ -11,8 +13,8 @@ import { CITY_CONFIG } from './config';
 import { TimeTileContent } from './TimeTileContent';
 import { useTimeApi } from './useTimeApi';
 
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
 import type { TimeTileData } from './types';
+import type { DragboardTileData } from '../../dragboard';
 
 // Helper functions to calculate business hours (extracted from dataMapper logic)
 const isBusinessHours = (dt: DateTime): boolean => {
@@ -63,7 +65,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
     {},
     params,
     {
-      refreshInterval: 5 * 60 * 1000, // 5 minutes
+      refreshInterval: minutesToMs(5), // 5 minutes
       enableAutoRefresh: true,
     },
   );
@@ -83,7 +85,8 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
       businessStatus: getBusinessStatus(now),
       lastUpdate: DateTime.now().toISO(),
     };
-  }, [data, updateCount]); // updateCount triggers recalculation every second
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- updateCount intentionally triggers recalculation every second
+  }, [data, updateCount]);
 
   return (
     <GenericTile

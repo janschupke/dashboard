@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 
 import { ALPHA_VANTAGE_GDX_ENDPOINT } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { setupGdxEtfSuccessMock, setupSuccessMock, setupFailureMock } from '../../../test/utils/mswTestUtils';
+import { setupSuccessMock, setupFailureMock } from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { gdxEtfDataMapper } from './dataMapper';

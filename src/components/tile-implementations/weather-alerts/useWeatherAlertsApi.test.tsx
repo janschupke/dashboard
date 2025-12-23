@@ -32,7 +32,7 @@ describe('useWeatherAlertsApi', () => {
       expect(fetchResult.data).toHaveProperty('alerts');
       expect(Array.isArray(fetchResult.data.alerts)).toBe(true);
       expect(fetchResult.data.alerts.length).toBe(1);
-      expect(fetchResult.data.alerts[0].event).toBe('Severe Weather Warning');
+      expect(fetchResult.data.alerts[0]!.event).toBe('Severe Weather Warning');
     }
   });
 });

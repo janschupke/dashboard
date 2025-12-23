@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from 'msw';
 
-import { server } from '../mocks/server';
 import { MockResponseData } from '../mocks/endpointMocks';
+import { server } from '../mocks/server';
 
 import type { MockApiErrorType } from '../mocks/endpointMocks';
 
@@ -11,7 +11,7 @@ export const API_ENDPOINTS = {
   OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/3.0/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
   FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
-  ECB_EURIBOR_12M: '/api/ecb/euribor-12m',
+  ECB_EURIBOR_12M: '/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
   URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',
   TIME_API: '/api/timezonedb/v2.1/get-time-zone',
@@ -31,9 +31,9 @@ const createErrorResponse = async (errorType: MockApiErrorType, delayMs = 0) => 
       // Network error - throw to simulate network failure
       throw new Error('Failed to fetch');
     case 'timeout':
-      // Timeout - delay longer than timeout
-      await delay(20000);
-      return HttpResponse.json({ error: 'Request timeout' }, { status: 408 });
+      // Timeout - throw immediately to simulate timeout error
+      // The fetcher's timeoutPromise will catch this
+      throw new Error('Request timeout');
     case 'api':
       return HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     case 'malformed':
@@ -68,7 +68,7 @@ export const setupSuccessMock = (endpoint: string, responseData?: unknown, delay
       if (delayMs > 0) {
         await delay(delayMs);
       }
-      return HttpResponse.json(responseData, { status: 200 });
+      return HttpResponse.json(responseData as Record<string, unknown>, { status: 200 });
     }),
   );
 };
@@ -80,8 +80,9 @@ export const setupFailureMock = (
   delayMs = 0,
 ): void => {
   const fullUrl = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
+  // Use http.all to catch all methods and ensure this handler takes precedence
   server.use(
-    http.get(fullUrl, async () => {
+    http.all(fullUrl, async () => {
       return createErrorResponse(errorType, delayMs);
     }),
   );
@@ -102,19 +103,12 @@ export const setupWeatherSuccessMock = (): void => {
 };
 
 export const setupWeatherAlertsSuccessMock = (): void => {
-  // Weather alerts use the same endpoint, so we need to distinguish them
-  // We'll use a query parameter or override the handler to return alerts data
+  // Weather alerts use the same endpoint, override to always return alerts data
   const fullUrl = `${API_BASE}${API_ENDPOINTS.OPENWEATHERMAP_ONECALL}`;
   server.use(
-    http.get(fullUrl, async ({ request }) => {
-      const url = new URL(request.url);
-      // Check if this is an alerts request (you can customize this logic)
-      const isAlerts = url.searchParams.get('__alerts') === 'true';
-      if (isAlerts) {
-        return HttpResponse.json(MockResponseData.getWeatherAlertsData(), { status: 200 });
-      }
-      // Default to regular weather data
-      return HttpResponse.json(MockResponseData.getWeatherData(), { status: 200 });
+    http.get(fullUrl, async () => {
+      // Always return alerts data for weather alerts mock
+      return HttpResponse.json(MockResponseData.getWeatherAlertsData(), { status: 200 });
     }),
   );
 };
@@ -135,7 +129,7 @@ export const setupUraniumSuccessMock = (): void => {
   server.use(
     http.get(fullUrl, async () => {
       const data = MockResponseData.getUraniumData();
-      const htmlContent = `<html><body><div data-price="${data.spotPrice}">Uranium Price: ${data.spotPrice}</div></body></html>`;
+      const htmlContent = `<html><body><span id="spot-price">${data.spotPrice}</span></body></html>`;
       return new HttpResponse(htmlContent, {
         status: 200,
         headers: { 'Content-Type': 'text/html' },
@@ -204,4 +198,3 @@ export const buildTestUrl = (
 
   return queryString ? `${url}?${queryString}` : url;
 };
-

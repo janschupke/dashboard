@@ -31,8 +31,8 @@ describe('LogView', () => {
     storageManager.addLog({ level: 'warning', apiCall: 'B', reason: 'warn', details: {} });
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
     const logs = storageManager.getLogs();
-    expect(screen.getByTestId(`log-row-${logs[1].id}`)).toHaveTextContent('A');
-    expect(screen.getByTestId(`log-row-${logs[0].id}`)).toHaveTextContent('B');
+    expect(screen.getByTestId(`log-row-${logs[1]!.id}`)).toHaveTextContent('A');
+    expect(screen.getByTestId(`log-row-${logs[0]!.id}`)).toHaveTextContent('B');
     expect(screen.getByText('1 Errors')).toBeInTheDocument();
     expect(screen.getByText('1 Warnings')).toBeInTheDocument();
   });
@@ -55,21 +55,21 @@ describe('LogView', () => {
       </>,
     );
     fireEvent.click(screen.getByText('Add Error'));
-    const logId = storageManager.getLogs()[0].id;
+    const logId = storageManager.getLogs()[0]!.id;
     expect(screen.getByTestId(`log-row-${logId}`)).toHaveTextContent('C');
   });
 
   it('updates log table when logs are added via storageManager directly', async () => {
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
     storageManager.addLog({ level: 'error', apiCall: 'D', reason: 'fail', details: {} });
-    const logId = storageManager.getLogs()[0].id;
+    const logId = storageManager.getLogs()[0]!.id;
     expect(await screen.findByTestId(`log-row-${logId}`)).toHaveTextContent('D');
   });
 
   it('removes log entries when logs are cleared', async () => {
     storageManager.addLog({ level: 'error', apiCall: 'E', reason: 'fail', details: {} });
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
-    const logId = storageManager.getLogs()[0].id;
+    const logId = storageManager.getLogs()[0]!.id;
     expect(screen.getByTestId(`log-row-${logId}`)).toHaveTextContent('E');
     storageManager.clearLogs();
     await screen.findByText('No API logs'); // wait for update

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 
+import { DRAGBOARD_CONSTANTS } from './constants';
 import {
   calculateViewportColumns,
   calculateGridCellFromPosition,
@@ -7,7 +8,6 @@ import {
   clampDropIndex,
   calculateDropZonePosition,
 } from './dragboardGridUtils';
-import { DRAGBOARD_CONSTANTS } from './constants';
 import { useTiles, useDragState, useDragboardActions } from './DragboardProvider';
 
 interface DragboardGridProps {

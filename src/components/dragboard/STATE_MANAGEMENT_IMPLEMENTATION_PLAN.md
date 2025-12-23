@@ -1,11 +1,13 @@
 # State Management Implementation Plan
 
 ## Overview
+
 This document outlines the implementation plan to fix state management issues in the dragboard tile system, **preventing excessive re-renders** while ensuring proper loading states, refresh behavior, and React Query best practices.
 
 ## Current Architecture Analysis
 
 ### State Management Flow
+
 1. **DragboardProvider** (`DragboardProvider.tsx`): Manages tile order and drag state
    - Uses `useState` for tiles array
    - Normalizes orders to sequential indices (0, 1, 2, ...)
@@ -29,7 +31,9 @@ This document outlines the implementation plan to fix state management issues in
 ### Current Problems
 
 #### Problem 1: Dropping a tile causes ALL tiles to re-render unnecessarily
+
 **Root Cause**:
+
 - `DragboardProvider` context value includes entire `tiles` array
 - When one tile's order changes, `normalizeOrders()` creates NEW objects for ALL tiles
 - All `DragboardTile` components subscribe to context via `useDragboard()`
@@ -39,7 +43,9 @@ This document outlines the implementation plan to fix state management issues in
 **Impact**: Performance degradation, unnecessary React Query re-subscriptions, flickering UI
 
 #### Problem 2: Changing position causes excessive re-renders
+
 **Root Cause**:
+
 - Same as Problem 1 - context updates propagate to all tiles
 - `dragState` changes also cause all tiles to re-render
 - `normalizeOrders` creates new tile objects even when order hasn't changed for most tiles
@@ -47,7 +53,9 @@ This document outlines the implementation plan to fix state management issues in
 **Impact**: Poor performance during drag operations
 
 #### Problem 3: Clicking refresh button does not trigger loading indicator for that tile
+
 **Root Cause**:
+
 - `manualRefresh()` calls `refetch()` from React Query
 - `isLoading` calculation in `useTileData` doesn't account for manual refresh
 - Logic: `showLoading = isPending || isLoading || (isFetching && (!result || !hasValidData))`
@@ -56,7 +64,9 @@ This document outlines the implementation plan to fix state management issues in
 **Impact**: No visual feedback when manually refreshing a tile
 
 #### Problem 4: Removing a tile causes ALL tiles to re-render and show loading unnecessarily
+
 **Root Cause**:
+
 - When a tile is removed, something is triggering query invalidation for ALL tiles
 - All tiles re-render and show loading state
 - This is EXCESSIVE and unnecessary - only the removed tile's query should be cleaned up
@@ -65,7 +75,9 @@ This document outlines the implementation plan to fix state management issues in
 **Impact**: Poor performance, unnecessary API calls, bad UX - tiles shouldn't all refresh when one is removed
 
 #### Problem 5: Need configurable periodic UI re-renders for all tiles (only time tiles enabled now)
+
 **Root Cause**:
+
 - No mechanism for periodic UI-only updates (not data fetching) that can be configured per tile
 - Time tiles need to update display every second without refetching data
 - Other tiles might need this in the future
@@ -74,13 +86,17 @@ This document outlines the implementation plan to fix state management issues in
 **Impact**: Time tiles don't update in real-time. Need a reusable, configurable solution for all tile types
 
 #### Problem 6: Automatic re-fetch when visible
+
 **Current State**:
+
 - React Query has `refetchOnMount: true` configured
 - `refetchOnWindowFocus` is configurable per tile
 - Should work, but needs verification
 
 #### Problem 7: React Query best practices
+
 **Current State**:
+
 - Using React Query v5
 - Has `staleTime`, `refetchInterval`, `gcTime` configured
 - Needs review for optimal caching strategy
@@ -91,6 +107,7 @@ This document outlines the implementation plan to fix state management issues in
 ### Phase 1: Prevent Excessive Re-renders (Problems 1 & 2) - **CRITICAL**
 
 #### 1.1 Optimize Context Value Updates
+
 **File**: `src/components/dragboard/DragboardProvider.tsx`
 
 **Problem**: Context value includes entire `tiles` array, causing all consumers to re-render on any change.
@@ -98,22 +115,26 @@ This document outlines the implementation plan to fix state management issues in
 **Solution Options**:
 
 **Option A: Split Context (Recommended)**
+
 - Create separate contexts: `TilesContext` and `DragStateContext`
 - Only tiles that need drag state subscribe to `DragStateContext`
 - Reduces re-renders significantly
 
 **Option B: Use Context Selectors (Better Performance)**
+
 - Keep single context but use selector pattern
 - Consumers only subscribe to specific parts of context
 - Requires custom hook with `useContextSelector` pattern
 
 **Option C: Memoize Context Value More Granularly**
+
 - Split context value into separate memoized objects
 - Only update what changed
 
 **Recommended**: Option A - Split Context
 
 **Implementation**:
+
 ```typescript
 // Create separate contexts
 const TilesContext = createContext<DragboardTileData[] | null>(null);
@@ -137,14 +158,18 @@ export const useDragState = () => {
 export const useTileById = (id: string) => {
   const tiles = useTiles();
   const dragState = useDragState();
-  return useMemo(() => ({
-    tile: tiles.find(t => t.id === id),
-    isDragging: dragState.draggingTileId === id,
-  }), [tiles, dragState.draggingTileId, id]);
+  return useMemo(
+    () => ({
+      tile: tiles.find((t) => t.id === id),
+      isDragging: dragState.draggingTileId === id,
+    }),
+    [tiles, dragState.draggingTileId, id],
+  );
 };
 ```
 
 #### 1.2 Optimize normalizeOrders to Preserve Object References
+
 **File**: `src/components/dragboard/DragboardProvider.tsx`
 
 **Problem**: `normalizeOrders` creates new objects for ALL tiles even when only one tile's order changed.
@@ -152,6 +177,7 @@ export const useTileById = (id: string) => {
 **Solution**: Only create new objects for tiles whose order actually changed.
 
 **Implementation**:
+
 ```typescript
 const normalizeOrders = useCallback((tilesArray: DragboardTileData[]): DragboardTileData[] => {
   return tilesArray.map((tile, index) => {
@@ -165,11 +191,13 @@ const normalizeOrders = useCallback((tilesArray: DragboardTileData[]): Dragboard
 ```
 
 **Benefits**:
+
 - Tiles with unchanged order keep same object reference
 - React.memo can properly prevent re-renders
 - Significant performance improvement
 
 #### 1.3 Memoize DragboardTile Component
+
 **File**: `src/components/dragboard/DragboardTile.tsx`
 
 **Problem**: `DragboardTile` is not memoized, so it re-renders on every parent re-render.
@@ -177,6 +205,7 @@ const normalizeOrders = useCallback((tilesArray: DragboardTileData[]): Dragboard
 **Solution**: Wrap with `React.memo` and use selective context subscriptions.
 
 **Implementation**:
+
 ```typescript
 interface DragboardTileProps {
   id: string;
@@ -203,12 +232,12 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
 
 export const DragboardTile = React.memo(DragboardTileComponent, (prevProps, nextProps) => {
   // Custom comparison: only re-render if id or viewportColumns changed
-  return prevProps.id === nextProps.id &&
-         prevProps.viewportColumns === nextProps.viewportColumns;
+  return prevProps.id === nextProps.id && prevProps.viewportColumns === nextProps.viewportColumns;
 });
 ```
 
 #### 1.4 Memoize Tile Component Props
+
 **File**: `src/components/tile/Tile.tsx`
 
 **Problem**: `Tile` is memoized but props might change reference unnecessarily.
@@ -216,12 +245,15 @@ export const DragboardTile = React.memo(DragboardTileComponent, (prevProps, next
 **Solution**: Ensure props are stable and add proper comparison function.
 
 **Implementation**:
+
 ```typescript
 export const Tile = memo(TileComponent, (prevProps, nextProps) => {
   // Only re-render if tile object reference changed or other props changed
-  return prevProps.tile === nextProps.tile &&
-         prevProps.onRemove === nextProps.onRemove &&
-         prevProps.refreshKey === nextProps.refreshKey;
+  return (
+    prevProps.tile === nextProps.tile &&
+    prevProps.onRemove === nextProps.onRemove &&
+    prevProps.refreshKey === nextProps.refreshKey
+  );
 });
 ```
 
@@ -230,6 +262,7 @@ export const Tile = memo(TileComponent, (prevProps, nextProps) => {
 ### Phase 2: Fix Loading States (Problems 3 & 4)
 
 #### 2.1 Fix Manual Refresh Loading Indicator
+
 **File**: `src/components/tile/useTileData.ts`
 
 **Problem**: Loading indicator doesn't show when manually refreshing a tile with existing data.
@@ -237,17 +270,20 @@ export const Tile = memo(TileComponent, (prevProps, nextProps) => {
 **Solution**: Always show loading when `isFetching` is true, regardless of data availability.
 
 **Implementation**:
+
 ```typescript
 // Update showLoading calculation - simpler approach
 const showLoading = isPending || isLoading || isFetching;
 ```
 
 **Rationale**:
+
 - `isFetching` is true during any fetch operation (including manual refresh)
 - Users expect visual feedback when clicking refresh
 - Previous data can still be displayed via `placeholderData` option
 
 **Alternative (More Granular)**: Track manual refresh separately if needed:
+
 ```typescript
 const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
@@ -262,21 +298,25 @@ const showLoading = isPending || isLoading || isFetching || isManualRefreshing;
 **Recommended**: Use simpler approach - `isFetching` already covers this case.
 
 #### 2.2 Prevent Unnecessary Re-renders and Loading States on Tile Removal
+
 **File**: `src/components/dragboard/DragboardProvider.tsx` and `src/components/overlay/Overlay.tsx`
 
 **Problem**: Removing a tile causes ALL tiles to re-render and show loading state unnecessarily.
 
 **Root Causes**:
+
 1. Context update causes all tiles to re-render (see Phase 1)
 2. Something is invalidating all queries when a tile is removed
 3. `TilePersistenceListener` might be triggering updates
 
 **Solution**:
+
 - Only remove the specific tile's query from cache
 - Do NOT invalidate all queries
 - Ensure context updates don't propagate unnecessarily (Phase 1 fixes this)
 
 **Implementation**:
+
 ```typescript
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -286,20 +326,23 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const removeTile = useCallback((id: string) => {
-    setTiles((prev) => {
-      const filtered = prev.filter((t) => t.id !== id);
-      return normalizeOrders(filtered);
-    });
+  const removeTile = useCallback(
+    (id: string) => {
+      setTiles((prev) => {
+        const filtered = prev.filter((t) => t.id !== id);
+        return normalizeOrders(filtered);
+      });
 
-    // ONLY remove the specific tile's query - do NOT invalidate all queries
-    queryClient.removeQueries({
-      queryKey: ['tile-data', id]
-    });
+      // ONLY remove the specific tile's query - do NOT invalidate all queries
+      queryClient.removeQueries({
+        queryKey: ['tile-data', id],
+      });
 
-    // Optionally: clean up localStorage for removed tile
-    // storageManager.removeTileState(id);
-  }, [normalizeOrders, queryClient]);
+      // Optionally: clean up localStorage for removed tile
+      // storageManager.removeTileState(id);
+    },
+    [normalizeOrders, queryClient],
+  );
 
   // ... rest of component
 };
@@ -308,6 +351,7 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
 **Also check**: `TilePersistenceListener` in `Overlay.tsx` - ensure it's not causing unnecessary updates.
 
 **Benefits**:
+
 - Only the removed tile's data is cleaned up
 - Other tiles continue working normally
 - No unnecessary re-renders or loading states
@@ -316,11 +360,13 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
 ### Phase 3: Configurable Periodic UI Re-renders (Problem 5)
 
 #### 3.1 Create Reusable Hook for Periodic UI Updates
+
 **File**: `src/hooks/usePeriodicUpdate.ts` (new file)
 
 **Purpose**: Create a configurable hook that triggers re-renders at specified intervals for UI-only updates (not data fetching).
 
 **Implementation**:
+
 ```typescript
 import { useState, useEffect, useRef } from 'react';
 
@@ -364,6 +410,7 @@ export function usePeriodicUpdate(options: UsePeriodicUpdateOptions = {}): numbe
 ```
 
 #### 3.2 Integrate Periodic Updates into Tile System
+
 **File**: `src/components/tile/GenericTile.tsx` or create `src/components/tile/useTilePeriodicUpdate.ts`
 
 **Option A: Add to GenericTile** (if all tiles might need it)
@@ -372,6 +419,7 @@ export function usePeriodicUpdate(options: UsePeriodicUpdateOptions = {}): numbe
 **Recommended**: Option B - Create separate hook that tiles can opt into
 
 **Implementation**:
+
 ```typescript
 // src/components/tile/useTilePeriodicUpdate.ts
 import { usePeriodicUpdate, UsePeriodicUpdateOptions } from '../../hooks/usePeriodicUpdate';
@@ -390,14 +438,17 @@ export function useTilePeriodicUpdate(config?: TilePeriodicUpdateConfig): number
 ```
 
 #### 3.3 Implement in Time Tile
+
 **File**: `src/components/tile-implementations/time/TimeTile.tsx`
 
 **Changes**:
+
 - Use `useTilePeriodicUpdate` with 1 second interval
 - Use update counter to trigger time recalculation
 - Keep API refresh separate (5-10 minutes for timezone/offset)
 
 **Implementation**:
+
 ```typescript
 import { useTilePeriodicUpdate } from '../../tile/useTilePeriodicUpdate';
 
@@ -467,6 +518,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
 ```
 
 **Benefits**:
+
 - Reusable for any tile type
 - Only time tiles enabled now, but others can opt in later
 - Minimal re-render scope (only TimeTileContent recalculates)
@@ -476,9 +528,11 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
 ### Phase 4: Ensure Automatic Re-fetch When Visible (Problem 6)
 
 #### 4.1 Verify React Query Configuration
+
 **File**: `src/components/tile/useTileData.ts`
 
 **Current Configuration Review**:
+
 - `refetchOnMount: true` ✓ (already set)
 - `refetchOnWindowFocus: refreshOnFocus && enableAutoRefresh` ✓ (configurable)
 - `refetchInterval: enableAutoRefresh && refreshInterval > 0 ? refreshInterval : false` ✓ (already set)
@@ -486,11 +540,13 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
 **Action**: Verify this works correctly - should already be in place
 
 #### 4.2 Add Intersection Observer for Visibility
+
 **Optional Enhancement**: Add intersection observer to pause/resume queries when tiles are not visible
 
 **File**: `src/components/tile/useTileData.ts` (optional)
 
 **Implementation** (if needed):
+
 ```typescript
 // Use React Query's built-in visibility handling
 // Or add custom hook with Intersection Observer
@@ -501,9 +557,11 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
 ### Phase 5: React Query Best Practices (Problem 7)
 
 #### 5.1 Review and Optimize Caching Strategy
+
 **File**: `src/components/tile/useTileData.ts` and `src/contexts/QueryClientProvider.tsx`
 
 **Current Configuration**:
+
 - `staleTime: enableAutoRefresh ? refreshInterval : Infinity` ✓
 - `gcTime: 5 * 60 * 1000` (in QueryClientProvider) ✓
 - `refetchInterval: enableAutoRefresh && refreshInterval > 0 ? refreshInterval : false` ✓
@@ -528,11 +586,13 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
    - Good for keeping previous data during refetch
 
 **Action Items**:
+
 - Review `gcTime` - consider increasing to 10-15 minutes
 - Verify `staleTime` calculation is optimal
 - Add comments explaining caching strategy
 
 #### 5.2 Ensure Proper Query Key Stability
+
 **File**: `src/components/tile/useTileData.ts`
 
 **Current**: Query keys are stable based on `tileId`, `pathParams`, `queryParams` ✓
@@ -540,18 +600,22 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
 **Action**: Verify query keys don't change unnecessarily
 
 #### 5.3 Add Query Invalidation on Tile Removal
+
 **Already covered in Phase 2.2** ✓
 
 ### Phase 6: Tile Refresh Service Integration
 
 #### 6.1 Register Tiles with Refresh Service
+
 **File**: `src/components/tile/useTileData.ts`
 
 **Changes**:
+
 - Register `manualRefresh` callback with `TileRefreshService`
 - Clean up on unmount
 
 **Implementation**:
+
 ```typescript
 // In useTileData.ts
 import { TileRefreshService } from '../../services/tileRefreshService';
@@ -575,6 +639,7 @@ useEffect(() => {
 **Challenge**: Need to pass `TileRefreshService` instance to tiles
 
 **Solution Options**:
+
 1. Create React Context for `TileRefreshService`
 2. Create singleton instance
 3. Pass service through props (not ideal)
@@ -584,6 +649,7 @@ useEffect(() => {
 **File**: `src/contexts/TileRefreshContext.tsx` (new file)
 
 **Implementation**:
+
 ```typescript
 import React, { createContext, useContext } from 'react';
 import { TileRefreshService } from '../services/tileRefreshService';
@@ -612,9 +678,11 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 **Update**: `src/components/overlay/Overlay.tsx` to use context instead of ref
 
 #### 6.2 Update Overlay to Use Context
+
 **File**: `src/components/overlay/Overlay.tsx`
 
 **Changes**:
+
 - Wrap with `TileRefreshProvider`
 - Use `useTileRefreshService` hook instead of ref
 
@@ -630,12 +698,14 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 ## Testing Checklist
 
 ### Phase 1 Testing
+
 - [ ] Drag and drop a tile - verify all tiles re-render and positions update
 - [ ] Move tile to different position - verify grid layout updates
 - [ ] Add tile from sidebar - verify new tile appears in correct position
 - [ ] Verify no performance issues with frequent re-renders
 
 ### Phase 2 Testing
+
 - [ ] Click refresh button on a tile - verify loading indicator appears
 - [ ] Remove a tile - verify remaining tiles do NOT show loading state or re-render unnecessarily
 - [ ] Verify only the removed tile's query is cleaned up
@@ -643,6 +713,7 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 - [ ] Test with network errors - verify error states work correctly
 
 ### Phase 3 Testing
+
 - [ ] Verify time tile UI updates every second (without API calls)
 - [ ] Verify time tile API still refreshes at configured interval (5 minutes)
 - [ ] Test with multiple time tiles - verify all update independently
@@ -651,17 +722,20 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 - [ ] Verify periodic updates don't cause excessive re-renders (use React DevTools Profiler)
 
 ### Phase 4 Testing
+
 - [ ] Verify tiles refetch when component mounts
 - [ ] Verify tiles refetch when window regains focus (if enabled)
 - [ ] Test with tiles off-screen - verify they refetch when scrolled into view
 
 ### Phase 5 Testing
+
 - [ ] Verify cached data is used when appropriate
 - [ ] Test tile removal and re-addition - verify cached data is used
 - [ ] Verify stale data is refetched correctly
 - [ ] Test with slow network - verify placeholder data is shown
 
 ### Phase 6 Testing
+
 - [ ] Click global refresh button - verify all tiles refresh
 - [ ] Verify tiles register/unregister correctly
 - [ ] Test with tile removal during refresh - verify no errors
@@ -669,32 +743,38 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 ## Files to Modify
 
 ### High Priority
+
 1. `src/components/overlay/Overlay.tsx` - Fix tile keys for re-rendering
 2. `src/components/tile/useTileData.ts` - Fix loading states
 3. `src/components/dragboard/DragboardProvider.tsx` - Add query invalidation on remove
 4. `src/components/tile-implementations/time/TimeTile.tsx` - Add real-time updates
 
 ### Medium Priority
+
 5. `src/contexts/TileRefreshContext.tsx` - New file for refresh service context
 6. `src/components/tile/useTileData.ts` - Register with refresh service
 7. `src/contexts/QueryClientProvider.tsx` - Optimize caching settings
 
 ### Low Priority
+
 8. `src/components/tile-implementations/time/useRealtimeTime.ts` - New hook (optional)
 9. Documentation updates
 
 ## Risk Assessment
 
 ### Low Risk
+
 - Phase 1: Changing keys is low risk, well-tested pattern
 - Phase 2: Loading state fixes are straightforward
 - Phase 3: Time tile updates are isolated
 
 ### Medium Risk
+
 - Phase 5: Caching changes could affect performance (test thoroughly)
 - Phase 6: Context changes affect multiple components
 
 ### Mitigation
+
 - Test each phase independently
 - Use feature flags if needed
 - Roll back plan for each phase
@@ -718,4 +798,3 @@ export const TileRefreshProvider: React.FC<{ children: React.ReactNode }> = ({ c
 - Monitor React Query DevTools for query behavior
 - Consider adding performance metrics for tile operations
 - Document caching strategy for future reference
-

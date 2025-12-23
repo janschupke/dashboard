@@ -19,8 +19,7 @@ const mockTiles = [
   {
     id: 'tile-1',
     type: 'cryptocurrency',
-    position: { x: 0, y: 0 },
-    size: 'medium',
+    order: 0,
     createdAt: 123,
     config: { foo: 'bar' },
   },
@@ -65,9 +64,9 @@ describe('Overlay', () => {
     const toggleButton = screen.getByTestId('toggle-sidebar');
     // Header should receive correct props
     expect(headerMock).toHaveBeenCalled();
-    expect(headerMock.mock.calls[0][0].isLogViewOpen).toBe(false);
-    expect(headerMock.mock.calls[0][0].theme).toBe(AppTheme.light);
-    expect(typeof headerMock.mock.calls[0][0].toggleCollapse).toBe('function');
+    expect(headerMock.mock.calls[0]![0].isLogViewOpen).toBe(false);
+    expect(headerMock.mock.calls[0]![0].theme).toBe(AppTheme.light);
+    expect(typeof headerMock.mock.calls[0]![0].toggleCollapse).toBe('function');
     // Click toggle button
     await act(async () => {
       toggleButton.click();

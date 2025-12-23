@@ -4,9 +4,10 @@ import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 
 import { REFRESH_INTERVALS } from '../../contexts/constants';
-import { useTileRefreshService } from '../../contexts/TileRefreshContext';
+import { useTileRefreshService } from '../../hooks/useTileRefreshService';
 import { storageManager } from '../../services/storageManager';
 import { calculateTileStatus } from '../../utils/statusCalculator';
+import { msToSeconds } from '../../utils/timeUtils';
 
 import type { TileConfig, TileDataType } from '../../services/storageManager';
 
@@ -49,7 +50,7 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
     refreshInterval = REFRESH_INTERVALS.TILE_DATA,
     enableAutoRefresh = true,
     refreshOnFocus = true,
-  } = refreshConfig || {};
+  } = refreshConfig ?? {};
 
   // Create a stable query key based on tile ID, path params, and query params
   const queryKey = useMemo(
@@ -75,8 +76,10 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
         if (!cachedData) return undefined;
         // Only use cached data if it's fresh and has valid data
         const now = DateTime.now().toMillis();
-        const timeSinceLastFetch = cachedData.lastDataRequest ? now - cachedData.lastDataRequest : Infinity;
-        const isFresh = timeSinceLastFetch < refreshInterval;
+        const timeSinceLastFetch = cachedData.lastDataRequest
+          ? msToSeconds(now - cachedData.lastDataRequest)
+          : Infinity;
+        const isFresh = timeSinceLastFetch < msToSeconds(refreshInterval);
         const hasValidData = cachedData.data !== null && cachedData.data !== undefined;
         // Only use as initialData if fresh and valid, otherwise let it fetch
         if (isFresh && hasValidData && cachedData.lastDataRequestSuccessful) {
@@ -89,8 +92,10 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
         const cachedData = storageManager.getTileState<T>(tileId);
         if (!cachedData) return 0;
         const now = DateTime.now().toMillis();
-        const timeSinceLastFetch = cachedData.lastDataRequest ? now - cachedData.lastDataRequest : Infinity;
-        const isFresh = timeSinceLastFetch < refreshInterval;
+        const timeSinceLastFetch = cachedData.lastDataRequest
+          ? msToSeconds(now - cachedData.lastDataRequest)
+          : Infinity;
+        const isFresh = timeSinceLastFetch < msToSeconds(refreshInterval);
         const hasValidData = cachedData.data !== null && cachedData.data !== undefined;
         if (isFresh && hasValidData && cachedData.lastDataRequestSuccessful) {
           return cachedData.lastDataRequest || 0;
@@ -113,7 +118,16 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
       // Network mode
       networkMode: 'online',
     }),
-    [queryKey, tileId, pathParams, queryParams, apiFn, refreshInterval, enableAutoRefresh, refreshOnFocus],
+    [
+      queryKey,
+      tileId,
+      pathParams,
+      queryParams,
+      apiFn,
+      refreshInterval,
+      enableAutoRefresh,
+      refreshOnFocus,
+    ],
   );
 
   // Use React Query
@@ -154,14 +168,14 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   const refreshService = useTileRefreshService();
   const manualRefresh = useMemo(
     () => () => {
-      refetch();
+      void refetch();
     },
     [refetch],
   );
 
   useEffect(() => {
-    const unregister = refreshService.registerRefreshCallback(async () => {
-      await refetch();
+    const unregister = refreshService.registerRefreshCallback(() => {
+      void refetch();
     });
 
     return unregister;

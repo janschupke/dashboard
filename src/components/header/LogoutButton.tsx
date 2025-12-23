@@ -23,7 +23,7 @@ export const LogoutButton: React.FC = () => {
     <Button
       variant="icon"
       size="sm"
-      onClick={handleLogout}
+      onClick={() => void handleLogout()}
       title="Logout"
       data-testid="logout-button"
     >

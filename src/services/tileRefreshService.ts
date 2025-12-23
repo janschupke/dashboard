@@ -5,13 +5,13 @@ import { REFRESH_INTERVALS } from '../contexts/constants';
  * Extracted from component logic to maintain separation of concerns
  */
 export class TileRefreshService {
-  private refreshCallbacks: Set<() => Promise<void>> = new Set();
+  private refreshCallbacks: Set<() => void | Promise<void>> = new Set();
   private isRefreshing = false;
 
   /**
    * Register a tile refresh callback
    */
-  registerRefreshCallback(callback: () => Promise<void>): () => void {
+  registerRefreshCallback(callback: () => void | Promise<void>): () => void {
     this.refreshCallbacks.add(callback);
     // Return unregister function
     return () => {
@@ -30,7 +30,9 @@ export class TileRefreshService {
     this.isRefreshing = true;
     try {
       // Execute all refresh callbacks in parallel
-      await Promise.all(Array.from(this.refreshCallbacks).map((callback) => callback()));
+      await Promise.all(
+        Array.from(this.refreshCallbacks).map((callback) => Promise.resolve(callback())),
+      );
     } finally {
       this.isRefreshing = false;
     }
@@ -49,4 +51,3 @@ export class TileRefreshService {
  * This gives users visual feedback that a refresh is happening
  */
 export const DEFAULT_REFRESH_DELAY_MS = REFRESH_INTERVALS.COUNTDOWN_UPDATE;
-

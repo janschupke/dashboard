@@ -1,8 +1,6 @@
 import { usePeriodicUpdate, type UsePeriodicUpdateOptions } from '../../hooks/usePeriodicUpdate';
 
-export interface TilePeriodicUpdateConfig extends UsePeriodicUpdateOptions {
-  // Can extend with tile-specific options if needed
-}
+export type TilePeriodicUpdateConfig = UsePeriodicUpdateOptions;
 
 /**
  * Hook for tiles that need periodic UI updates.
@@ -11,4 +9,3 @@ export interface TilePeriodicUpdateConfig extends UsePeriodicUpdateOptions {
 export function useTilePeriodicUpdate(config?: TilePeriodicUpdateConfig): number {
   return usePeriodicUpdate(config);
 }
-

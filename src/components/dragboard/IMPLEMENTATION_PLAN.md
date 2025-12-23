@@ -23,6 +23,7 @@ interface DashboardState {
 ```
 
 **Why Order Instead of Positions?**
+
 - Spec says "they always re-arrange so that no empty gaps remain"
 - If we always consolidate to fill gaps, explicit positions are unnecessary
 - Order-based placement is simpler: tiles placed sequentially, wrap automatically
@@ -51,9 +52,11 @@ interface DashboardState {
    - Grid placement is automatic based on order
 
 4. **Persistence Flow**:
+
    ```
    User Action → Provider updates tiles → TilePersistenceListener watches → Saves to localStorage
    ```
+
    - Provider does NOT access localStorage directly
    - `TilePersistenceListener` (in Overlay) handles persistence
    - This keeps dragboard decoupled from storage implementation
@@ -61,6 +64,7 @@ interface DashboardState {
 ## Core Requirements
 
 ### Functional Requirements
+
 1. **Encapsulated, reusable component** - No implementation leaks to rest of app
 2. **Tile rearrangement** - Tiles can be moved by drag-and-drop
 3. **Add tiles from sidebar** - By clicking or dragging sidebar items
@@ -72,6 +76,7 @@ interface DashboardState {
 9. **Minimum dimensions** - Tiles are at least 250px wide, 200px high
 
 ### Technical Requirements
+
 1. **No hardcoded values** - Use constants and enums
 2. **Tailwind CSS** - Use Tailwind for styling
 3. **CSS Grid** - Use CSS Grid for layout
@@ -93,6 +98,7 @@ src/components/dragboard/
 ```
 
 **Why no separate services?**
+
 - Order management is trivial (array index = order)
 - Drag/drop is simple array reordering
 - No collision detection needed (order-based = no collisions)
@@ -121,11 +127,11 @@ Component re-renders
 
 ```typescript
 export const DRAGBOARD_CONSTANTS = {
-  MIN_TILE_WIDTH: 250,  // pixels
-  MIN_TILE_HEIGHT: 200,  // pixels
-  GRID_GAP: 16,          // pixels (1rem)
-  TILE_COL_SPAN: 1,      // All tiles span 1 column
-  TILE_ROW_SPAN: 1,      // All tiles span 1 row
+  MIN_TILE_WIDTH: 250, // pixels
+  MIN_TILE_HEIGHT: 200, // pixels
+  GRID_GAP: 16, // pixels (1rem)
+  TILE_COL_SPAN: 1, // All tiles span 1 column
+  TILE_ROW_SPAN: 1, // All tiles span 1 row
 } as const;
 ```
 
@@ -169,6 +175,7 @@ export interface DashboardState {
 ```
 
 **Action Items**:
+
 - [ ] Create `constants.ts` with all constants (including TILE_COL_SPAN=1, TILE_ROW_SPAN=1)
 - [ ] Create `types.ts` with all TypeScript interfaces
 - [ ] Add `DashboardState` interface matching localStorage format (no size field)
@@ -184,10 +191,12 @@ export interface DashboardState {
 **Purpose**: Single file with context, state, and all logic. No separate context file needed.
 
 **State**:
+
 - `tiles: DragboardTileData[]` - All tiles (from localStorage initially)
 - `dragState: { draggingTileId: string | null, dropIndex: number | null, sidebarTileType?: string }` - Drag state
 
 **Context Interface**:
+
 ```typescript
 interface DragboardContextValue {
   tiles: DragboardTileData[];
@@ -206,6 +215,7 @@ interface DragboardContextValue {
 ```
 
 **Initialization**:
+
 - Accept `initialTiles` prop (from localStorage via Overlay)
 - Normalize: ensure tiles have `order` matching array index (0, 1, 2, ...)
 - Ensure `createdAt` exists
@@ -242,18 +252,21 @@ interface DragboardContextValue {
    - Clear drag state
 
 **LocalStorage Integration**:
+
 - Provider does NOT directly interact with localStorage
 - Overlay component has `TilePersistenceListener` that watches `tiles` from context
 - When tiles change, listener calls `storage.setDashboardState({ tiles })`
 - This ensures dragboard is decoupled from storage implementation
 
 **Key Simplifications**:
+
 - **Order = Array Index**: No separate order field needed. Sort tiles by order, then index = order.
 - **No viewportColumns in context**: Grid calculates it, passes directly to tiles via props
 - **No rows state**: Calculate from `Math.ceil(tiles.length / viewportColumns)` when needed
 - **No services**: All logic inline in Provider
 
 **Action Items**:
+
 - [ ] Single file with context + state + logic
 - [ ] Normalize tiles on load: sort by order, reassign 0,1,2...
 - [ ] Inline drag/drop logic (simple array reordering)
@@ -270,6 +283,7 @@ interface DragboardContextValue {
 **Key Implementation Details**:
 
 1. **Column Calculation (CRITICAL - THIS WAS BROKEN)**:
+
    ```typescript
    // Calculate viewport columns correctly
    const calculateViewportColumns = (containerWidth: number): number => {
@@ -279,13 +293,14 @@ interface DragboardContextValue {
      // Solving: n = (availableWidth + gap) / (minWidth + gap)
      const columns = Math.floor(
        (availableWidth + DRAGBOARD_CONSTANTS.GRID_GAP) /
-       (DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH + DRAGBOARD_CONSTANTS.GRID_GAP)
+         (DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH + DRAGBOARD_CONSTANTS.GRID_GAP),
      );
      return Math.max(1, columns);
    };
    ```
 
 2. **Grid Template (CRITICAL - FIX COLUMN WIDTH ISSUE)**:
+
    ```tsx
    <div
      className="relative w-full h-full p-4 grid gap-4 content-start overflow-hidden"
@@ -308,6 +323,7 @@ interface DragboardContextValue {
    - Convert mouse position to grid cell index
 
 **Action Items**:
+
 - [ ] Calculate columns with ResizeObserver
 - [ ] Pass `viewportColumns` to tiles as prop
 - [ ] Implement drop zones
@@ -324,6 +340,7 @@ interface DragboardContextValue {
 **Key Implementation Details**:
 
 1. **Order-Based Placement (SIMPLE)**:
+
    ```typescript
    // Get viewport columns from props (not context)
    const { viewportColumns } = props; // From Grid component
@@ -335,6 +352,7 @@ interface DragboardContextValue {
    ```
 
 2. **Grid Positioning**:
+
    ```tsx
    <div
      className="relative flex flex-col w-full h-full"
@@ -352,6 +370,7 @@ interface DragboardContextValue {
    - `onDragEnd`: Call `endTileDrag` with new order index
 
 **Action Items**:
+
 - [ ] Implement order-to-position calculation
 - [ ] Handle drag events (pass order index, not position)
 - [ ] Apply correct grid positioning
@@ -361,11 +380,13 @@ interface DragboardContextValue {
 ---
 
 **Why Removed**:
+
 - Step 9 (Column Width): Already covered in Step 3 (Grid component)
 - Step 10 (Vertical Stretching): Just CSS, not a separate step
 - Step 11 (LocalStorage): Already covered in Step 2 (Provider)
 
 **Action Items**:
+
 - [ ] Column width handled in Grid component
 - [ ] Vertical stretching is CSS (`alignItems: 'stretch'`, `h-full`)
 - [ ] LocalStorage handled by TilePersistenceListener (already documented)
@@ -375,6 +396,7 @@ interface DragboardContextValue {
 ### Step 5: Integration and Testing
 
 **Action Items**:
+
 - [ ] Integrate with Overlay component
 - [ ] Test loading tiles from localStorage
 - [ ] Test saving tiles to localStorage
@@ -396,12 +418,14 @@ interface DragboardContextValue {
 ### Column Width Calculation (THE FIX)
 
 **WRONG (Previous Implementation)**:
+
 ```typescript
 // ❌ This creates too many columns
 const finalColumns = Math.max(viewportColumns, maxColumnNeeded, config.columns);
 ```
 
 **RIGHT (New Implementation)**:
+
 ```typescript
 // ✅ Only use viewport columns
 const viewportColumns = calculateViewportColumns(containerWidth);
@@ -413,11 +437,13 @@ const viewportColumns = calculateViewportColumns(containerWidth);
 ### Grid Template
 
 **CRITICAL**: Use exact column count, not maximum:
+
 ```tsx
-gridTemplateColumns: `repeat(${viewportColumns}, minmax(${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px, 1fr))`
+gridTemplateColumns: `repeat(${viewportColumns}, minmax(${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px, 1fr))`;
 ```
 
 This ensures:
+
 - Exactly `viewportColumns` columns
 - Each column at least `MIN_TILE_WIDTH` (250px from constants)
 - Remaining space distributed equally (`1fr`)
@@ -426,6 +452,7 @@ This ensures:
 ### Order-Based Placement
 
 **CRITICAL**: Calculate grid position from order:
+
 ```typescript
 // Order 0, 1, 2, 3... maps to grid cells left-to-right, top-to-bottom
 const row = Math.floor(order / viewportColumns);
@@ -436,6 +463,7 @@ const col = order % viewportColumns;
 ### No State for Columns
 
 **CRITICAL**: Don't store column count in Provider state. Calculate in Grid component:
+
 - Calculate on every render based on container width
 - Use ResizeObserver to update on resize
 - Pass `viewportColumns` to tiles via props
@@ -445,6 +473,7 @@ const col = order % viewportColumns;
 **CRITICAL**: The dragboard must work seamlessly with localStorage:
 
 1. **Storage Format** (matches `StorageManager.DashboardState`):
+
    ```typescript
    {
      tiles: [
@@ -480,11 +509,13 @@ const col = order % viewportColumns;
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] `DragboardProvider.test.tsx` - State management and drag/drop logic
 - [ ] `DragboardGrid.test.tsx` - Column calculation
 - [ ] `DragboardTile.test.tsx` - Order-to-position calculation
 
 ### Integration Tests
+
 - [ ] Add tile from sidebar
 - [ ] Remove tile
 - [ ] Drag tile to new position
@@ -493,6 +524,7 @@ const col = order % viewportColumns;
 - [ ] Sidebar open/closed (layout adjusts)
 
 ### Visual Tests
+
 - [ ] 1 tile - stretches to fill width
 - [ ] 3 tiles - wrap correctly, equal columns
 - [ ] Many tiles - all wrap, no overflow
@@ -544,4 +576,3 @@ const col = order % viewportColumns;
 
 **Status**: Ready for implementation
 **Priority**: CRITICAL - Follow implementation order (Steps 1-5)
-

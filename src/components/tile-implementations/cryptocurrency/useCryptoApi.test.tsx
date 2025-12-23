@@ -1,6 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 
+import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
@@ -161,6 +162,11 @@ describe('useCryptoApi', () => {
   });
 
   describe('getCryptocurrencyMarkets - Edge Cases', () => {
+    beforeEach(() => {
+      // Clear any cached data before edge case tests
+      storageManager.clearTileState();
+    });
+
     it('should handle different parameter combinations', async () => {
       // Arrange
       setupCryptocurrencySuccessMock();

@@ -1,7 +1,7 @@
 // Theme initialization script
 (function () {
   try {
-    const theme = localStorage.getItem('dashboard-theme') || 'light';
+    const theme = localStorage.getItem('dashboard-theme') ?? 'light';
     document.documentElement.setAttribute('data-theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');

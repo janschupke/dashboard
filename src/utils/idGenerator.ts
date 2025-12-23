@@ -27,4 +27,3 @@ export function generateTileId(): string {
 export function generateLogId(): string {
   return generateId('log');
 }
-

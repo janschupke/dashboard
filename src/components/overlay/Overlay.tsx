@@ -3,15 +3,16 @@ import React, { Suspense, useState, useCallback } from 'react';
 import { DateTime } from 'luxon';
 
 import { Header } from '../../components/header/Header.tsx';
+import { TileRefreshProvider } from '../../contexts/TileRefreshContext';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useTheme } from '../../hooks/useTheme';
-import { DEFAULT_REFRESH_DELAY_MS } from '../../services/tileRefreshService';
+import { useTileRefreshService } from '../../hooks/useTileRefreshService';
 import { useStorageManager } from '../../services/storageManager';
+import { DEFAULT_REFRESH_DELAY_MS } from '../../services/tileRefreshService';
 import { useLogManager } from '../api-log/useLogManager';
 import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Tile } from '../tile/Tile';
-import { TileRefreshProvider, useTileRefreshService } from '../../contexts/TileRefreshContext';
 
 import { ErrorBoundary } from './ErrorBoundary';
 
@@ -119,8 +120,9 @@ function useTileStorage() {
               ...tile,
               type: tile.type,
               order: typeof tile.order === 'number' ? tile.order : 0, // Default to 0 if missing
-              createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
-              config: tile.config || {},
+              createdAt:
+                typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
+              config: tile.config ?? {},
             }) as DragboardTileData,
         ),
       );
@@ -142,8 +144,9 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
           id: tile.id,
           type: tile.type,
           order: tile.order,
-          createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
-          config: tile.config || {},
+          createdAt:
+            typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
+          config: tile.config ?? {},
         })),
       });
       if (prevTiles) {

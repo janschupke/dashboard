@@ -2,15 +2,21 @@ import { useMemo, useState, useCallback, memo } from 'react';
 
 import { DateTime } from 'luxon';
 
+import { formatDateToISO } from '../../../utils/dateFormatters';
+import {
+  fromUnixTimestampMs,
+  diffInHours,
+  toLocaleDateString,
+  now,
+} from '../../../utils/luxonUtils';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
-import { fromUnixTimestampMs, diffInHours, toLocaleDateString, now } from '../../../utils/luxonUtils';
 
 import { useEarthquakeApi } from './useEarthquakeApi';
 
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
 import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data,
@@ -22,7 +28,7 @@ const EarthquakeTileContent = memo(function EarthquakeTileContent({
   onThresholdChange: (value: number) => void;
 }) {
   // Handle the case where data might be an array directly or have items property
-  const earthquakes = data?.items || (Array.isArray(data) ? data : []);
+  const earthquakes = data?.items ?? (Array.isArray(data) ? data : []);
 
   // Filter earthquakes by magnitude threshold and sort by time (most recent first)
   const filteredEarthquakes = earthquakes
@@ -154,7 +160,7 @@ export const EarthquakeTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISO() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

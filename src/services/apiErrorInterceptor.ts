@@ -1,47 +1,5 @@
 import { storageManager } from './storageManager';
 
-import type { APILogDetails } from './storageManager';
-
-export interface APIError {
-  apiCall: string;
-  reason: string;
-  details?: Record<string, unknown>;
-}
-
-export const interceptAPIError = (error: APIError): void => {
-  // Prevent error from appearing in console
-  const originalConsoleError = console.error;
-  console.error = () => {}; // Temporarily suppress console.error
-
-  // Log the error to our storage system
-  storageManager.addLog({
-    level: 'error',
-    apiCall: error.apiCall,
-    reason: error.reason,
-    details: error.details as APILogDetails,
-  });
-
-  // Restore console.error
-  console.error = originalConsoleError;
-};
-
-export const interceptAPIWarning = (warning: APIError): void => {
-  // Prevent warning from appearing in console
-  const originalConsoleWarn = console.warn;
-  console.warn = () => {}; // Temporarily suppress console.warn
-
-  // Log the warning to our storage system
-  storageManager.addLog({
-    level: 'warning',
-    apiCall: warning.apiCall,
-    reason: warning.reason,
-    details: warning.details as APILogDetails,
-  });
-
-  // Restore console.warn
-  console.warn = originalConsoleWarn;
-};
-
 // Global error handler for unhandled fetch errors
 export const setupGlobalErrorHandling = (): void => {
   // Override console.error to catch network errors
@@ -89,8 +47,8 @@ export const setupGlobalErrorHandling = (): void => {
           source: String(source),
           lineno: lineno ?? '',
           colno: colno ?? '',
-          errorName: error && error.name ? error.name : '',
-          errorMessage: error && error.message ? error.message : '',
+          errorName: error?.name ?? '',
+          errorMessage: error?.message ?? '',
         },
       });
       return false;
@@ -101,8 +59,8 @@ export const setupGlobalErrorHandling = (): void => {
         apiCall: 'window.onunhandledrejection',
         reason: String(event.reason),
         details: {
-          errorName: event.reason && event.reason.name ? event.reason.name : '',
-          errorMessage: event.reason && event.reason.message ? event.reason.message : '',
+          errorName: event.reason?.name ?? '',
+          errorMessage: event.reason?.message ?? '',
         },
       });
       return false;

@@ -1,4 +1,6 @@
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
+
+import { msToHours } from './timeUtils';
 
 /**
  * Luxon utility functions
@@ -57,7 +59,7 @@ export function toLocaleDateString(dt: DateTime): string {
 /**
  * Calculate difference between two DateTimes in minutes
  */
-export function diffInMinutes(dt1: DateTime, dt2: DateTime): number {
+function diffInMinutes(dt1: DateTime, dt2: DateTime): number {
   return Math.floor(dt2.diff(dt1, 'minutes').minutes);
 }
 
@@ -71,7 +73,7 @@ export function diffInHours(dt1: DateTime, dt2: DateTime): number {
 /**
  * Calculate difference between two DateTimes in milliseconds
  */
-export function diffInMilliseconds(dt1: DateTime, dt2: DateTime): number {
+function diffInMilliseconds(dt1: DateTime, dt2: DateTime): number {
   return dt2.diff(dt1, 'milliseconds').milliseconds;
 }
 
@@ -81,8 +83,8 @@ export function diffInMilliseconds(dt1: DateTime, dt2: DateTime): number {
  */
 export function formatRelativeTime(dt: DateTime, reference: DateTime = now()): string {
   const diffMs = diffInMilliseconds(dt, reference);
-  const diffMins = Math.floor(Math.abs(diffMs) / (1000 * 60));
-  const diffHours = Math.floor(diffMins / 60);
+  const diffMins = Math.abs(diffInMinutes(dt, reference));
+  const diffHours = Math.floor(Math.abs(msToHours(diffMs)));
   const diffDays = Math.floor(diffHours / 24);
 
   if (diffMins < 1) return 'Just now';
@@ -91,25 +93,3 @@ export function formatRelativeTime(dt: DateTime, reference: DateTime = now()): s
   if (diffDays < 7) return `${diffDays}d ago`;
   return toLocaleDateString(dt);
 }
-
-/**
- * Create a Duration from milliseconds
- */
-export function durationFromMs(ms: number): Duration {
-  return Duration.fromMillis(ms);
-}
-
-/**
- * Create a Duration from seconds
- */
-export function durationFromSeconds(seconds: number): Duration {
-  return Duration.fromObject({ seconds });
-}
-
-/**
- * Create a Duration from minutes
- */
-export function durationFromMinutes(minutes: number): Duration {
-  return Duration.fromObject({ minutes });
-}
-

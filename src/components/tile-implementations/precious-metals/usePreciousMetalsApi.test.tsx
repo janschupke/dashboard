@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { setupPreciousMetalsSuccessMock } from '../../../test/utils/mswTestUtils';
@@ -46,6 +46,6 @@ describe('usePreciousMetalsApi', () => {
     const data = fetchResult.data;
     expect(data).toBeDefined();
     expect(data?.gold?.price).toBe(3350.699951);
-    expect(data?.silver?.price).toBe(0); // Silver is set to 0 in current implementation
+    expect(data?.silver?.price).toBe(23.45); // Silver price from mock data
   });
 });

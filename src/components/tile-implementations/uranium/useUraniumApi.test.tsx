@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { setupUraniumSuccessMock } from '../../../test/utils/mswTestUtils';
@@ -26,7 +26,6 @@ describe('useUraniumApi', () => {
   const mockParams: UraniumHtmlQueryParams = {
     range: '1Y',
   };
-  const mockHtml = '<span id="spot-price">85.5</span>';
   const expectedData: UraniumTileData = {
     spotPrice: 85.5,
     change: 0,

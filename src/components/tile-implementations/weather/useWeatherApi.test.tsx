@@ -1,8 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 
+import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
+import { server } from '../../../test/mocks/server';
 import {
   API_ENDPOINTS,
   setupWeatherSuccessMock,
@@ -105,6 +107,12 @@ describe('useWeatherApi', () => {
   });
 
   describe('getWeather - Failure Scenarios', () => {
+    beforeEach(() => {
+      // Clear any cached data before failure tests
+      server.resetHandlers();
+      storageManager.clearTileState();
+    });
+
     it('should handle network errors', async () => {
       // Arrange
       setupFailureMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, 'network');

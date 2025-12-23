@@ -1,12 +1,10 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
+
 import { useTranslation } from 'react-i18next';
 
-import { DateTime } from 'luxon';
-
-import { CardVariant } from '../../constants/enums';
 import { ERROR_MESSAGES } from '../../constants/errorMessages';
-import { minutesToMs } from '../../utils/timeUtils';
 import { formatRelativeTime, now, fromISO } from '../../utils/luxonUtils';
+import { minutesToMs } from '../../utils/timeUtils';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 
@@ -16,7 +14,7 @@ import { TileStatus } from './useTileData';
 
 import type { TileDataType } from '../../services/storageManager';
 import type { TileCategory } from '../../types/tileCategories';
-import type { DragboardTileData, DraggableTileProps } from '../dragboard';
+import type { DragboardTileData } from '../dragboard';
 
 export interface TileMeta {
   title: string;
@@ -24,7 +22,7 @@ export interface TileMeta {
   category?: TileCategory;
 }
 
-export interface GenericTileProps extends DraggableTileProps {
+export interface GenericTileProps {
   tile: DragboardTileData;
   meta: TileMeta;
   children?: React.ReactNode;
@@ -33,6 +31,9 @@ export interface GenericTileProps extends DraggableTileProps {
   data: TileDataType | null;
   onManualRefresh?: () => void;
   isLoading?: boolean;
+  onRemove?: (id: string) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  className?: string;
 }
 
 const StatusBar = ({
@@ -121,7 +122,9 @@ const StatusBar = ({
 const ErrorContent = React.memo(() => (
   <div className="flex flex-col items-center justify-center h-full space-y-1">
     <div className="text-4xl mb-4">🍆</div>
-    <p className="text-theme-status-error text-sm text-center">{ERROR_MESSAGES.TILE.DATA_FETCH_FAILED}</p>
+    <p className="text-theme-status-error text-sm text-center">
+      {ERROR_MESSAGES.TILE.DATA_FETCH_FAILED}
+    </p>
   </div>
 ));
 
@@ -150,11 +153,11 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       }
     }, [tile.id, onRemove]);
 
-    const getCardVariant = useCallback((): CardVariant => {
+    const getCardVariant = useCallback((): 'default' | 'elevated' | 'outlined' => {
       if (status === TileStatus.Error || status === TileStatus.Stale) {
-        return CardVariant.OUTLINED;
+        return 'outlined';
       }
-      return CardVariant.ELEVATED;
+      return 'elevated';
     }, [status]);
 
     const getBorderClass = useCallback(() => {
@@ -194,7 +197,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
         <Card
           ref={ref}
           variant={getCardVariant()}
-          className={`relative h-full flex flex-col ${getBorderClass()} ${className || ''}`}
+          className={`relative h-full flex flex-col ${getBorderClass()} ${className ?? ''}`}
           data-tile-id={tile.id}
           data-tile-type={tile.type}
           role="gridcell"
@@ -216,7 +219,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           {/* Close Button - Positioned in top right corner */}
           {onRemove && (
             <button
-              onClick={handleRemove}
+              onClick={() => void handleRemove()}
               className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
               aria-label={`Remove ${meta.title} tile`}
               onMouseDown={(e) => e.stopPropagation()}

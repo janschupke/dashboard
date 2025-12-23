@@ -15,9 +15,7 @@ export interface DragboardTileData {
  * Dragboard configuration
  * Simplified - no config needed, all behavior is automatic
  */
-export interface DragboardConfig {
-  // Empty - no config needed for order-based placement
-}
+export type DragboardConfig = Record<string, never>;
 
 /**
  * Dashboard state as stored in localStorage
@@ -32,4 +30,3 @@ export interface DashboardState {
     config?: Record<string, unknown>;
   }>;
 }
-

@@ -1,7 +1,7 @@
 /**
  * Authentication validation utilities
  * Extracted from component logic to maintain separation of concerns
- * 
+ *
  * Note: Error messages should be handled via i18n in components
  */
 
@@ -15,7 +15,7 @@ export interface ValidationResult {
  * Returns error key for i18n translation
  */
 export function validatePassword(password: string): ValidationResult {
-  if (!password || !password.trim()) {
+  if (!password?.trim()) {
     return {
       isValid: false,
       error: 'auth.passwordRequired', // i18n key
@@ -34,4 +34,3 @@ export function validateLoginResponse(success: boolean): string | undefined {
   }
   return undefined;
 }
-

@@ -14,7 +14,10 @@ const createResponse = async (data: unknown, status = 200, delayMs = 0) => {
 };
 
 // Helper to create error responses
-const createErrorResponse = async (errorType: 'network' | 'timeout' | 'api' | 'malformed', delayMs = 0) => {
+const createErrorResponse = async (
+  errorType: 'network' | 'timeout' | 'api' | 'malformed',
+  delayMs = 0,
+) => {
   if (delayMs > 0) {
     await delay(delayMs);
   }
@@ -24,9 +27,8 @@ const createErrorResponse = async (errorType: 'network' | 'timeout' | 'api' | 'm
       // Network error - throw to simulate network failure
       throw new Error('Failed to fetch');
     case 'timeout':
-      // Timeout - delay longer than timeout
-      await delay(20000);
-      return HttpResponse.json({ error: 'Request timeout' }, { status: 408 });
+      // Timeout - throw immediately to simulate timeout error
+      throw new Error('Request timeout');
     case 'api':
       return HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     case 'malformed':
@@ -46,8 +48,13 @@ export const handlers = [
   http.get(`${API_BASE}/api/coingecko/api/v3/coins/markets`, async ({ request }) => {
     const url = new URL(request.url);
     // Check for custom delay or error in query params (for testing)
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -59,8 +66,13 @@ export const handlers = [
   // Weather (OpenWeatherMap) - handles both weather and weather alerts
   http.get(`${API_BASE}/api/openweathermap/data/3.0/onecall`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
     // Check if this is a weather alerts request (has alerts in response or specific param)
     const isAlerts = url.searchParams.get('__alerts') === 'true';
 
@@ -83,8 +95,13 @@ export const handlers = [
   // GDX ETF (Alpha Vantage)
   http.get(`${API_BASE}/api/alpha-vantage/query`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -96,8 +113,13 @@ export const handlers = [
   // Federal Funds Rate (FRED)
   http.get(`${API_BASE}/api/fred/fred/series/observations`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -109,8 +131,13 @@ export const handlers = [
   // Euribor Rate (ECB) - matches /api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A
   http.get(`${API_BASE}/api/ecb/service/data/*`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -122,8 +149,13 @@ export const handlers = [
   // Uranium (HTML scraping)
   http.get(`${API_BASE}/api/uranium-html`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -132,11 +164,11 @@ export const handlers = [
     // Return HTML content for scraping - convert JSON to HTML-like string
     const data = MockResponseData.getUraniumData();
     const htmlContent = `<html><body><div data-price="${data.spotPrice}">Uranium Price: ${data.spotPrice}</div></body></html>`;
-    
+
     if (delayMs > 0) {
       await delay(delayMs);
     }
-    
+
     return new HttpResponse(htmlContent, {
       status: 200,
       headers: { 'Content-Type': 'text/html' },
@@ -146,23 +178,32 @@ export const handlers = [
   // Precious Metals
   http.get(`${API_BASE}/api/precious-metals/:symbol`, async ({ request, params }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
     }
 
-    const symbol = (params as { symbol?: string }).symbol || 'XAU';
+    const symbol = (params as { symbol?: string }).symbol ?? 'XAU';
     return createResponse(MockResponseData.getPreciousMetalsData(symbol), 200, delayMs);
   }),
-
 
   // Time (TimeZoneDB)
   http.get(`${API_BASE}/api/timezonedb/v2.1/get-time-zone`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -174,8 +215,13 @@ export const handlers = [
   // Earthquake (USGS)
   http.get(`${API_BASE}/api/usgs/fdsnws/event/1/query`, async ({ request }) => {
     const url = new URL(request.url);
-    const errorType = url.searchParams.get('__error') as 'network' | 'timeout' | 'api' | 'malformed' | null;
-    const delayMs = parseInt(url.searchParams.get('__delay') || '0', 10);
+    const errorType = url.searchParams.get('__error') as
+      | 'network'
+      | 'timeout'
+      | 'api'
+      | 'malformed'
+      | null;
+    const delayMs = parseInt(url.searchParams.get('__delay') ?? '0', 10);
 
     if (errorType) {
       return createErrorResponse(errorType, delayMs);
@@ -204,4 +250,3 @@ export const handlers = [
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
 ];
-

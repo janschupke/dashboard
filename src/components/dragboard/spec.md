@@ -1,4 +1,5 @@
 Requirements:
+
 - encapsulated, reusable component, does not leak implementation to the rest of the app
 - tiles can be re-arranged, added from sidebar by clicking item or drag
 - items can be removed by clicking the X button
@@ -9,6 +10,7 @@ Requirements:
 - tiles min dimensions are 250px wide, 200px high
 
 Tech requirements
+
 - no hardcoded garbage
 - use tailwind and grid layout
 - keep logic and presentation separate

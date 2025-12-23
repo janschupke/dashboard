@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useCallback } from 'react';
 
+import { DateTime } from 'luxon';
+
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { TILE_CATEGORIES } from '../../types/tileCategories';
+import { generateTileId } from '../../utils/idGenerator';
 import { TILE_CATALOG } from '../tile/TileFactoryRegistry';
 
 import { SidebarItem } from './SidebarItem';
@@ -34,7 +37,7 @@ export function Sidebar({
     () =>
       TILE_CATALOG.map((entry) => {
         const meta =
-          entry.meta ||
+          entry.meta ??
           (entry.getMeta ? entry.getMeta() : { title: '', icon: '', category: undefined });
         return {
           type: entry.type,
@@ -81,9 +84,10 @@ export function Sidebar({
       } else {
         // Add tile - order will be assigned automatically (at end)
         addTile({
-          id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateTileId(),
           type: tileType,
-          createdAt: Date.now(),
+          order: tiles.length, // Add at end
+          createdAt: DateTime.now().toMillis(),
         });
       }
     },
@@ -93,7 +97,7 @@ export function Sidebar({
   useKeyboardNavigation({
     navigation: {
       items: flatTiles.map((tile) => tile.type),
-      onToggle: (tileType) => handleTileToggle(tileType as TileType),
+      onToggle: (tileType) => void handleTileToggle(tileType as TileType),
       onSidebarToggle,
       isCollapsed,
     },

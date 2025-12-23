@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon';
 
+import { fromUnixTimestampMs, fromDate } from '../../../utils/luxonUtils';
+
 import type { EuriborRateApiResponse, EuriborRateTileData, EuriborRateHistoryEntry } from './types';
 import type { DataMapper } from '../../../services/dataMapper';
 
@@ -11,28 +13,28 @@ export const ecbEuriborDataMapper: DataMapper<EuriborRateApiResponse, EuriborRat
   map: (apiResponse: EuriborRateApiResponse): EuriborRateTileData => {
     // ECB JSON: dataSets[0].series, structure.dimensions.observation[0] is time
     const series =
-      (apiResponse.dataSets?.[0] as { series?: Record<string, unknown> })?.series || {};
+      (apiResponse.dataSets?.[0] as { series?: Record<string, unknown> })?.series ?? {};
     const timeDim =
       (apiResponse.structure as { dimensions?: { observation?: { values?: { id: string }[] }[] } })
-        ?.dimensions?.observation?.[0]?.values || [];
+        ?.dimensions?.observation?.[0]?.values ?? [];
     const historicalData = Object.entries(series).flatMap(([, seriesObj]) => {
       const observations =
-        (seriesObj as { observations?: Record<string, unknown[]> })?.observations || {};
+        (seriesObj as { observations?: Record<string, unknown[]> })?.observations ?? {};
       return Object.entries(observations)
         .map(([obsIdx, obsArr]) => {
           const date = timeDim[parseInt(obsIdx, 10)]?.id;
-          const rate = parseFloat((obsArr as unknown[])[0] as string);
+          const rate = parseFloat(obsArr[0] as string);
           return date && !isNaN(rate) ? { date: DateTime.fromISO(date).toJSDate(), rate } : null;
         })
         .filter(Boolean);
     });
     const sorted = (historicalData as EuriborRateHistoryEntry[]).sort(
-      (a, b) => a.date.getTime() - b.date.getTime(),
+      (a, b) => fromDate(a.date).toMillis() - fromDate(b.date).toMillis(),
     );
     const latest = sorted[sorted.length - 1];
     return {
       currentRate: latest?.rate ?? 0,
-      lastUpdate: latest?.date ?? DateTime.fromMillis(0).toJSDate(),
+      lastUpdate: latest?.date ?? fromUnixTimestampMs(0).toJSDate(),
       historicalData: sorted,
     };
   },

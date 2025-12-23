@@ -1,10 +1,11 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 
+import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { server } from '../../../test/mocks/server';
 import {
   setupEuriborRateSuccessMock,
-  setupSuccessMock,
   setupFailureMock,
   API_ENDPOINTS,
 } from '../../../test/utils/mswTestUtils';
@@ -33,10 +34,10 @@ describe('useEuriborApi', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    setupEuriborRateSuccessMock();
   });
 
   it('fetches and maps ECB Euribor data successfully', async () => {
+    setupEuriborRateSuccessMock();
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
@@ -60,17 +61,21 @@ describe('useEuriborApi', () => {
   });
 
   it('returns empty data and error if API returns not ok', async () => {
+    server.resetHandlers();
+    storageManager.clearTileState();
     setupFailureMock(API_ENDPOINTS.ECB_EURIBOR_12M, 'api');
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
-    const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
+    const fetchResult = await result.current.getEuriborRate('failure-test-api', {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });
 
   it('returns empty data and error if fetch fails', async () => {
+    server.resetHandlers();
+    storageManager.clearTileState();
     setupFailureMock(API_ENDPOINTS.ECB_EURIBOR_12M, 'network');
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
-    const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
+    const fetchResult = await result.current.getEuriborRate('failure-test-network', {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
     expect(fetchResult.data).toBeNull();
   });

@@ -9,7 +9,7 @@ import { gdxEtfDataMapper } from './dataMapper';
 import { GdxEtfTile } from './GdxEtfTile';
 
 import type { GdxEtfTileData } from './types';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 import type { TileMeta } from '../../tile/GenericTile';
 
 vi.mock('../../tile/useTileData', () => ({
@@ -36,8 +36,8 @@ describe('GdxEtfTile', () => {
   const mockTile: DragboardTileData = {
     id: 'test-gdx-tile',
     type: TileType.GDX_ETF,
-    position: { x: 0, y: 0 },
-    size: 'medium',
+    order: 0,
+    createdAt: Date.now(),
   };
 
   const mockMeta: TileMeta = {
@@ -110,7 +110,7 @@ describe('GdxEtfTile', () => {
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
 
-    expect(screen.getByText('No data available')).toBeInTheDocument();
+    expect(screen.getByText('tiles.noDataAvailable')).toBeInTheDocument();
   });
 
   it('renders no data message when currentPrice is 0', () => {
@@ -139,7 +139,7 @@ describe('GdxEtfTile', () => {
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
 
-    expect(screen.getByText('No data available')).toBeInTheDocument();
+    expect(screen.getByText('tiles.noDataAvailable')).toBeInTheDocument();
   });
 
   it('renders no data message when data is null', () => {
@@ -154,6 +154,6 @@ describe('GdxEtfTile', () => {
 
     render(<GdxEtfTile tile={mockTile} meta={mockMeta} />, { wrapper });
 
-    expect(screen.getByText('No data available')).toBeInTheDocument();
+    expect(screen.getByText('tiles.noDataAvailable')).toBeInTheDocument();
   });
 });

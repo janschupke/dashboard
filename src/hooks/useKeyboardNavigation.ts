@@ -12,7 +12,7 @@ export interface KeyboardNavigationOptions {
   navigation?: KeyboardNavigationConfig;
   enabled?: boolean;
   toggleLogView?: () => void;
-  refreshAllTiles?: () => void;
+  refreshAllTiles?: () => void | Promise<void>;
   isRefreshing?: boolean;
   selectedIndex: number;
   setSelectedIndex: (index: number) => void;
@@ -65,7 +65,7 @@ export const useKeyboardNavigation = (options: KeyboardNavigationOptions) => {
       if ((event.key === 'r' || event.key === 'R') && typeof refreshAllTiles === 'function') {
         if (!isRefreshing) {
           event.preventDefault();
-          refreshAllTiles();
+          void refreshAllTiles();
         }
         return;
       }

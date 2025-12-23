@@ -1,12 +1,11 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
-import { DateTime } from 'luxon';
-
 import {
   type APILogEntry,
   APILogLevel,
   type APILogLevelType,
 } from '../../services/storageManager.ts';
+import { fromUnixTimestampMs } from '../../utils/luxonUtils';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon.tsx';
@@ -58,7 +57,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
 
   // Format timestamp as readable string using Luxon
   const formatTimestamp = (timestamp: number) => {
-    return DateTime.fromMillis(timestamp).toLocaleString();
+    return fromUnixTimestampMs(timestamp).toLocaleString();
   };
 
   // Return Tailwind color classes based on log level
@@ -95,11 +94,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
             </span>
           </div>
         </div>
-        <Button
-          variant="icon"
-          onClick={onClose}
-          aria-label="Close log view"
-        >
+        <Button variant="icon" onClick={onClose} aria-label="Close log view">
           <Icon name="x" className="w-5 h-5" />
         </Button>
       </div>
@@ -191,7 +186,7 @@ const LogRow: React.FC<LogRowProps> = ({
   onToggleDetails,
 }) => {
   // Extract HTTP status code from details if present
-  const httpStatus = log.details?.status || log.details?.httpStatus || '';
+  const httpStatus = log.details?.['status'] ?? log.details?.['httpStatus'] ?? '';
 
   // Prevent row click from firing when clicking remove button
   const handleRowClick = (e: React.MouseEvent) => {
@@ -222,13 +217,8 @@ const LogRow: React.FC<LogRowProps> = ({
             {log.level}
           </span>
         </td>
-        <td className="px-4 py-3 text-sm text-primary">
-          {formatTimestamp(log.timestamp)}
-        </td>
-        <td
-          className="px-4 py-3 text-sm text-primary font-mono"
-          data-testid={`log-row-${log.id}`}
-        >
+        <td className="px-4 py-3 text-sm text-primary">{formatTimestamp(log.timestamp)}</td>
+        <td className="px-4 py-3 text-sm text-primary font-mono" data-testid={`log-row-${log.id}`}>
           {log.apiCall}
         </td>
         <td className="px-4 py-3 text-sm text-primary">
@@ -270,10 +260,7 @@ const LogRow: React.FC<LogRowProps> = ({
       </tr>
       {log.details && showDetails && (
         <tr id={`log-details-${log.id}`}>
-          <td
-            colSpan={7}
-            className="px-4 pb-4 pt-0 text-xs text-secondary bg-surface-secondary"
-          >
+          <td colSpan={7} className="px-4 pb-4 pt-0 text-xs text-secondary bg-surface-secondary">
             <pre className="whitespace-pre-wrap break-all">
               {JSON.stringify(log.details, null, 2)}
             </pre>

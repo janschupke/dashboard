@@ -1,8 +1,8 @@
 import { useMemo, useState, useCallback, memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { format } from 'date-fns';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 
 import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
@@ -13,7 +13,8 @@ import { useWeatherApi } from './useWeatherApi';
 
 import type { WeatherTileData } from './types';
 import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { TileType } from '../../../types/tile';
+import type { DragboardTileData } from '../../dragboard';
 
 const WeatherIcon = memo(function WeatherIcon({
   icon,
@@ -63,7 +64,7 @@ const WeatherIcon = memo(function WeatherIcon({
       '50n': '🌫️',
     };
 
-    return iconMap[iconCode] || '🌤️';
+    return iconMap[iconCode] ?? '🌤️';
   };
 
   return (
@@ -167,7 +168,7 @@ const WeatherTileContent = memo(function WeatherTileContent({
   onToggleForecast: () => void;
 }) {
   const { t } = useTranslation();
-  
+
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -238,7 +239,7 @@ export const WeatherTile = ({
   const { getWeather } = useWeatherApi();
 
   // Get city configuration based on tile type
-  const cityConfig = getWeatherCityConfig(tile.type);
+  const cityConfig = getWeatherCityConfig(tile.type as TileType);
 
   const pathParams = useMemo<PathParams>(() => ({}), []);
   const queryParams = useMemo<WeatherQueryParams>(

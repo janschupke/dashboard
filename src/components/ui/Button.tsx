@@ -7,8 +7,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses = {
-  primary: 'bg-interactive-primary text-theme-inverse hover:bg-interactive-hover focus:ring-interactive-primary',
-  secondary: 'bg-surface-secondary text-theme-primary hover:bg-surface-tertiary border border-theme-primary',
+  primary:
+    'bg-interactive-primary text-theme-inverse hover:bg-interactive-hover focus:ring-interactive-primary',
+  secondary:
+    'bg-surface-secondary text-theme-primary hover:bg-surface-tertiary border border-theme-primary',
   ghost: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary',
   icon: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary',
 };
@@ -27,7 +29,8 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center gap-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses =
+    'inline-flex items-center justify-center gap-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
   const variantClass = variantClasses[variant];
   const sizeClass = sizeClasses[size];
   const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : '';

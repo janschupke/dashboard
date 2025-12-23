@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+
 import { useTranslation } from 'react-i18next';
 
-import { ERROR_MESSAGES } from '../../constants/errorMessages';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { validatePassword, validateLoginResponse } from '../../utils/authValidation';
@@ -16,11 +16,11 @@ export const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate password using extracted validation logic
     const validation = validatePassword(password);
     if (!validation.isValid) {
-      addToast(validation.error || t('auth.passwordRequired'), 'error');
+      addToast(validation.error ?? t('auth.passwordRequired'), 'error');
       return;
     }
 
@@ -47,7 +47,7 @@ export const LoginForm: React.FC = () => {
           <p className="text-theme-secondary">Enter your password to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
           <div>
             <label htmlFor="password" className="sr-only">
               Password
@@ -66,12 +66,7 @@ export const LoginForm: React.FC = () => {
           </div>
 
           <div>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading}
-              className="w-full"
-            >
+            <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
               {isLoading ? t('auth.signingIn') : t('auth.signIn')}
             </Button>
           </div>

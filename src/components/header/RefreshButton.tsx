@@ -2,7 +2,7 @@ import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 export interface RefreshButtonProps {
-  onRefresh: () => void;
+  onRefresh: () => void | Promise<void>;
   isRefreshing: boolean;
   disabled?: boolean;
 }
@@ -15,7 +15,7 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
 }) => (
   <Button
     variant="icon"
-    onClick={onRefresh}
+    onClick={() => void onRefresh()}
     disabled={disabled || isRefreshing}
     aria-label="Refresh all tiles"
     title="Refresh all tiles (R)"

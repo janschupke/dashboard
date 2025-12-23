@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
+import { generateId } from '../utils/idGenerator';
+
 import { ToastContext } from './ToastContextDef';
 
 import type { Toast, ToastContextType } from './ToastContextDef';
@@ -17,7 +19,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 
   const addToast = useCallback(
     (message: string, type: Toast['type'], duration = 5000) => {
-      const id = Math.random().toString(36).substr(2, 9);
+      const id = generateId();
       const newToast: Toast = { id, message, type, duration };
 
       setToasts((prev) => [...prev, newToast]);

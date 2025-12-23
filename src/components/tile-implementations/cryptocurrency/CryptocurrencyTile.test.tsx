@@ -9,7 +9,7 @@ import { CryptocurrencyDataMapper } from './dataMapper';
 
 import type { CryptocurrencyTileData } from './types';
 import type { TileCategory } from '../../../types/tileCategories';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 import type { TileMeta } from '../../tile/GenericTile';
 
 // Mock data for testing
@@ -211,8 +211,8 @@ const mockCryptocurrencyData: CryptocurrencyTileData = {
 const mockTile: DragboardTileData = {
   id: 'test-crypto-tile',
   type: 'cryptocurrency',
-  size: 'medium',
-  position: { x: 0, y: 0 },
+  order: 0,
+  createdAt: Date.now(),
   config: {},
 };
 

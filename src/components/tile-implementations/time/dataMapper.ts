@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { BaseDataMapper } from '../../../services/dataMapper';
+import { hoursToMs, msToHours, msToMinutes, secondsToMs } from '../../../utils/timeUtils';
 
 import type { TimeTileData, TimeApiResponse } from './types';
 
@@ -33,20 +34,21 @@ export class TimeDataMapper extends BaseDataMapper<TimeApiResponse, TimeTileData
     }
     const response = apiResponse as Record<string, unknown>;
     return (
-      typeof response.status === 'string' &&
-      typeof response.zoneName === 'string' &&
-      typeof response.abbreviation === 'string' &&
-      typeof response.gmtOffset === 'number' &&
-      typeof response.timestamp === 'number' &&
-      typeof response.formatted === 'string'
+      typeof response['status'] === 'string' &&
+      typeof response['zoneName'] === 'string' &&
+      typeof response['abbreviation'] === 'string' &&
+      typeof response['gmtOffset'] === 'number' &&
+      typeof response['timestamp'] === 'number' &&
+      typeof response['formatted'] === 'string'
     );
   }
 
   private formatOffset(offsetSeconds: number): string {
     const sign = offsetSeconds >= 0 ? '+' : '-';
     const abs = Math.abs(offsetSeconds);
-    const hours = Math.floor(abs / 3600);
-    const minutes = Math.floor((abs % 3600) / 60);
+    const absMs = secondsToMs(abs);
+    const hours = Math.floor(msToHours(absMs));
+    const minutes = Math.floor(msToMinutes(absMs % hoursToMs(1)));
     return `${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
 

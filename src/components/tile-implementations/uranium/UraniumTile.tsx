@@ -8,7 +8,7 @@ import { useTileData } from '../../tile/useTileData';
 import { useUraniumApi } from './useUraniumApi';
 
 import type { UraniumTileData } from './types';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const UraniumTileContent = ({ data }: { data: UraniumTileData | null }) => {
   if (data) {

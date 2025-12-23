@@ -30,7 +30,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   onMouseLeave,
   disabled = false,
 }) => {
-  const { startSidebarDrag, endSidebarDrag } = useDragboardActions();
+  const { startSidebarDrag } = useDragboardActions();
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,7 +65,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     <Button
       variant="secondary"
       className={`w-full flex items-center justify-between px-4 py-3 ${getBorderClass()} ${isHovered && !disabled ? 'bg-surface-secondary' : ''} ${isLoading ? 'opacity-75' : ''}`}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       disabled={disabled || isLoading}
@@ -87,7 +87,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       onKeyDown={(e) => {
         if (e.key === ' ') {
           e.preventDefault();
-          handleClick();
+          void handleClick();
         }
       }}
       title={`${isActive ? 'Remove' : 'Add'} ${name} tile ${isActive ? 'from' : 'to'} dashboard`}

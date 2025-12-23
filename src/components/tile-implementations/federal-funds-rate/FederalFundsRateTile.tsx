@@ -12,7 +12,7 @@ import { useFederalFundsApi } from './useFederalFundsApi';
 
 import type { FederalFundsRateTileData, TimeRange } from './types';
 import type { FredQueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
   data,

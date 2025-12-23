@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { useTranslation } from 'react-i18next';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
@@ -11,11 +12,11 @@ import { useGdxEtfApi } from './useGdxEtfApi';
 
 import type { GdxEtfTileData } from './types';
 import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
   const { t } = useTranslation();
-  
+
   // Check if data is null or contains only default/empty values
   const hasValidData = data && data.currentPrice > 0 && data.symbol && data.symbol.length > 0;
 

@@ -72,7 +72,7 @@ export const STORAGE_KEYS = {
 };
 
 // Log retention time: 1 hour in milliseconds
-export const LOG_RETENTION_TIME = hoursToMs(1);
+const LOG_RETENTION_TIME = hoursToMs(1);
 
 export const DEFAULT_APPCONFIG: AppConfig = {
   isSidebarCollapsed: false,

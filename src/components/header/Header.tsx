@@ -12,7 +12,7 @@ export interface HeaderProps {
   theme: 'light' | 'dark';
   toggleCollapse: () => void;
   tilesCount: number;
-  refreshAllTiles?: () => void;
+  refreshAllTiles?: () => void | Promise<void>;
   isRefreshing?: boolean;
 }
 
@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
     </div>
     <div className="flex items-center space-x-2">
       <LogButton isOpen={isLogViewOpen} onToggle={toggleLogView} />
-      <RefreshButton onRefresh={refreshAllTiles || (() => {})} isRefreshing={isRefreshing} />
+      <RefreshButton onRefresh={refreshAllTiles ?? (() => {})} isRefreshing={isRefreshing} />
       <ThemeButton theme={theme} onToggle={toggleTheme} />
       <LogoutButton />
       <span className="text-sm text-theme-secondary">{tilesCount} tiles</span>

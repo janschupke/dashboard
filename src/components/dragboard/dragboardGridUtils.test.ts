@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
+import { DRAGBOARD_CONSTANTS } from './constants';
 import {
   calculateViewportColumns,
   calculateGridCellFromPosition,
@@ -7,7 +8,6 @@ import {
   clampDropIndex,
   calculateDropZonePosition,
 } from './dragboardGridUtils';
-import { DRAGBOARD_CONSTANTS } from './constants';
 
 describe('dragboardGridUtils', () => {
   describe('calculateViewportColumns', () => {
@@ -50,7 +50,8 @@ describe('dragboardGridUtils', () => {
 
     it('should calculate correct cell for position in second column', () => {
       const availableWidth = containerWidth - 32;
-      const cellWidth = (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
+      const cellWidth =
+        (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
       const x = cellWidth + DRAGBOARD_CONSTANTS.GRID_GAP + 10; // Second cell
       const { row, col } = calculateGridCellFromPosition(x, 20, containerWidth, viewportColumns);
       expect(row).toBe(0);
@@ -152,4 +153,3 @@ describe('dragboardGridUtils', () => {
     });
   });
 });
-

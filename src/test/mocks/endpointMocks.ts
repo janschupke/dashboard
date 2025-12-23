@@ -158,7 +158,6 @@ export class MockResponseData {
     };
   }
 
-
   static getGdxEtfData(): GdxEtfApiResponse {
     return {
       symbol: 'GDX',
@@ -206,7 +205,16 @@ export class MockResponseData {
     };
   }
 
-  static getWeatherAlertsData(): { alerts: Array<{ sender_name: string; event: string; start: number; end: number; description: string; tags?: string[] }> } {
+  static getWeatherAlertsData(): {
+    alerts: Array<{
+      sender_name: string;
+      event: string;
+      start: number;
+      end: number;
+      description: string;
+      tags?: string[];
+    }>;
+  } {
     return {
       alerts: [
         {
@@ -223,7 +231,14 @@ export class MockResponseData {
 
   static getEarthquakeData(): {
     type: string;
-    metadata: { generated: number; url: string; title: string; status: number; api: string; count: number };
+    metadata: {
+      generated: number;
+      url: string;
+      title: string;
+      status: number;
+      api: string;
+      count: number;
+    };
     features: Array<{
       type: string;
       properties: {
@@ -282,7 +297,7 @@ export class MockResponseData {
     if (symbol === 'XAG') {
       return {
         gold: {
-          price: 2050.75,
+          price: 3350.699951,
           change_24h: 15.25,
           change_percentage_24h: 0.75,
         },
@@ -295,7 +310,7 @@ export class MockResponseData {
     }
     return {
       gold: {
-        price: 2050.75,
+        price: 3350.699951,
         change_24h: 15.25,
         change_percentage_24h: 0.75,
       },
@@ -357,7 +372,7 @@ export class EndpointMockService {
 
     // Simulate failures
     if (config.shouldFail) {
-      throw this.createMockError(config.errorType || 'network');
+      throw this.createMockError(config.errorType ?? 'network');
     }
 
     // Handle empty/null/undefined responseData cases:
@@ -372,7 +387,7 @@ export class EndpointMockService {
     } else {
       mockData = config.responseData;
     }
-    const status = config.status || 200;
+    const status = config.status ?? 200;
 
     return new Response(JSON.stringify(mockData), {
       status,

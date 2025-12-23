@@ -1,5 +1,7 @@
 import React, { Suspense, memo } from 'react';
 
+import { TileType } from '../../types/tile';
+
 import { GenericTile } from './GenericTile';
 import { LoadingComponent } from './LoadingComponent';
 import { getLazyTileComponent, getTileMeta } from './TileFactoryRegistry';
@@ -14,8 +16,8 @@ export interface TileProps {
 }
 
 const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProps) => {
-  const LazyTileComponent = getLazyTileComponent(tile.type);
-  const meta = getTileMeta(tile.type);
+  const LazyTileComponent = getLazyTileComponent(tile.type as TileType);
+  const meta = getTileMeta(tile.type as TileType);
 
   if (!LazyTileComponent || !meta) {
     return (

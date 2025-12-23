@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+
 import { useQueryClient } from '@tanstack/react-query';
+import { DateTime } from 'luxon';
+
+import { generateTileId } from '../../utils/idGenerator';
 
 import type { DragboardTileData } from './types';
 
@@ -20,6 +24,7 @@ const DragboardActionsContext = createContext<{
   setDropTarget: (dropIndex: number | null) => void;
 } | null>(null);
 
+/* eslint-disable react-refresh/only-export-components */
 // Separate hooks for selective subscriptions
 export const useTiles = () => {
   const tiles = useContext(TilesContext);
@@ -93,7 +98,7 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
     return sorted.map((tile, index) => ({
       ...tile,
       order: index, // Sequential: 0, 1, 2, ...
-      createdAt: tile.createdAt ?? Date.now(),
+      createdAt: tile.createdAt ?? DateTime.now().toMillis(),
     }));
   }, [initialTiles]);
 
@@ -124,19 +129,16 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
     });
   }, []);
 
-  const addTile = useCallback(
-    (tile: Omit<DragboardTileData, 'order'>) => {
-      setTiles((prev) => {
-        const newTile: DragboardTileData = {
-          ...tile,
-          order: prev.length,
-          createdAt: tile.createdAt ?? Date.now(),
-        };
-        return [...prev, newTile];
-      });
-    },
-    [],
-  );
+  const addTile = useCallback((tile: Omit<DragboardTileData, 'order'>) => {
+    setTiles((prev) => {
+      const newTile: DragboardTileData = {
+        ...tile,
+        order: prev.length,
+        createdAt: tile.createdAt ?? DateTime.now().toMillis(),
+      };
+      return [...prev, newTile];
+    });
+  }, []);
 
   const queryClient = useQueryClient();
 
@@ -180,7 +182,8 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
         if (draggingIndex === -1) return prev;
 
         const newTiles = [...prev];
-        const [draggedTile] = newTiles.splice(draggingIndex, 1);
+        const draggedTile = newTiles.splice(draggingIndex, 1)[0];
+        if (!draggedTile) return prev;
         newTiles.splice(dropIndex, 0, draggedTile);
 
         return normalizeOrders(newTiles);
@@ -216,10 +219,10 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
 
       setTiles((prev) => {
         const newTile: DragboardTileData = {
-          id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateTileId(),
           type: tileType,
           order: dropIndex,
-          createdAt: Date.now(),
+          createdAt: DateTime.now().toMillis(),
         };
 
         const newTiles = [...prev];
@@ -255,7 +258,15 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
       endSidebarDrag,
       setDropTarget,
     }),
-    [addTile, removeTile, startTileDrag, endTileDrag, startSidebarDrag, endSidebarDrag, setDropTarget],
+    [
+      addTile,
+      removeTile,
+      startTileDrag,
+      endTileDrag,
+      startSidebarDrag,
+      endSidebarDrag,
+      setDropTarget,
+    ],
   );
 
   // Memoize drag state separately
@@ -264,7 +275,9 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
   return (
     <TilesContext.Provider value={tiles}>
       <DragStateContext.Provider value={memoizedDragState}>
-        <DragboardActionsContext.Provider value={actions}>{children}</DragboardActionsContext.Provider>
+        <DragboardActionsContext.Provider value={actions}>
+          {children}
+        </DragboardActionsContext.Provider>
       </DragStateContext.Provider>
     </TilesContext.Provider>
   );

@@ -57,7 +57,7 @@ describe('App', () => {
       </MockAuthProvider>,
     );
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByText('general.loading')).toBeInTheDocument();
   });
 
   it('renders authenticated app when user is authenticated', () => {

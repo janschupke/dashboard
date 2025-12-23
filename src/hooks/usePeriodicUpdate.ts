@@ -37,4 +37,3 @@ export function usePeriodicUpdate(options: UsePeriodicUpdateOptions = {}): numbe
 
   return updateCount;
 }
-

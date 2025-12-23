@@ -11,20 +11,17 @@ const variantClasses = {
   outlined: 'bg-surface-primary border border-theme-secondary',
 };
 
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(({
-  variant = 'default',
-  className = '',
-  children,
-  ...props
-}, ref) => {
-  const baseClasses = 'rounded-xl transition-shadow duration-200';
-  const variantClass = variantClasses[variant];
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ variant = 'default', className = '', children, ...props }, ref) => {
+    const baseClasses = 'rounded-xl transition-shadow duration-200';
+    const variantClass = variantClasses[variant];
 
-  return (
-    <div ref={ref} className={`${baseClasses} ${variantClass} ${className}`} {...props}>
-      {children}
-    </div>
-  );
-});
+    return (
+      <div ref={ref} className={`${baseClasses} ${variantClass} ${className}`} {...props}>
+        {children}
+      </div>
+    );
+  },
+);
 
 Card.displayName = 'Card';

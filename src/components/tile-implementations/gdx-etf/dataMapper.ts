@@ -1,6 +1,7 @@
 import { ALPHA_VANTAGE_FIELDS } from '../../../constants/apiFields';
 import { TradingStatus } from '../../../constants/enums';
 import { ERROR_MESSAGES } from '../../../constants/errorMessages';
+
 import type { GdxEtfApiResponse, GdxEtfTileData } from './types';
 import type { DataMapper } from '../../../services/dataMapper';
 
