@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
+import { useDragboard } from '../dragboard';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
@@ -29,6 +30,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   onMouseLeave,
   disabled = false,
 }) => {
+  const { startSidebarDrag, endSidebarDrag } = useDragboard();
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,8 +78,12 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       onDragStart={(e) => {
         e.dataTransfer.setData('application/dashboard-tile-type', tileType);
         e.dataTransfer.effectAllowed = 'copy';
+        startSidebarDrag(tileType);
       }}
-      onDragEnd={() => {}}
+      onDragEnd={() => {
+        // Don't clear here - let the drop handler or drag leave handler manage state
+        // This is just for cleanup if drag is cancelled outside the grid
+      }}
       onKeyDown={(e) => {
         if (e.key === ' ') {
           e.preventDefault();

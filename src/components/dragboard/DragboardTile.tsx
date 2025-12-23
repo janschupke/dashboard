@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Icon } from '../ui/Icon';
 import { useDragboard } from './DragboardProvider';
 import { DRAGBOARD_CONSTANTS } from './constants';
 
@@ -16,7 +17,7 @@ export const DragboardTile: React.FC<DragboardTileProps> = ({
   children,
   viewportColumns,
 }) => {
-  const { tiles, startTileDrag, endTileDrag, dragState } = useDragboard();
+  const { tiles, startTileDrag, endTileDrag, removeTile, dragState } = useDragboard();
   const tile = tiles.find((t) => t.id === id);
 
   if (!tile) {
@@ -41,9 +42,14 @@ export const DragboardTile: React.FC<DragboardTileProps> = ({
     endTileDrag(null); // Will be updated by drop handler
   };
 
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeTile(id);
+  };
+
   return (
     <div
-      className="relative flex flex-col w-full h-full"
+      className="relative flex flex-col w-full h-full group"
       style={{
         minWidth: `${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px`,
         minHeight: `${DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT}px`,
@@ -59,6 +65,15 @@ export const DragboardTile: React.FC<DragboardTileProps> = ({
       role="gridcell"
       aria-label={`Tile ${id}`}
     >
+      <button
+        onClick={handleRemove}
+        className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
+        aria-label="Remove tile"
+        type="button"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <Icon name="close" size="sm" />
+      </button>
       {children}
     </div>
   );

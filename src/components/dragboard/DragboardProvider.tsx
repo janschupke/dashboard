@@ -145,18 +145,26 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
 
   const endSidebarDrag = useCallback(
     (dropIndex: number | null, tileType: string) => {
-      const finalDropIndex = dropIndex ?? tiles.length;
+      // If dropIndex is null, the drag was cancelled - don't create a tile
+      if (dropIndex === null) {
+        setDragState({
+          draggingTileId: null,
+          dropIndex: null,
+          sidebarTileType: undefined,
+        });
+        return;
+      }
 
       setTiles((prev) => {
         const newTile: DragboardTileData = {
           id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: tileType,
-          order: finalDropIndex,
+          order: dropIndex,
           createdAt: Date.now(),
         };
 
         const newTiles = [...prev];
-        newTiles.splice(finalDropIndex, 0, newTile);
+        newTiles.splice(dropIndex, 0, newTile);
 
         return normalizeOrders(newTiles);
       });
@@ -164,9 +172,10 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
       setDragState({
         draggingTileId: null,
         dropIndex: null,
+        sidebarTileType: undefined,
       });
     },
-    [tiles.length, normalizeOrders],
+    [normalizeOrders],
   );
 
   const setDropTarget = useCallback((dropIndex: number | null) => {

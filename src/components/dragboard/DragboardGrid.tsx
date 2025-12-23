@@ -23,7 +23,7 @@ const calculateViewportColumns = (containerWidth: number): number => {
 export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [viewportColumns, setViewportColumns] = useState(1);
-  const { dragState, endTileDrag, endSidebarDrag, setDropTarget } = useDragboard();
+  const { dragState, endTileDrag, endSidebarDrag, setDropTarget, tiles } = useDragboard();
 
   useEffect(() => {
     const updateColumns = () => {
@@ -53,7 +53,12 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   const handleDragOver = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+      // Set dropEffect based on drag source
+      if (dragState.sidebarTileType) {
+        e.dataTransfer.dropEffect = 'copy';
+      } else {
+        e.dataTransfer.dropEffect = 'move';
+      }
 
       if (!gridRef.current) return;
 
@@ -62,16 +67,31 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
       const y = e.clientY - rect.top - 16;
 
       // Calculate which grid cell the mouse is over
-      const cellWidth = (rect.width - 32) / viewportColumns; // Account for padding
-      const cellHeight = DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT + DRAGBOARD_CONSTANTS.GRID_GAP;
+      // CSS Grid with gap: availableWidth = n * cellWidth + (n-1) * gap
+      // So: cellWidth = (availableWidth - (n-1) * gap) / n
+      const availableWidth = rect.width - 32; // Account for padding
+      const cellWidth = (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
+      const cellHeight = DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT;
 
-      const col = Math.floor(x / (cellWidth + DRAGBOARD_CONSTANTS.GRID_GAP));
-      const row = Math.floor(y / (cellHeight + DRAGBOARD_CONSTANTS.GRID_GAP));
+      // Calculate column: account for gaps between cells
+      const col = Math.min(
+        viewportColumns - 1,
+        Math.max(0, Math.floor(x / (cellWidth + DRAGBOARD_CONSTANTS.GRID_GAP))),
+      );
+      // Calculate row: account for gaps between rows
+      const row = Math.max(0, Math.floor(y / (cellHeight + DRAGBOARD_CONSTANTS.GRID_GAP)));
 
-      const dropIndex = Math.max(0, row * viewportColumns + col);
+      let dropIndex = row * viewportColumns + col;
+
+      // Clamp drop index to valid range
+      // For sidebar drags: allow up to tiles.length (insert at end)
+      // For tile drags: allow up to tiles.length - 1 (can't drop after removing self)
+      const maxIndex = dragState.sidebarTileType ? tiles.length : Math.max(0, tiles.length - 1);
+      dropIndex = Math.min(dropIndex, maxIndex);
+
       setDropTarget(dropIndex);
     },
-    [viewportColumns, setDropTarget],
+    [viewportColumns, setDropTarget, dragState, tiles],
   );
 
   const handleDrop = useCallback(
@@ -80,18 +100,8 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
 
       if (!gridRef.current) return;
 
-      const rect = gridRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left - 16; // Account for padding
-      const y = e.clientY - rect.top - 16;
-
-      // Calculate which grid cell the mouse is over
-      const cellWidth = (rect.width - 32) / viewportColumns; // Account for padding
-      const cellHeight = DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT + DRAGBOARD_CONSTANTS.GRID_GAP;
-
-      const col = Math.floor(x / (cellWidth + DRAGBOARD_CONSTANTS.GRID_GAP));
-      const row = Math.floor(y / (cellHeight + DRAGBOARD_CONSTANTS.GRID_GAP));
-
-      const dropIndex = Math.max(0, row * viewportColumns + col);
+      // Use the dropIndex from dragState (set by handleDragOver)
+      const dropIndex = dragState.dropIndex ?? 0;
 
       setDropTarget(null); // Clear drop target on drop
 
@@ -101,7 +111,7 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
         endSidebarDrag(dropIndex, dragState.sidebarTileType);
       }
     },
-    [viewportColumns, dragState, endTileDrag, endSidebarDrag],
+    [dragState, endTileDrag, endSidebarDrag, setDropTarget],
   );
 
   const handleDragLeave = useCallback(
