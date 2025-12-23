@@ -61,4 +61,11 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
   );
 };
 
-export const Tile = memo(TileComponent);
+export const Tile = memo(TileComponent, (prevProps, nextProps) => {
+  // Only re-render if tile object reference changed or other props changed
+  return (
+    prevProps.tile === nextProps.tile &&
+    prevProps.onRemove === nextProps.onRemove &&
+    prevProps.refreshKey === nextProps.refreshKey
+  );
+});

@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 
 import { REFRESH_INTERVALS } from '../../contexts/constants';
+import { useTileRefreshService } from '../../contexts/TileRefreshContext';
 import { storageManager } from '../../services/storageManager';
 import { calculateTileStatus } from '../../utils/statusCalculator';
 
@@ -129,13 +130,9 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   // Show loading when:
   // 1. Query is pending (initial load, no data yet) - isPending
   // 2. Query is loading and no result - isLoading
-  // 3. Query is fetching and no valid data available - isFetching && (!result || !result?.data)
-  // Note: We prioritize showing loading when there's no valid data to display
-  const hasValidData = result?.data !== null && result?.data !== undefined;
-  // Show loading on initial load (isPending) or when loading without data (isLoading)
-  // Also show when fetching if we don't have valid data to show
-  // If we're fetching and have no result yet, show loading
-  const showLoading = isPending || isLoading || (isFetching && (!result || !hasValidData));
+  // 3. Query is fetching (including manual refresh) - isFetching
+  // Always show loading when fetching to provide visual feedback, especially for manual refresh
+  const showLoading = isPending || isLoading || isFetching;
 
   // Calculate status based on query state and result using extracted logic
   const statusResult = useMemo(() => {
@@ -149,17 +146,32 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   }, [showLoading, result, error, tileId]);
 
   const { status, data, lastUpdated: lastUpdatedDateTime } = statusResult;
-  
+
   // Convert DateTime to Date for backward compatibility (can be removed later)
   const lastUpdated = lastUpdatedDateTime ? lastUpdatedDateTime.toJSDate() : null;
+
+  // Register with refresh service for global refresh functionality
+  const refreshService = useTileRefreshService();
+  const manualRefresh = useMemo(
+    () => () => {
+      refetch();
+    },
+    [refetch],
+  );
+
+  useEffect(() => {
+    const unregister = refreshService.registerRefreshCallback(async () => {
+      await refetch();
+    });
+
+    return unregister;
+  }, [refreshService, refetch]);
 
   return {
     data,
     status,
     lastUpdated,
-    manualRefresh: () => {
-      refetch();
-    },
+    manualRefresh,
     isLoading: showLoading,
   };
 }

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-import { useDragboard } from '../dragboard';
+import { useDragboardActions } from '../dragboard';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
@@ -30,7 +30,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   onMouseLeave,
   disabled = false,
 }) => {
-  const { startSidebarDrag, endSidebarDrag } = useDragboard();
+  const { startSidebarDrag, endSidebarDrag } = useDragboardActions();
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

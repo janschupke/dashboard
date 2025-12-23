@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Icon } from '../ui/Icon';
-import { useDragboard } from './DragboardProvider';
+import { useTileById, useDragboardActions } from './DragboardProvider';
 import { DRAGBOARD_CONSTANTS } from './constants';
-
-import type { DragboardTileData } from './types';
 
 interface DragboardTileProps {
   id: string;
@@ -12,25 +10,29 @@ interface DragboardTileProps {
   viewportColumns: number; // Passed from Grid component
 }
 
-export const DragboardTile: React.FC<DragboardTileProps> = ({
+const DragboardTileComponent: React.FC<DragboardTileProps> = ({
   id,
   children,
   viewportColumns,
 }) => {
-  const { tiles, startTileDrag, endTileDrag, removeTile, dragState } = useDragboard();
-  const tile = tiles.find((t) => t.id === id);
+  // Use selective hook that only re-renders when THIS tile changes
+  const { tile, isDragging } = useTileById(id);
+  const { startTileDrag, endTileDrag, removeTile } = useDragboardActions();
 
   if (!tile) {
     return null;
   }
 
-  const isDragging = dragState.draggingTileId === id;
-
   // Calculate grid position from order
   // Order 0 = first cell, order 1 = second cell, etc.
   // Wrapping happens automatically: order 3 with 3 columns = row 2, col 1
-  const row = Math.floor(tile.order / viewportColumns);
-  const col = tile.order % viewportColumns;
+  const { row, col } = useMemo(
+    () => ({
+      row: Math.floor(tile.order / viewportColumns),
+      col: tile.order % viewportColumns,
+    }),
+    [tile.order, viewportColumns],
+  );
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'move';
@@ -78,3 +80,8 @@ export const DragboardTile: React.FC<DragboardTileProps> = ({
     </div>
   );
 };
+
+// Memoize with custom comparison - only re-render if id or viewportColumns changed
+export const DragboardTile = React.memo(DragboardTileComponent, (prevProps, nextProps) => {
+  return prevProps.id === nextProps.id && prevProps.viewportColumns === nextProps.viewportColumns;
+});

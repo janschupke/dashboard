@@ -1,9 +1,16 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import type { DragboardTileData } from './types';
 
-interface DragboardContextValue {
-  tiles: DragboardTileData[];
+// Split contexts to prevent unnecessary re-renders
+const TilesContext = createContext<DragboardTileData[] | null>(null);
+const DragStateContext = createContext<{
+  draggingTileId: string | null;
+  dropIndex: number | null;
+  sidebarTileType?: string;
+} | null>(null);
+const DragboardActionsContext = createContext<{
   addTile: (tile: Omit<DragboardTileData, 'order'>) => void;
   removeTile: (id: string) => void;
   startTileDrag: (tileId: string) => void;
@@ -11,21 +18,59 @@ interface DragboardContextValue {
   startSidebarDrag: (tileType: string) => void;
   endSidebarDrag: (dropIndex: number | null, tileType: string) => void;
   setDropTarget: (dropIndex: number | null) => void;
-  dragState: {
-    draggingTileId: string | null;
-    dropIndex: number | null;
-    sidebarTileType?: string; // For sidebar drags
-  };
-}
+} | null>(null);
 
-const DragboardContext = createContext<DragboardContextValue | null>(null);
-
-export const useDragboard = () => {
-  const context = useContext(DragboardContext);
-  if (!context) {
-    throw new Error('useDragboard must be used within DragboardProvider');
+// Separate hooks for selective subscriptions
+export const useTiles = () => {
+  const tiles = useContext(TilesContext);
+  if (!tiles) {
+    throw new Error('useTiles must be used within DragboardProvider');
   }
-  return context;
+  return tiles;
+};
+
+export const useDragState = () => {
+  const dragState = useContext(DragStateContext);
+  if (!dragState) {
+    throw new Error('useDragState must be used within DragboardProvider');
+  }
+  return dragState;
+};
+
+export const useDragboardActions = () => {
+  const actions = useContext(DragboardActionsContext);
+  if (!actions) {
+    throw new Error('useDragboardActions must be used within DragboardProvider');
+  }
+  return actions;
+};
+
+// Hook to get specific tile data - only re-renders when that tile changes
+export const useTileById = (id: string) => {
+  const tiles = useTiles();
+  const dragState = useDragState();
+  return useMemo(
+    () => ({
+      tile: tiles.find((t) => t.id === id),
+      isDragging: dragState.draggingTileId === id,
+    }),
+    [tiles, dragState.draggingTileId, id],
+  );
+};
+
+// Legacy hook for backward compatibility - use specific hooks when possible
+export const useDragboard = () => {
+  const tiles = useTiles();
+  const dragState = useDragState();
+  const actions = useDragboardActions();
+  return useMemo(
+    () => ({
+      tiles,
+      dragState,
+      ...actions,
+    }),
+    [tiles, dragState, actions],
+  );
 };
 
 interface DragboardProviderProps {
@@ -68,11 +113,15 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
   });
 
   // Normalize orders to match array indices (0, 1, 2, ...)
+  // Only create new objects for tiles whose order actually changed
   const normalizeOrders = useCallback((tilesArray: DragboardTileData[]): DragboardTileData[] => {
-    return tilesArray.map((tile, index) => ({
-      ...tile,
-      order: index,
-    }));
+    return tilesArray.map((tile, index) => {
+      // Only create new object if order changed
+      if (tile.order === index) {
+        return tile; // Preserve reference
+      }
+      return { ...tile, order: index };
+    });
   }, []);
 
   const addTile = useCallback(
@@ -89,12 +138,22 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
     [],
   );
 
-  const removeTile = useCallback((id: string) => {
-    setTiles((prev) => {
-      const filtered = prev.filter((t) => t.id !== id);
-      return normalizeOrders(filtered);
-    });
-  }, [normalizeOrders]);
+  const queryClient = useQueryClient();
+
+  const removeTile = useCallback(
+    (id: string) => {
+      setTiles((prev) => {
+        const filtered = prev.filter((t) => t.id !== id);
+        return normalizeOrders(filtered);
+      });
+
+      // ONLY remove the specific tile's query - do NOT invalidate all queries
+      queryClient.removeQueries({
+        queryKey: ['tile-data', id],
+      });
+    },
+    [normalizeOrders, queryClient],
+  );
 
   const startTileDrag = useCallback((tileId: string) => {
     setDragState({
@@ -185,9 +244,9 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
     }));
   }, []);
 
-  const value: DragboardContextValue = useMemo(
+  // Memoize actions separately - they don't change
+  const actions = useMemo(
     () => ({
-      tiles,
       addTile,
       removeTile,
       startTileDrag,
@@ -195,10 +254,18 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
       startSidebarDrag,
       endSidebarDrag,
       setDropTarget,
-      dragState,
     }),
-    [tiles, addTile, removeTile, startTileDrag, endTileDrag, startSidebarDrag, endSidebarDrag, setDropTarget, dragState],
+    [addTile, removeTile, startTileDrag, endTileDrag, startSidebarDrag, endSidebarDrag, setDropTarget],
   );
 
-  return <DragboardContext.Provider value={value}>{children}</DragboardContext.Provider>;
+  // Memoize drag state separately
+  const memoizedDragState = useMemo(() => dragState, [dragState]);
+
+  return (
+    <TilesContext.Provider value={tiles}>
+      <DragStateContext.Provider value={memoizedDragState}>
+        <DragboardActionsContext.Provider value={actions}>{children}</DragboardActionsContext.Provider>
+      </DragStateContext.Provider>
+    </TilesContext.Provider>
+  );
 };

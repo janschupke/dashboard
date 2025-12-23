@@ -8,7 +8,7 @@ import {
   calculateDropZonePosition,
 } from './dragboardGridUtils';
 import { DRAGBOARD_CONSTANTS } from './constants';
-import { useDragboard } from './DragboardProvider';
+import { useTiles, useDragState, useDragboardActions } from './DragboardProvider';
 
 interface DragboardGridProps {
   children: React.ReactNode;
@@ -17,7 +17,9 @@ interface DragboardGridProps {
 export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [viewportColumns, setViewportColumns] = useState(1);
-  const { dragState, endTileDrag, endSidebarDrag, setDropTarget, tiles } = useDragboard();
+  const tiles = useTiles();
+  const dragState = useDragState();
+  const { endTileDrag, endSidebarDrag, setDropTarget } = useDragboardActions();
 
   useEffect(() => {
     const updateColumns = () => {

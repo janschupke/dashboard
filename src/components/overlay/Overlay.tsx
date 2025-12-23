@@ -5,12 +5,13 @@ import { DateTime } from 'luxon';
 import { Header } from '../../components/header/Header.tsx';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useTheme } from '../../hooks/useTheme';
-import { DEFAULT_REFRESH_DELAY_MS, TileRefreshService } from '../../services/tileRefreshService';
+import { DEFAULT_REFRESH_DELAY_MS } from '../../services/tileRefreshService';
 import { useStorageManager } from '../../services/storageManager';
 import { useLogManager } from '../api-log/useLogManager';
 import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Tile } from '../tile/Tile';
+import { TileRefreshProvider, useTileRefreshService } from '../../contexts/TileRefreshContext';
 
 import { ErrorBoundary } from './ErrorBoundary';
 
@@ -31,7 +32,7 @@ function OverlayContent({
   const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { tiles, addTile, removeTile } = useDragboard();
-  const refreshServiceRef = React.useRef(new TileRefreshService());
+  const refreshService = useTileRefreshService();
 
   // Refresh all tiles function - extracted business logic
   const refreshAllTiles = useCallback(async () => {
@@ -39,13 +40,13 @@ function OverlayContent({
     setIsRefreshing(true);
     try {
       // Use the refresh service to handle tile refreshes
-      await refreshServiceRef.current.refreshAllTiles();
+      await refreshService.refreshAllTiles();
       // Add a small delay for UI feedback
       await new Promise((resolve) => setTimeout(resolve, DEFAULT_REFRESH_DELAY_MS));
     } finally {
       setIsRefreshing(false);
     }
-  }, [isRefreshing]);
+  }, [isRefreshing, refreshService]);
 
   useKeyboardNavigation({
     toggleLogView,
@@ -196,15 +197,17 @@ export function Overlay() {
 
   return (
     <ErrorBoundary variant="app">
-      <DragboardProvider initialTiles={initialTiles}>
-        <TilePersistenceListener storage={storage} />
-        <OverlayContent
-          isSidebarCollapsed={isSidebarCollapsed}
-          setSidebarCollapsed={handleSidebarToggle}
-          sidebarSelectedIndex={sidebarSelectedIndex}
-          setSidebarSelectedIndex={setSidebarSelectedIndex}
-        />
-      </DragboardProvider>
+      <TileRefreshProvider>
+        <DragboardProvider initialTiles={initialTiles}>
+          <TilePersistenceListener storage={storage} />
+          <OverlayContent
+            isSidebarCollapsed={isSidebarCollapsed}
+            setSidebarCollapsed={handleSidebarToggle}
+            sidebarSelectedIndex={sidebarSelectedIndex}
+            setSidebarSelectedIndex={setSidebarSelectedIndex}
+          />
+        </DragboardProvider>
+      </TileRefreshProvider>
     </ErrorBoundary>
   );
 }
