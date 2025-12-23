@@ -1,8 +1,11 @@
 import React, { Suspense, useState, useCallback } from 'react';
 
+import { DateTime } from 'luxon';
+
 import { Header } from '../../components/header/Header.tsx';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useTheme } from '../../hooks/useTheme';
+import { DEFAULT_REFRESH_DELAY_MS, TileRefreshService } from '../../services/tileRefreshService';
 import { useStorageManager } from '../../services/storageManager';
 import { useLogManager } from '../api-log/useLogManager';
 import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
@@ -29,14 +32,17 @@ function OverlayContent({
   const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { tiles, addTile, removeTile } = useDragboard();
+  const refreshServiceRef = React.useRef(new TileRefreshService());
 
-  // Refresh all tiles function
+  // Refresh all tiles function - extracted business logic
   const refreshAllTiles = useCallback(async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     try {
-      // TODO: hook this to loading states
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Use the refresh service to handle tile refreshes
+      await refreshServiceRef.current.refreshAllTiles();
+      // Add a small delay for UI feedback
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_REFRESH_DELAY_MS));
     } finally {
       setIsRefreshing(false);
     }
@@ -118,7 +124,7 @@ function useTileStorage() {
               ...tile,
               type: tile.type,
               size: tile.size,
-              createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : Date.now(),
+              createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
               config: tile.config || {},
             }) as DragboardTileData,
         ),
@@ -142,7 +148,7 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
           type: tile.type,
           position: tile.position,
           size: tile.size,
-          createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : Date.now(),
+          createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
           config: tile.config || {},
         })),
       });
@@ -187,7 +193,7 @@ export function Overlay() {
         storage.setSidebarState({
           activeTiles,
           isCollapsed: newState,
-          lastUpdated: Date.now(),
+          lastUpdated: DateTime.now().toMillis(),
         });
         return newState;
       });

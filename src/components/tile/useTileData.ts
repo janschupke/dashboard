@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+import { DateTime } from 'luxon';
 
 import { REFRESH_INTERVALS } from '../../contexts/constants';
 import { storageManager } from '../../services/storageManager';
+import { calculateTileStatus } from '../../utils/statusCalculator';
 
 import type { TileConfig, TileDataType } from '../../services/storageManager';
 
@@ -71,7 +73,7 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
         const cachedData = storageManager.getTileState<T>(tileId);
         if (!cachedData) return undefined;
         // Only use cached data if it's fresh and has valid data
-        const now = Date.now();
+        const now = DateTime.now().toMillis();
         const timeSinceLastFetch = cachedData.lastDataRequest ? now - cachedData.lastDataRequest : Infinity;
         const isFresh = timeSinceLastFetch < refreshInterval;
         const hasValidData = cachedData.data !== null && cachedData.data !== undefined;
@@ -85,7 +87,7 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
       initialDataUpdatedAt: () => {
         const cachedData = storageManager.getTileState<T>(tileId);
         if (!cachedData) return 0;
-        const now = Date.now();
+        const now = DateTime.now().toMillis();
         const timeSinceLastFetch = cachedData.lastDataRequest ? now - cachedData.lastDataRequest : Infinity;
         const isFresh = timeSinceLastFetch < refreshInterval;
         const hasValidData = cachedData.data !== null && cachedData.data !== undefined;
@@ -135,57 +137,21 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   // If we're fetching and have no result yet, show loading
   const showLoading = isPending || isLoading || (isFetching && (!result || !hasValidData));
 
-  // Calculate status based on query state and result
-  const { status, data, lastUpdated } = useMemo(() => {
-    // Show loading state when fetching and no data available
-    if (showLoading) {
-      return {
-        status: TileStatus.Loading,
-        data: null as T | null,
-        lastUpdated: null as Date | null,
-      };
-    }
-
-    if (error || !result) {
-      // Try to get cached data on error
-      const cachedData = storageManager.getTileState<T>(tileId);
-      if (cachedData && cachedData.data) {
-        return {
-          status: TileStatus.Stale,
-          data: cachedData.data,
-          lastUpdated: cachedData.lastDataRequest ? new Date(cachedData.lastDataRequest) : null,
-        };
-      }
-      return {
-        status: TileStatus.Error,
-        data: null as T | null,
-        lastUpdated: null as Date | null,
-      };
-    }
-
-    const data = result.data;
-    const lastUpdated = result.lastDataRequest ? new Date(result.lastDataRequest) : null;
-
-    if (result.lastDataRequestSuccessful && data) {
-      return {
-        status: TileStatus.Success,
-        data,
-        lastUpdated,
-      };
-    } else if (!result.lastDataRequestSuccessful && data) {
-      return {
-        status: TileStatus.Stale,
-        data,
-        lastUpdated,
-      };
-    } else {
-      return {
-        status: TileStatus.Error,
-        data: null as T | null,
-        lastUpdated: null as Date | null,
-      };
-    }
+  // Calculate status based on query state and result using extracted logic
+  const statusResult = useMemo(() => {
+    return calculateTileStatus<T>({
+      showLoading,
+      error,
+      result,
+      tileId,
+      getCachedData: (id) => storageManager.getTileState<T>(id),
+    });
   }, [showLoading, result, error, tileId]);
+
+  const { status, data, lastUpdated: lastUpdatedDateTime } = statusResult;
+  
+  // Convert DateTime to Date for backward compatibility (can be removed later)
+  const lastUpdated = lastUpdatedDateTime ? lastUpdatedDateTime.toJSDate() : null;
 
   return {
     data,

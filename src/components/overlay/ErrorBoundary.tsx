@@ -1,5 +1,9 @@
 import React from 'react';
 
+import { DateTime } from 'luxon';
+
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
+
 interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallback?: React.ComponentType<{ error: Error; resetError: () => void }>;
@@ -52,7 +56,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         message: error.message,
         stack: error.stack,
         componentStack: errorInfo.componentStack,
-        timestamp: new Date().toISOString(),
+        timestamp: DateTime.now().toISO() || '',
         userAgent: navigator.userAgent,
         url: window.location.href,
       };
@@ -74,7 +78,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
         return (
-          <FallbackComponent error={new Error('Unknown error')} resetError={this.resetError} />
+          <FallbackComponent
+            error={new Error(ERROR_MESSAGES.TILE.UNKNOWN_ERROR)}
+            resetError={this.resetError}
+          />
         );
       }
 
@@ -82,7 +89,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       if (this.props.variant === 'component') {
         return (
           <div className="p-4 text-center text-red-600" data-testid="error-boundary-message">
-            There was an error loading this component.
+            {ERROR_MESSAGES.TILE.COMPONENT_LOAD_ERROR}
           </div>
         );
       }

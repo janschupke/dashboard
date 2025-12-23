@@ -1,6 +1,7 @@
 import { useMemo, memo } from 'react';
 
 import { format } from 'date-fns';
+import { DateTime } from 'luxon';
 import {
   LineChart,
   Line,
@@ -46,38 +47,39 @@ export const MarketChart = memo<MarketChartProps>(
     const chartData = useMemo(() => {
       if (!data || data.length === 0) return [];
 
-      // Filter data based on time range
-      const now = new Date();
-      const filterDate = new Date();
+      // Filter data based on time range using Luxon
+      const now = DateTime.now();
+      let filterDate: DateTime;
 
       switch (timeRange) {
         case '1M':
-          filterDate.setMonth(now.getMonth() - 1);
+          filterDate = now.minus({ months: 1 });
           break;
         case '3M':
-          filterDate.setMonth(now.getMonth() - 3);
+          filterDate = now.minus({ months: 3 });
           break;
         case '6M':
-          filterDate.setMonth(now.getMonth() - 6);
+          filterDate = now.minus({ months: 6 });
           break;
         case '1Y':
-          filterDate.setFullYear(now.getFullYear() - 1);
+          filterDate = now.minus({ years: 1 });
           break;
         case '5Y':
-          filterDate.setFullYear(now.getFullYear() - 5);
+          filterDate = now.minus({ years: 5 });
           break;
         case 'Max':
         default:
           return data.map((entry) => ({
-            date: entry.label || format(new Date(entry.date), 'MMM dd'),
+            date: entry.label || format(DateTime.fromJSDate(entry.date).toJSDate(), 'MMM dd'),
             value: entry.value,
           }));
       }
 
+      const filterDateJs = filterDate.toJSDate();
       return data
-        .filter((entry) => new Date(entry.date) >= filterDate)
+        .filter((entry) => DateTime.fromJSDate(entry.date) >= filterDate)
         .map((entry) => ({
-          date: entry.label || format(new Date(entry.date), 'MMM dd'),
+          date: entry.label || format(DateTime.fromJSDate(entry.date).toJSDate(), 'MMM dd'),
           value: entry.value,
         }));
     }, [data, timeRange]);

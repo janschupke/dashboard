@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { BaseDataParser } from '../../../services/dataParser';
 
 import type { UraniumTileData } from './types';
@@ -18,7 +20,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
       spotPrice,
       change: 0,
       changePercent: 0,
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: DateTime.now().toISO() || '',
       history: [],
     };
   }

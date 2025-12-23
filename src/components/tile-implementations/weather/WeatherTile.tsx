@@ -1,7 +1,10 @@
 import { useMemo, useState, useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { format } from 'date-fns';
+import { DateTime } from 'luxon';
 
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 
@@ -117,7 +120,8 @@ const WeatherForecast = memo(function WeatherForecast({
   if (!showForecast || daily.length === 0) return null;
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'EEE');
+    const dt = DateTime.fromISO(dateString);
+    return dt.isValid ? format(dt.toJSDate(), 'EEE') : dateString;
   };
 
   return (
@@ -162,10 +166,12 @@ const WeatherTileContent = memo(function WeatherTileContent({
   showForecast: boolean;
   onToggleForecast: () => void;
 }) {
+  const { t } = useTranslation();
+  
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
-        <span className="text-theme-tertiary text-sm">No weather data available</span>
+        <span className="text-theme-tertiary text-sm">{t('tiles.noDataAvailable')}</span>
       </div>
     );
   }
@@ -191,7 +197,7 @@ const WeatherTileContent = memo(function WeatherTileContent({
         </div>
         <div className="text-right">
           <div className="text-sm font-medium text-theme-primary">
-            {cityConfig ? `${cityConfig.city}, ${cityConfig.country}` : 'Unknown Location'}
+            {cityConfig ? `${cityConfig.city}, ${cityConfig.country}` : t('tiles.unknownLocation')}
           </div>
         </div>
       </div>
@@ -260,7 +266,7 @@ export const WeatherTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

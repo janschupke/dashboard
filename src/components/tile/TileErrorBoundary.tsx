@@ -33,8 +33,8 @@ export class TileErrorBoundary extends React.Component<
       return (
         <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">
           <div>
-            <p className="font-semibold">Tile Error</p>
-            <p className="text-xs mt-1">{this.state.error?.message || 'Unknown error'}</p>
+            <p className="font-semibold">{ERROR_MESSAGES.TILE.TILE_ERROR}</p>
+            <p className="text-xs mt-1">{this.state.error?.message || ERROR_MESSAGES.TILE.UNKNOWN_ERROR}</p>
           </div>
         </div>
       );

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { validatePassword, validateLoginResponse } from '../../utils/authValidation';
 import { Button } from '../ui/Button';
 
 export const LoginForm: React.FC = () => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -12,8 +16,11 @@ export const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) {
-      addToast('Password is required', 'error');
+    
+    // Validate password using extracted validation logic
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      addToast(validation.error || t('auth.passwordRequired'), 'error');
       return;
     }
 
@@ -21,11 +28,12 @@ export const LoginForm: React.FC = () => {
 
     try {
       const success = await login(password);
-      if (!success) {
-        addToast('Invalid password', 'error');
+      const errorMessage = validateLoginResponse(success);
+      if (errorMessage) {
+        addToast(t('auth.invalidPassword'), 'error');
       }
     } catch {
-      addToast('Login failed. Please try again.', 'error');
+      addToast(t('auth.loginFailed'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +72,7 @@ export const LoginForm: React.FC = () => {
               disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? t('auth.signingIn') : t('auth.signIn')}
             </Button>
           </div>
         </form>

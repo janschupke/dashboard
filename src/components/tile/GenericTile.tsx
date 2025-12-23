@@ -1,5 +1,12 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { DateTime } from 'luxon';
+
+import { CardVariant } from '../../constants/enums';
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
+import { minutesToMs } from '../../utils/timeUtils';
+import { formatRelativeTime, now, fromISO } from '../../utils/luxonUtils';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 
@@ -41,13 +48,13 @@ const StatusBar = ({
   onManualRefresh?: () => void;
   isLoading?: boolean;
 }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(now());
 
   // Update current time every minute to keep elapsed time accurate
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
+      setCurrentTime(now());
+    }, minutesToMs(1)); // Update every minute
 
     return () => clearInterval(interval);
   }, []);
@@ -66,20 +73,18 @@ const StatusBar = ({
     }
   };
 
-  // Format last update time
+  const { t } = useTranslation();
+
+  // Format last update time using Luxon and i18n
   const formatLastUpdate = (isLoading?: boolean, timestamp?: string) => {
-    if (isLoading) return 'Pending';
-    if (!timestamp) return 'Never';
+    if (isLoading) return t('tile.pending');
+    if (!timestamp) return t('tile.never');
     try {
-      const date = new Date(timestamp);
-      const diffMs = currentTime.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      if (diffMins < 1) return 'Just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
-      return date.toLocaleDateString();
+      const date = fromISO(timestamp);
+      if (!date.isValid) return t('tile.invalidDate');
+      return formatRelativeTime(date, currentTime);
     } catch {
-      return 'Invalid date';
+      return t('tile.invalidDate');
     }
   };
 
@@ -96,8 +101,8 @@ const StatusBar = ({
           <button
             onClick={onManualRefresh}
             className="p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer"
-            aria-label="Refresh data"
-            title="Refresh data"
+            aria-label={t('tiles.refreshData')}
+            title={t('tiles.refreshData')}
           >
             <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
           </button>
@@ -116,7 +121,7 @@ const StatusBar = ({
 const ErrorContent = React.memo(() => (
   <div className="flex flex-col items-center justify-center h-full space-y-1">
     <div className="text-4xl mb-4">🍆</div>
-    <p className="text-theme-status-error text-sm text-center">Data failed to fetch</p>
+    <p className="text-theme-status-error text-sm text-center">{ERROR_MESSAGES.TILE.DATA_FETCH_FAILED}</p>
   </div>
 ));
 
@@ -145,11 +150,11 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       }
     }, [tile.id, onRemove]);
 
-    const getCardVariant = useCallback(() => {
+    const getCardVariant = useCallback((): CardVariant => {
       if (status === TileStatus.Error || status === TileStatus.Stale) {
-        return 'outlined';
+        return CardVariant.OUTLINED;
       }
-      return 'elevated';
+      return CardVariant.ELEVATED;
     }, [status]);
 
     const getBorderClass = useCallback(() => {

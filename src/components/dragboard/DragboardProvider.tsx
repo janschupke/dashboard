@@ -1,5 +1,9 @@
 import React, { useCallback, useMemo, useState, useRef } from 'react';
 
+import { DateTime } from 'luxon';
+
+import { generateTileId } from '../../utils/idGenerator';
+import { getHighestOccupiedRow, snapToTileGrid, tileFits } from '../../utils/gridUtils';
 import { DragboardContext, DragboardDragContext } from './DragboardContext';
 import { findNextFreePosition, rearrangeTiles } from './rearrangeTiles';
 
@@ -14,34 +18,6 @@ interface DragboardProviderProps {
   config: DragboardConfig;
   initialTiles?: DragboardTileData[];
   children: React.ReactNode;
-}
-
-// Utility to snap a position to the nearest valid tile increment
-function snapToTileGrid(
-  x: number,
-  y: number,
-  config: DragboardConfig,
-  tileSize: 'small' | 'medium' | 'large',
-): { x: number; y: number } {
-  const { colSpan, rowSpan } = config.tileSizes[tileSize] || config.tileSizes['medium'];
-  return {
-    x: Math.max(0, Math.min(config.columns - colSpan, Math.round(x / colSpan) * colSpan)),
-    y: Math.max(0, Math.min(config.rows - rowSpan, Math.round(y / rowSpan) * rowSpan)),
-  };
-}
-
-function getHighestOccupiedRow(
-  tiles: DragboardTileData[],
-  tileSizes: DragboardConfig['tileSizes'],
-  minRows: number,
-) {
-  let maxRow = minRows - 1;
-  for (const tile of tiles) {
-    const { rowSpan } = tileSizes[tile.size] || tileSizes['medium'];
-    const tileBottom = tile.position.y + rowSpan - 1;
-    if (tileBottom > maxRow) maxRow = tileBottom;
-  }
-  return Math.max(maxRow + 1, minRows);
 }
 
 export const DragboardProvider: React.FC<DragboardProviderProps> = ({
@@ -86,24 +62,9 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
   });
 
   // Helper: Check if a tile fits in the current grid
-  const tileFits = useCallback(
+  const checkTileFits = useCallback(
     (tile: DragboardTileData) => {
-      const { colSpan, rowSpan } = tileSizes[tile.size] || tileSizes['medium'];
-      for (let y = 0; y <= rows - rowSpan; y++) {
-        for (let x = 0; x <= columns - colSpan; x++) {
-          const overlap = tiles.some((t) => {
-            const tSize = tileSizes[t.size] || tileSizes['medium'];
-            return (
-              x < t.position.x + tSize.colSpan &&
-              x + colSpan > t.position.x &&
-              y < t.position.y + tSize.rowSpan &&
-              y + rowSpan > t.position.y
-            );
-          });
-          if (!overlap) return true;
-        }
-      }
-      return false;
+      return tileFits(tile, tiles, tileSizes, rows, columns);
     },
     [tileSizes, rows, columns, tiles],
   );
@@ -288,14 +249,14 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
       }
       // Prepare new tile
       const newTile: DragboardTileData = {
-        id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: generateTileId(),
         type: tileType as TileType,
         position: snappedTarget!,
         size: 'medium',
-        createdAt: Date.now(),
+        createdAt: DateTime.now().toMillis(),
       };
       // Check if tile fits
-      if (!tileFits(newTile)) {
+      if (!checkTileFits(newTile)) {
         if (!config.dynamicExtensions) {
           throw new Error('Board is full and dynamicExtensions is disabled.');
         } else {
@@ -318,7 +279,7 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
         sidebarTileType: undefined,
       }));
     },
-    [columns, rows, config, tiles, addTile, tileFits, extendRowsIfNeeded, reduceRowsIfPossible],
+    [columns, rows, config, tiles, addTile, checkTileFits, extendRowsIfNeeded, reduceRowsIfPossible],
   );
 
   // Set drop target for drag-over events

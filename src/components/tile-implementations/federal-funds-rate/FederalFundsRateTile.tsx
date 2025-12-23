@@ -3,6 +3,7 @@ import { useMemo, useState, memo } from 'react';
 import { format } from 'date-fns';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 import { MarketChart, type ChartDataPoint } from '../../ui/MarketChart';
@@ -101,7 +102,7 @@ export const FederalFundsRateTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

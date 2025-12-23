@@ -1,5 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
+import { DateTime } from 'luxon';
+
 import {
   type APILogEntry,
   APILogLevel,
@@ -54,10 +56,9 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // Format timestamp as readable string
+  // Format timestamp as readable string using Luxon
   const formatTimestamp = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+    return DateTime.fromMillis(timestamp).toLocaleString();
   };
 
   // Return Tailwind color classes based on log level

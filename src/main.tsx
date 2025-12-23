@@ -1,5 +1,6 @@
 import './index.css';
 import './theme-init';
+import './i18n/config';
 
 import React from 'react';
 

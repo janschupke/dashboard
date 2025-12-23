@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import type { EuriborRateApiResponse, EuriborRateTileData, EuriborRateHistoryEntry } from './types';
 import type { DataMapper } from '../../../services/dataMapper';
 
@@ -20,7 +22,7 @@ export const ecbEuriborDataMapper: DataMapper<EuriborRateApiResponse, EuriborRat
         .map(([obsIdx, obsArr]) => {
           const date = timeDim[parseInt(obsIdx, 10)]?.id;
           const rate = parseFloat((obsArr as unknown[])[0] as string);
-          return date && !isNaN(rate) ? { date: new Date(date), rate } : null;
+          return date && !isNaN(rate) ? { date: DateTime.fromISO(date).toJSDate(), rate } : null;
         })
         .filter(Boolean);
     });
@@ -30,7 +32,7 @@ export const ecbEuriborDataMapper: DataMapper<EuriborRateApiResponse, EuriborRat
     const latest = sorted[sorted.length - 1];
     return {
       currentRate: latest?.rate ?? 0,
-      lastUpdate: latest?.date ?? new Date(0),
+      lastUpdate: latest?.date ?? DateTime.fromMillis(0).toJSDate(),
       historicalData: sorted,
     };
   },

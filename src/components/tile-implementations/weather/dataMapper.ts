@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { BaseDataMapper } from '../../../services/dataMapper';
 
 import type { WeatherTileData, WeatherApiResponse, WeatherForecast } from './types';
@@ -9,7 +11,7 @@ export class WeatherDataMapper extends BaseDataMapper<WeatherApiResponse, Weathe
     const weather = current.weather[0];
     const daily: WeatherForecast[] = Array.isArray(apiResponse.daily)
       ? apiResponse.daily.map((day) => ({
-          date: new Date(day.dt * 1000).toISOString(),
+          date: DateTime.fromSeconds(day.dt).toISO() || '',
           temperature: {
             min: day.temp.min,
             max: day.temp.max,

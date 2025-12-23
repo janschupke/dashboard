@@ -1,0 +1,45 @@
+{
+  "auth": {
+    "passwordRequired": "Password is required",
+    "invalidPassword": "Invalid password",
+    "loginFailed": "Login failed. Please try again.",
+    "logoutFailed": "Logout failed. Please try again.",
+    "signingIn": "Signing in...",
+    "signIn": "Sign in"
+  },
+  "tile": {
+    "dataFetchFailed": "Data failed to fetch",
+    "componentLoadError": "There was an error loading this component.",
+    "tileError": "Tile Error",
+    "unknownError": "Unknown error",
+    "pending": "Pending",
+    "never": "Never",
+    "justNow": "Just now",
+    "minutesAgo_one": "{{count}}m ago",
+    "minutesAgo_other": "{{count}}m ago",
+    "hoursAgo_one": "{{count}}h ago",
+    "hoursAgo_other": "{{count}}h ago",
+    "invalidDate": "Invalid date"
+  },
+  "api": {
+    "timeout": "API request timed out after {{seconds}} seconds",
+    "noMapperFound": "No data mapper found for tile type: {{tileType}}",
+    "noParserFound": "No parser registered for tile type: {{tileType}}",
+    "noGlobalQuote": "No Global Quote data found in API response",
+    "missingRequiredFields": "Missing required fields in Global Quote data",
+    "mappingFailed": "Failed to map GDX ETF data: {{error}}"
+  },
+  "general": {
+    "loading": "Loading..."
+  },
+  "weatherAlerts": {
+    "noActiveAlerts": "No active weather alerts."
+  },
+  "tiles": {
+    "refreshData": "Refresh data",
+    "noDataAvailable": "No data available",
+    "unknownLocation": "Unknown Location",
+    "gdxEtfName": "VanEck Gold Miners ETF"
+  }
+}
+
