@@ -13,7 +13,6 @@ import { Sidebar } from '../sidebar/Sidebar';
 import { Tile } from '../tile/Tile';
 
 import { ErrorBoundary } from './ErrorBoundary';
-import { DASHBOARD_GRID_CONFIG } from './gridConfig';
 
 import type { DragboardTileData } from '../dragboard';
 
@@ -92,12 +91,7 @@ function OverlayContent({
         >
           <DragboardGrid>
             {tiles.map((tile) => (
-              <DragboardTile
-                key={tile.id}
-                id={tile.id}
-                position={tile.position || { x: 0, y: 0 }}
-                size={typeof tile.size === 'string' ? tile.size : 'medium'}
-              >
+              <DragboardTile key={tile.id} id={tile.id}>
                 <Tile tile={tile} />
               </DragboardTile>
             ))}
@@ -123,7 +117,7 @@ function useTileStorage() {
             ({
               ...tile,
               type: tile.type,
-              size: tile.size,
+              order: typeof tile.order === 'number' ? tile.order : 0, // Default to 0 if missing
               createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
               config: tile.config || {},
             }) as DragboardTileData,
@@ -146,8 +140,7 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
         tiles: tiles.map((tile: DragboardTileData) => ({
           id: tile.id,
           type: tile.type,
-          position: tile.position,
-          size: tile.size,
+          order: tile.order,
           createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
           config: tile.config || {},
         })),
@@ -203,7 +196,7 @@ export function Overlay() {
 
   return (
     <ErrorBoundary variant="app">
-      <DragboardProvider config={DASHBOARD_GRID_CONFIG} initialTiles={initialTiles}>
+      <DragboardProvider initialTiles={initialTiles}>
         <TilePersistenceListener storage={storage} />
         <OverlayContent
           isSidebarCollapsed={isSidebarCollapsed}

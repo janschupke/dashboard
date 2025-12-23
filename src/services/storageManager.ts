@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { generateLogId } from '../utils/idGenerator';
 import { hoursToMs } from '../utils/timeUtils';
 
-import type { DragboardTileData } from '../components/dragboard/dragboardTypes';
+import type { DragboardTileData } from '../components/dragboard/types';
 
 // --- Types ---
 export const AppTheme = {
@@ -85,8 +85,7 @@ export interface DashboardState {
   tiles: Array<{
     id: string;
     type: string;
-    position: { x: number; y: number };
-    size: string;
+    order: number;
     createdAt: number;
     config?: Record<string, unknown>;
   }>;

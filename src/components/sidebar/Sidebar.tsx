@@ -2,8 +2,6 @@ import { useEffect, useMemo, useCallback } from 'react';
 
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { TILE_CATEGORIES } from '../../types/tileCategories';
-import { findNextFreePosition } from '../dragboard';
-import { DASHBOARD_GRID_CONFIG } from '../overlay/gridConfig';
 import { TILE_CATALOG } from '../tile/TileFactoryRegistry';
 
 import { SidebarItem } from './SidebarItem';
@@ -81,15 +79,10 @@ export function Sidebar({
         const tile = tiles.find((t) => t.type === tileType);
         if (tile) removeTile(tile.id);
       } else {
-        const position = findNextFreePosition(tiles, DASHBOARD_GRID_CONFIG, 'medium') || {
-          x: 0,
-          y: 0,
-        };
+        // Add tile - order will be assigned automatically (at end)
         addTile({
           id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: tileType,
-          position,
-          size: 'medium',
           createdAt: Date.now(),
         });
       }

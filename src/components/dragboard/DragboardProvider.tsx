@@ -1,370 +1,195 @@
-import React, { useCallback, useMemo, useState, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 
-import { DateTime } from 'luxon';
+import type { DragboardTileData } from './types';
 
-import { generateTileId } from '../../utils/idGenerator';
-import { getHighestOccupiedRow, snapToTileGrid, tileFits } from '../../utils/gridUtils';
-import { DragboardContext, DragboardDragContext } from './DragboardContext';
-import { findNextFreePosition, rearrangeTiles } from './rearrangeTiles';
+interface DragboardContextValue {
+  tiles: DragboardTileData[];
+  addTile: (tile: Omit<DragboardTileData, 'order'>) => void;
+  removeTile: (id: string) => void;
+  startTileDrag: (tileId: string) => void;
+  endTileDrag: (dropIndex: number | null) => void;
+  startSidebarDrag: (tileType: string) => void;
+  endSidebarDrag: (dropIndex: number | null, tileType: string) => void;
+  setDropTarget: (dropIndex: number | null) => void;
+  dragState: {
+    draggingTileId: string | null;
+    dropIndex: number | null;
+    sidebarTileType?: string; // For sidebar drags
+  };
+}
 
-import type {
-  DragboardConfig,
-  DragboardDragState,
-  DragboardContextValue,
-} from './DragboardContext';
-import type { DragboardTileData, TileType } from './dragboardTypes';
+const DragboardContext = createContext<DragboardContextValue | null>(null);
+
+export const useDragboard = () => {
+  const context = useContext(DragboardContext);
+  if (!context) {
+    throw new Error('useDragboard must be used within DragboardProvider');
+  }
+  return context;
+};
 
 interface DragboardProviderProps {
-  config: DragboardConfig;
   initialTiles?: DragboardTileData[];
   children: React.ReactNode;
 }
 
 export const DragboardProvider: React.FC<DragboardProviderProps> = ({
-  config,
   initialTiles = [],
   children,
 }) => {
-  // Set config defaults
-  const {
-    consolidation = true,
-    movementEnabled = true,
-    columns,
-    rows: defaultRows,
-    tileSizes,
-    // breakpoints, // removed unused
-  } = config;
-
-  // Internal tile state
-  const [tiles, setTiles] = useState<DragboardTileData[]>(initialTiles);
-
-  // Sync tiles state with initialTiles prop (for reload/restore)
-  React.useEffect(() => {
-    setTiles(initialTiles);
+  // Normalize initial tiles: sort by saved order, then reassign sequential orders (0, 1, 2, ...)
+  // This ensures orders are always sequential with no gaps, while preserving relative order
+  const normalizedInitialTiles = useMemo(() => {
+    const sorted = [...initialTiles].sort((a, b) => {
+      const aOrder = a.order ?? 0;
+      const bOrder = b.order ?? 0;
+      return aOrder - bOrder;
+    });
+    return sorted.map((tile, index) => ({
+      ...tile,
+      order: index, // Sequential: 0, 1, 2, ...
+      createdAt: tile.createdAt ?? Date.now(),
+    }));
   }, [initialTiles]);
 
-  // Track current row count (for dynamic extension/reduction)
-  const [rows, setRows] = useState(defaultRows);
-  const defaultRowsRef = useRef(defaultRows);
-  const tilesRef = useRef(tiles);
-  React.useEffect(() => {
-    tilesRef.current = tiles;
-  }, [tiles]);
+  const [tiles, setTiles] = useState<DragboardTileData[]>(normalizedInitialTiles);
 
-  // Drag state
-  const [dragState, setDragState] = useState<DragboardDragState>({
+  // Update tiles when initialTiles change (e.g., loaded from localStorage)
+  useEffect(() => {
+    setTiles(normalizedInitialTiles);
+  }, [normalizedInitialTiles]);
+  const [dragState, setDragState] = useState<{
+    draggingTileId: string | null;
+    dropIndex: number | null;
+    sidebarTileType?: string;
+  }>({
     draggingTileId: null,
-    dragOrigin: null,
-    dragOffset: null,
-    dropTarget: null,
-    isSidebarDrag: false,
-    sidebarTileType: undefined,
+    dropIndex: null,
   });
 
-  // Helper: Check if a tile fits in the current grid
-  const checkTileFits = useCallback(
-    (tile: DragboardTileData) => {
-      return tileFits(tile, tiles, tileSizes, rows, columns);
-    },
-    [tileSizes, rows, columns, tiles],
-  );
-
-  // Helper: Extend rows to fit a tile if needed
-  const extendRowsIfNeeded = useCallback(
-    (tile: DragboardTileData) => {
-      const { rowSpan } = tileSizes[tile.size] || tileSizes['medium'];
-      const neededRows = tile.position.y + rowSpan;
-      if (neededRows > rows) setRows(neededRows);
-    },
-    [tileSizes, rows],
-  );
-
-  // Helper: Reduce rows if possible (after remove/move)
-  const reduceRowsIfPossible = useCallback(() => {
-    const highest = getHighestOccupiedRow(tiles, tileSizes, defaultRowsRef.current);
-    if (rows > highest) setRows(highest);
-  }, [tiles, tileSizes, rows]);
-
-  // Tile drag actions (drag state only)
-  const startTileDrag = useCallback((tileId: string, origin: { x: number; y: number }) => {
-    setDragState((prev) => ({
-      ...prev,
-      draggingTileId: tileId,
-      dragOrigin: origin,
-      dragOffset: { x: 0, y: 0 },
-      isSidebarDrag: false,
-      sidebarTileType: undefined,
+  // Normalize orders to match array indices (0, 1, 2, ...)
+  const normalizeOrders = useCallback((tilesArray: DragboardTileData[]): DragboardTileData[] => {
+    return tilesArray.map((tile, index) => ({
+      ...tile,
+      order: index,
     }));
   }, []);
 
-  const updateTileDrag = useCallback((offset: { x: number; y: number }) => {
-    setDragState((prev) => ({ ...prev, dragOffset: offset }));
-  }, []);
-
-  // Internal tile actions
   const addTile = useCallback(
-    (tile: DragboardTileData) => {
+    (tile: Omit<DragboardTileData, 'order'>) => {
       setTiles((prev) => {
-        const next = [...prev, tile];
-        if (consolidation) {
-          return rearrangeTiles(next);
-        }
-        return next;
+        const newTile: DragboardTileData = {
+          ...tile,
+          order: prev.length,
+          createdAt: tile.createdAt ?? Date.now(),
+        };
+        return [...prev, newTile];
       });
-      extendRowsIfNeeded(tile);
-      reduceRowsIfPossible();
     },
-    [consolidation, extendRowsIfNeeded, reduceRowsIfPossible],
+    [],
   );
 
-  const removeTile = useCallback(
-    (id: string) => {
-      setTiles((prev) => {
-        const next = prev.filter((t) => t.id !== id);
-        if (consolidation && next.length > 0) {
-          return rearrangeTiles(next);
-        }
-        return next;
-      });
-      reduceRowsIfPossible();
-    },
-    [consolidation, reduceRowsIfPossible],
-  );
+  const removeTile = useCallback((id: string) => {
+    setTiles((prev) => {
+      const filtered = prev.filter((t) => t.id !== id);
+      return normalizeOrders(filtered);
+    });
+  }, [normalizeOrders]);
 
-  const updateTile = useCallback((id: string, updates: Partial<DragboardTileData>) => {
-    setTiles((prev) => prev.map((tile) => (tile.id === id ? { ...tile, ...updates } : tile)));
+  const startTileDrag = useCallback((tileId: string) => {
+    setDragState({
+      draggingTileId: tileId,
+      dropIndex: null,
+    });
   }, []);
 
-  const moveTile = useCallback(
-    (tileId: string, newPosition: { x: number; y: number }) => {
-      setTiles((prev) => {
-        const next = prev.map((tile) =>
-          tile.id === tileId ? { ...tile, position: newPosition } : tile,
-        );
-        if (consolidation) {
-          return rearrangeTiles(next);
-        }
-        return next;
-      });
-      reduceRowsIfPossible();
-    },
-    [consolidation, reduceRowsIfPossible],
-  );
-
-  const reorderTiles = useCallback(
-    (newTiles: DragboardTileData[]) => {
-      setTiles(consolidation ? rearrangeTiles(newTiles) : newTiles);
-    },
-    [consolidation],
-  );
-
-  // End tile drag (move or out-of-bounds)
   const endTileDrag = useCallback(
-    (dropTarget: { x: number; y: number } | null, tileId?: string) => {
-      if (!tileId) return;
-      const tile = tiles.find((t) => t.id === tileId);
-      if (!tile) return;
-      let snappedTarget = dropTarget;
-      // Out of bounds logic
-      if (
-        dropTarget &&
-        (dropTarget.x < 0 || dropTarget.y < 0 || dropTarget.x >= columns || dropTarget.y >= rows)
-      ) {
-        if (config.allowDragOutOfBounds) {
-          removeTile(tileId);
-        } // else, do nothing (tile stays in place)
-        setDragState((prev) => ({
-          ...prev,
+    (dropIndex: number | null) => {
+      if (dropIndex === null) {
+        setDragState({
           draggingTileId: null,
-          dragOrigin: null,
-          dragOffset: null,
-          dropTarget: null,
-          isSidebarDrag: false,
-          sidebarTileType: undefined,
-        }));
+          dropIndex: null,
+        });
         return;
       }
-      if (dropTarget) {
-        const tileSize: 'small' | 'medium' | 'large' = tile.size;
-        snappedTarget = snapToTileGrid(dropTarget.x, dropTarget.y, { ...config, rows }, tileSize);
-        moveTile(tileId, snappedTarget);
-        // Dynamic row extension (after move)
-        extendRowsIfNeeded({ ...tile, position: snappedTarget });
-        // Dynamic row reduction (after move)
-        reduceRowsIfPossible();
-      }
-      setDragState((prev) => ({
-        ...prev,
+
+      setTiles((prev) => {
+        const draggingId = dragState.draggingTileId;
+        if (!draggingId) return prev;
+
+        const draggingIndex = prev.findIndex((t) => t.id === draggingId);
+        if (draggingIndex === -1) return prev;
+
+        const newTiles = [...prev];
+        const [draggedTile] = newTiles.splice(draggingIndex, 1);
+        newTiles.splice(dropIndex, 0, draggedTile);
+
+        return normalizeOrders(newTiles);
+      });
+
+      setDragState({
         draggingTileId: null,
-        dragOrigin: null,
-        dragOffset: null,
-        dropTarget: snappedTarget,
-        isSidebarDrag: false,
-        sidebarTileType: undefined,
-      }));
+        dropIndex: null,
+      });
     },
-    [columns, rows, moveTile, removeTile, config, extendRowsIfNeeded, reduceRowsIfPossible, tiles],
+    [dragState.draggingTileId, normalizeOrders],
   );
 
-  // Sidebar drag actions
   const startSidebarDrag = useCallback((tileType: string) => {
-    setDragState((prev) => ({
-      ...prev,
+    setDragState({
       draggingTileId: null,
-      dragOrigin: null,
-      dragOffset: null,
-      dropTarget: null,
-      isSidebarDrag: true,
+      dropIndex: null,
       sidebarTileType: tileType,
-    }));
+    });
   }, []);
 
   const endSidebarDrag = useCallback(
-    (dropTarget: { x: number; y: number } | null, tileType?: string) => {
-      if (!tileType) return;
-      let snappedTarget = dropTarget;
-      // Only allow drop if within bounds
-      if (
-        dropTarget &&
-        (dropTarget.x < 0 || dropTarget.y < 0 || dropTarget.x >= columns || dropTarget.y >= rows)
-      ) {
-        // Out of bounds drop: do nothing
-        setDragState((prev) => ({
-          ...prev,
-          draggingTileId: null,
-          dragOrigin: null,
-          dragOffset: null,
-          dropTarget: null,
-          isSidebarDrag: false,
-          sidebarTileType: undefined,
-        }));
-        return;
-      }
-      // Find next free position if not provided
-      if (!dropTarget) {
-        snappedTarget = findNextFreePosition(tiles, { ...config, rows }, 'medium') || {
-          x: 0,
-          y: 0,
+    (dropIndex: number | null, tileType: string) => {
+      const finalDropIndex = dropIndex ?? tiles.length;
+
+      setTiles((prev) => {
+        const newTile: DragboardTileData = {
+          id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: tileType,
+          order: finalDropIndex,
+          createdAt: Date.now(),
         };
-      }
-      // Prepare new tile
-      const newTile: DragboardTileData = {
-        id: generateTileId(),
-        type: tileType as TileType,
-        position: snappedTarget!,
-        size: 'medium',
-        createdAt: DateTime.now().toMillis(),
-      };
-      // Check if tile fits
-      if (!checkTileFits(newTile)) {
-        if (!config.dynamicExtensions) {
-          throw new Error('Board is full and dynamicExtensions is disabled.');
-        } else {
-          // Extend rows to fit
-          extendRowsIfNeeded(newTile);
-        }
-      }
-      addTile(newTile);
-      // Dynamic row extension (after add)
-      extendRowsIfNeeded(newTile);
-      // Dynamic row reduction (after add)
-      reduceRowsIfPossible();
-      setDragState((prev) => ({
-        ...prev,
+
+        const newTiles = [...prev];
+        newTiles.splice(finalDropIndex, 0, newTile);
+
+        return normalizeOrders(newTiles);
+      });
+
+      setDragState({
         draggingTileId: null,
-        dragOrigin: null,
-        dragOffset: null,
-        dropTarget: snappedTarget,
-        isSidebarDrag: false,
-        sidebarTileType: undefined,
-      }));
+        dropIndex: null,
+      });
     },
-    [columns, rows, config, tiles, addTile, checkTileFits, extendRowsIfNeeded, reduceRowsIfPossible],
+    [tiles.length, normalizeOrders],
   );
 
-  // Set drop target for drag-over events
-  const setDropTarget = useCallback((target: { x: number; y: number } | null) => {
-    setDragState((prev) => ({ ...prev, dropTarget: target }));
+  const setDropTarget = useCallback((dropIndex: number | null) => {
+    setDragState((prev) => ({
+      ...prev,
+      dropIndex,
+    }));
   }, []);
 
-  // Memoize drag context value separately for performance
-  const dragContextValue = useMemo(
+  const value: DragboardContextValue = useMemo(
     () => ({
-      dragState,
-      startTileDrag,
-      updateTileDrag,
-      endTileDrag,
-      startSidebarDrag,
-      endSidebarDrag,
-      setDropTarget,
-    }),
-    [
-      dragState,
-      startTileDrag,
-      updateTileDrag,
-      endTileDrag,
-      startSidebarDrag,
-      endSidebarDrag,
-      setDropTarget,
-    ],
-  );
-
-  // Memoize main context value (public API)
-  const value = useMemo<
-    DragboardContextValue & {
-      tiles: DragboardTileData[];
-      addTile: (tile: DragboardTileData) => void;
-      removeTile: (id: string) => void;
-      updateTile: (id: string, updates: Partial<DragboardTileData>) => void;
-      moveTile: (tileId: string, newPosition: { x: number; y: number }) => void;
-      reorderTiles: (tiles: DragboardTileData[]) => void;
-      movementEnabled: boolean;
-      rows: number;
-    }
-  >(
-    () => ({
-      config: { ...config, rows },
-      dragState,
-      startTileDrag,
-      updateTileDrag,
-      endTileDrag,
-      startSidebarDrag,
-      endSidebarDrag,
-      setDropTarget,
       tiles,
       addTile,
       removeTile,
-      updateTile,
-      moveTile,
-      reorderTiles,
-      movementEnabled,
-      rows,
-    }),
-    [
-      config,
-      rows,
-      dragState,
       startTileDrag,
-      updateTileDrag,
       endTileDrag,
       startSidebarDrag,
       endSidebarDrag,
       setDropTarget,
-      tiles,
-      addTile,
-      removeTile,
-      updateTile,
-      moveTile,
-      reorderTiles,
-      movementEnabled,
-    ],
+      dragState,
+    }),
+    [tiles, addTile, removeTile, startTileDrag, endTileDrag, startSidebarDrag, endSidebarDrag, setDropTarget, dragState],
   );
 
-  return (
-    <DragboardContext.Provider value={value}>
-      <DragboardDragContext.Provider value={dragContextValue}>
-        {children}
-      </DragboardDragContext.Provider>
-    </DragboardContext.Provider>
-  );
+  return <DragboardContext.Provider value={value}>{children}</DragboardContext.Provider>;
 };

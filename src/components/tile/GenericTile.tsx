@@ -194,7 +194,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
         <Card
           ref={ref}
           variant={getCardVariant()}
-          className={`relative ${getBorderClass()} ${className || ''}`}
+          className={`relative h-full flex flex-col ${getBorderClass()} ${className || ''}`}
           data-tile-id={tile.id}
           data-tile-type={tile.type}
           role="gridcell"

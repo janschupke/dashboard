@@ -1,6 +1,6 @@
-export { DragboardProvider } from './DragboardProvider';
+export { DragboardProvider, useDragboard } from './DragboardProvider';
 export { DragboardGrid } from './DragboardGrid';
 export { DragboardTile } from './DragboardTile';
-export * from './DragboardContext';
-export type { DragboardTileData, TileType, TileSize, DraggableTileProps } from './dragboardTypes';
-export { rearrangeTiles, findNextFreePosition } from './rearrangeTiles';
+export type { DragboardTileData, DragboardConfig, DashboardState } from './types';
+export { DRAGBOARD_CONSTANTS } from './constants';
+
