@@ -23,6 +23,7 @@
     "password": "node scripts/generate-password.js"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.12",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.6.2",

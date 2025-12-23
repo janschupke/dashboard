@@ -17,6 +17,7 @@ import { UraniumHtmlDataParser } from './components/tile-implementations/uranium
 import { WeatherDataMapper } from './components/tile-implementations/weather/dataMapper';
 import { WeatherAlertsDataMapper } from './components/tile-implementations/weather-alerts/dataMapper';
 import { DataServicesContext } from './contexts/DataServicesContext';
+import { QueryClientProvider } from './contexts/QueryClientProvider';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
@@ -54,12 +55,14 @@ const dataServices = { parserRegistry, mapperRegistry, dataFetcher };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <DataServicesContext.Provider value={dataServices}>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </DataServicesContext.Provider>
-    </ThemeProvider>
+    <QueryClientProvider>
+      <ThemeProvider>
+        <DataServicesContext.Provider value={dataServices}>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </DataServicesContext.Provider>
+      </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );
