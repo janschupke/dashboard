@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { setupPreciousMetalsSuccessMock } from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { PreciousMetalsDataMapper } from './dataMapper';
@@ -28,20 +29,7 @@ describe('usePreciousMetalsApi', () => {
   const mockParams: QueryParams = {};
 
   it('should successfully fetch precious metals data', async () => {
-    // Mock the gold API response (current actual behavior)
-    const mockResponse = {
-      name: 'Gold',
-      price: 3350.699951,
-      symbol: 'XAU',
-      updatedAt: '2025-07-19T12:38:58Z',
-      updatedAtReadable: 'a few seconds ago',
-    };
-
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => mockResponse,
-    });
+    setupPreciousMetalsSuccessMock();
 
     const { result } = renderHook(() => usePreciousMetalsApi(), { wrapper });
     const fetchResult = await result.current.getPreciousMetals(

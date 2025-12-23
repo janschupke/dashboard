@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
+import { setupUraniumSuccessMock } from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { UraniumHtmlDataParser } from './dataParser';
@@ -36,12 +36,7 @@ describe('useUraniumApi', () => {
   };
 
   beforeEach(() => {
-    EndpointTestUtils.clearMocks();
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: async () => mockHtml,
-    });
+    setupUraniumSuccessMock();
   });
 
   it('should successfully fetch uranium data (HTML scraping)', async () => {

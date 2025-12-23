@@ -1,3 +1,8 @@
+import '@testing-library/jest-dom';
+import { vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+
+import { server } from './mocks/server';
+
 // Patch fetch to handle relative URLs in test environment
 // This patch only normalizes the URL and then calls the current global fetch (which may be a mock)
 globalThis.fetch = ((prevFetch) => (input: RequestInfo | URL, init?: RequestInit) => {
@@ -15,8 +20,21 @@ if (typeof window !== 'undefined' && window.location) {
   window.location.href = 'http://localhost:3000/';
 }
 
-import '@testing-library/jest-dom';
-import { vi, beforeEach, afterEach } from 'vitest';
+// Setup MSW server
+// Establish API mocking before all tests
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' });
+});
+
+// Reset handlers after each test (important for test isolation)
+afterEach(() => {
+  server.resetHandlers();
+});
+
+// Clean up after all tests
+afterAll(() => {
+  server.close();
+});
 
 // Mock IntersectionObserver
 (

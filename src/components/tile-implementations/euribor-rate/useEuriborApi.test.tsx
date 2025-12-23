@@ -4,9 +4,10 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import {
   setupEuriborRateSuccessMock,
-  EndpointTestUtils,
+  setupSuccessMock,
+  setupFailureMock,
   API_ENDPOINTS,
-} from '../../../test/utils/endpointTestUtils';
+} from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { ecbEuriborDataMapper } from './dataMapper';
@@ -59,11 +60,7 @@ describe('useEuriborApi', () => {
   });
 
   it('returns empty data and error if API returns not ok', async () => {
-    EndpointTestUtils.configureMock(API_ENDPOINTS.ECB_EURIBOR_12M, {
-      shouldFail: false,
-      status: 500,
-      responseData: { error: 'API error' },
-    });
+    setupFailureMock(API_ENDPOINTS.ECB_EURIBOR_12M, 'api');
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
     const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
@@ -71,10 +68,7 @@ describe('useEuriborApi', () => {
   });
 
   it('returns empty data and error if fetch fails', async () => {
-    EndpointTestUtils.configureMock(API_ENDPOINTS.ECB_EURIBOR_12M, {
-      shouldFail: true,
-      errorType: 'network',
-    });
+    setupFailureMock(API_ENDPOINTS.ECB_EURIBOR_12M, 'network');
     const { result } = renderHook(() => useEuriborApi(), { wrapper });
     const fetchResult = await result.current.getEuriborRate(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);

@@ -1,3 +1,12 @@
+/**
+ * @deprecated This file is deprecated. All tests should use MSW (Mock Service Worker) via mswTestUtils.ts instead.
+ * This file will be removed in a future version.
+ * 
+ * Migration guide:
+ * - Replace imports from 'endpointTestUtils' with imports from 'mswTestUtils'
+ * - Use setupSuccessMock(), setupFailureMock(), etc. from mswTestUtils instead of EndpointTestUtils methods
+ */
+
 import { beforeEach, afterEach } from 'vitest';
 
 import { storageManager } from '../../services/storageManager';

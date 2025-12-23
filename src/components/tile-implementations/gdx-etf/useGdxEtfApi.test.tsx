@@ -3,15 +3,13 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 
 import { ALPHA_VANTAGE_GDX_ENDPOINT } from '../../../services/apiEndpoints';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
-import { EndpointTestUtils } from '../../../test/utils/endpointTestUtils';
+import { setupGdxEtfSuccessMock, setupSuccessMock, setupFailureMock } from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { gdxEtfDataMapper } from './dataMapper';
 import { useGdxEtfApi } from './useGdxEtfApi';
 
 import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
-
-global.fetch = vi.fn();
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MockDataServicesProvider
@@ -36,23 +34,18 @@ describe('useGdxEtfApi', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // registerGdxEtfDataMapper(); // This line is removed as per the new_code
-    EndpointTestUtils.configureMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, {
-      shouldFail: false,
-      status: 200,
-      responseData: {
-        'Global Quote': {
-          '01. symbol': 'GDX',
-          '02. open': '30.10',
-          '03. high': '31.00',
-          '04. low': '29.50',
-          '05. price': '30.50',
-          '06. volume': '1000000',
-          '07. latest trading day': '2024-06-01',
-          '08. previous close': '30.00',
-          '09. change': '0.50',
-          '10. change percent': '1.67%',
-        },
+    setupSuccessMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, {
+      'Global Quote': {
+        '01. symbol': 'GDX',
+        '02. open': '30.10',
+        '03. high': '31.00',
+        '04. low': '29.50',
+        '05. price': '30.50',
+        '06. volume': '1000000',
+        '07. latest trading day': '2024-06-01',
+        '08. previous close': '30.00',
+        '09. change': '0.50',
+        '10. change percent': '1.67%',
       },
     });
   });
@@ -81,11 +74,7 @@ describe('useGdxEtfApi', () => {
   });
 
   it('returns empty data and error if API returns not ok', async () => {
-    EndpointTestUtils.configureMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, {
-      shouldFail: false,
-      status: 500,
-      responseData: { error: 'API error' },
-    });
+    setupFailureMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, 'api');
     const { result } = renderHook(() => useGdxEtfApi(), { wrapper });
     const fetchResult = await result.current.getGdxEtf(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);
@@ -93,10 +82,7 @@ describe('useGdxEtfApi', () => {
   });
 
   it('returns empty data and error if fetch fails', async () => {
-    EndpointTestUtils.configureMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, {
-      shouldFail: true,
-      errorType: 'network',
-    });
+    setupFailureMock(ALPHA_VANTAGE_GDX_ENDPOINT.url, 'network');
     const { result } = renderHook(() => useGdxEtfApi(), { wrapper });
     const fetchResult = await result.current.getGdxEtf(mockTileId, {}, mockParams);
     expect(fetchResult.lastDataRequestSuccessful).toBe(false);

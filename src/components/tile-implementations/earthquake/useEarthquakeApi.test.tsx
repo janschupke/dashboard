@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 
 import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
+import { setupEarthquakeSuccessMock, setupFailureMock } from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { earthquakeDataMapper } from './dataMapper';
@@ -62,7 +63,6 @@ const mockApiResponse: EarthquakeApiResponse = {
   bbox: [140.123, 35.678, 10, 140.123, 35.678, 10],
 };
 
-global.fetch = vi.fn();
 
 beforeAll(() => {
   // registerEarthquakeDataMapper(); // This line is removed as per the new_code
@@ -91,10 +91,7 @@ describe('useEarthquakeApi', () => {
   };
 
   it('fetches and maps USGS earthquake data successfully', async () => {
-    (globalThis.fetch as unknown as { mockResolvedValueOnce: Function }).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockApiResponse,
-    });
+    setupEarthquakeSuccessMock();
     const { result } = renderHook(() => useEarthquakeApi(), { wrapper });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
@@ -122,9 +119,7 @@ describe('useEarthquakeApi', () => {
   });
 
   it('returns empty data and error if API returns not ok', async () => {
-    (globalThis.fetch as unknown as { mockResolvedValueOnce: Function }).mockResolvedValueOnce({
-      ok: false,
-    });
+    setupFailureMock('/api/usgs/fdsnws/event/1/query', 'api');
     const { result } = renderHook(() => useEarthquakeApi(), { wrapper });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;
@@ -142,9 +137,7 @@ describe('useEarthquakeApi', () => {
   });
 
   it('returns empty data and error if fetch fails', async () => {
-    (globalThis.fetch as unknown as { mockRejectedValueOnce: Function }).mockRejectedValueOnce(
-      new Error('Network error'),
-    );
+    setupFailureMock('/api/usgs/fdsnws/event/1/query', 'network');
     const { result } = renderHook(() => useEarthquakeApi(), { wrapper });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let fetchResult: any = null;

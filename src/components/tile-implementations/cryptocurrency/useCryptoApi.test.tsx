@@ -4,13 +4,12 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
-  EndpointTestUtils,
   API_ENDPOINTS,
   setupCryptocurrencySuccessMock,
   setupSuccessMock,
   setupDelayedMock,
   setupFailureMock,
-} from '../../../test/utils/endpointTestUtils';
+} from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { CryptocurrencyDataMapper } from './dataMapper';
@@ -46,7 +45,6 @@ describe('useCryptoApi', () => {
   describe('getCryptocurrencyMarkets - Success Scenarios', () => {
     it('should successfully fetch cryptocurrency data', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupCryptocurrencySuccessMock();
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -83,7 +81,6 @@ describe('useCryptoApi', () => {
 
     it('should handle empty response data', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupSuccessMock(API_ENDPOINTS.COINGECKO_MARKETS, []);
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -97,7 +94,6 @@ describe('useCryptoApi', () => {
 
     it('should handle delayed response', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupDelayedMock(
         API_ENDPOINTS.COINGECKO_MARKETS,
         MockResponseData.getCryptocurrencyData(),
@@ -121,7 +117,6 @@ describe('useCryptoApi', () => {
   describe('getCryptocurrencyMarkets - Failure Scenarios', () => {
     it('should handle network errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.COINGECKO_MARKETS, 'network');
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -133,7 +128,6 @@ describe('useCryptoApi', () => {
 
     it('should handle timeout errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.COINGECKO_MARKETS, 'timeout');
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -145,7 +139,6 @@ describe('useCryptoApi', () => {
 
     it('should handle API errors (500)', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.COINGECKO_MARKETS, 'api');
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -157,7 +150,6 @@ describe('useCryptoApi', () => {
 
     it('should handle malformed JSON responses', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.COINGECKO_MARKETS, 'malformed');
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -171,7 +163,6 @@ describe('useCryptoApi', () => {
   describe('getCryptocurrencyMarkets - Edge Cases', () => {
     it('should handle different parameter combinations', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupCryptocurrencySuccessMock();
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -197,7 +188,6 @@ describe('useCryptoApi', () => {
 
     it('should handle null response data', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupSuccessMock(API_ENDPOINTS.COINGECKO_MARKETS, null);
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
@@ -213,7 +203,6 @@ describe('useCryptoApi', () => {
   describe('getCryptocurrencyMarkets - Data Validation', () => {
     it('should return properly structured cryptocurrency data', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupCryptocurrencySuccessMock();
       const { result } = renderHook(() => useCryptoApi(), { wrapper });
 
