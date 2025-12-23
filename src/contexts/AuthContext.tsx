@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuth = useCallback(async () => {
     try {
       // Skip auth check in test environment
-      if (typeof window === 'undefined' || process.env['NODE_ENV'] === 'test') {
+      if (typeof window === 'undefined' || import.meta.env['NODE_ENV'] === 'test') {
         setIsAuthenticated(false);
         setIsLoading(false);
         return;
