@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
+import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 import type { TileType } from '../../types/tile';
@@ -51,23 +52,17 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     onMouseLeave?.();
   }, [onMouseLeave]);
 
-  const getStateClasses = () => {
+  const getBorderClass = () => {
     if (isSelected) {
-      return 'border border-yellow-500 bg-surface-primary text-theme-primary';
+      return 'border-status-warning';
     }
-    return 'border border-theme-primary bg-surface-primary text-theme-primary';
-  };
-
-  const getHoverClasses = () => {
-    if (isHovered && !disabled) {
-      return 'bg-surface-secondary';
-    }
-    return '';
+    return 'border-theme-primary';
   };
 
   return (
-    <button
-      className={`w-full flex items-center justify-between px-4 py-3 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2 rounded-lg ${getStateClasses()} ${getHoverClasses()} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${isLoading ? 'opacity-75' : ''}`}
+    <Button
+      variant="secondary"
+      className={`w-full flex items-center justify-between px-4 py-3 ${getBorderClass()} ${isHovered && !disabled ? 'bg-surface-secondary' : ''} ${isLoading ? 'opacity-75' : ''}`}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -113,6 +108,6 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           <Icon name="success" size="sm" className="text-accent-primary" aria-hidden="true" />
         ) : null}
       </span>
-    </button>
+    </Button>
   );
 };

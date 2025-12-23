@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { Button } from '../ui/Button';
 
 export const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -57,13 +58,14 @@ export const LoginForm: React.FC = () => {
           </div>
 
           <div>
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-theme-inverse bg-interactive-primary hover:bg-interactive-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-interactive-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

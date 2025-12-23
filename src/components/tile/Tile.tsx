@@ -29,7 +29,7 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
         onRemove={onRemove}
         data={null}
       >
-        <div className="flex items-center justify-center h-full p-4 text-theme-text-tertiary">
+        <div className="flex items-center justify-center h-full p-4 text-tertiary">
           <p>Unknown tile type: {tile.type}</p>
         </div>
       </GenericTile>

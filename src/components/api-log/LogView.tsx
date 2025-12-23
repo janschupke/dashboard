@@ -5,6 +5,8 @@ import {
   APILogLevel,
   type APILogLevelType,
 } from '../../services/storageManager.ts';
+import { Button } from '../ui/Button';
+import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon.tsx';
 
 import { useLogContext } from './useLogContext.ts';
@@ -61,8 +63,8 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
   // Return Tailwind color classes based on log level
   const getLevelColor = (level: APILogLevelType) => {
     return level === APILogLevel.ERROR
-      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      ? 'bg-status-error/20 text-status-error'
+      : 'bg-status-warning/20 text-status-warning';
   };
 
   // Return icon name based on log level
@@ -72,35 +74,38 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
 
   // Position exactly over the tile grid area
   return (
-    <div className="absolute inset-0 z-40 flex flex-col bg-white/90 dark:bg-gray-900/90 border border-gray-200/50 dark:border-gray-700/50 rounded-lg shadow-lg overflow-hidden">
+    <Card
+      variant="elevated"
+      className="absolute inset-0 z-40 flex flex-col bg-surface-primary/90 border-theme-secondary overflow-hidden"
+    >
       {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-white/95 dark:bg-gray-900/95 z-10">
+      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-theme-secondary bg-surface-primary/95 z-10">
         <div className="flex items-center gap-3">
-          <Icon name="clipboard-list" className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">API Logs</h2>
+          <Icon name="clipboard-list" className="w-6 h-6 text-secondary" />
+          <h2 className="text-xl font-semibold text-primary">API Logs</h2>
           <div className="flex gap-2">
-            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded">
+            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-status-error/20 text-status-error rounded">
               <Icon name="exclamation-triangle" className="w-3 h-3" />
               {logs.filter((log) => log.level === 'error').length} Errors
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded">
+            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-status-warning/20 text-status-warning rounded">
               <Icon name="exclamation-circle" className="w-3 h-3" />
               {logs.filter((log) => log.level === 'warning').length} Warnings
             </span>
           </div>
         </div>
-        <button
+        <Button
+          variant="icon"
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Close log view"
         >
           <Icon name="x" className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
       {/* Log Table Container - scrollable content area */}
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {logs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400 flex-1">
+          <div className="flex flex-col items-center justify-center py-12 text-tertiary flex-1">
             <Icon name="check-circle" className="w-12 h-12 mb-4" />
             <p className="text-lg font-medium">No API logs</p>
             <p className="text-sm">All API calls are working correctly</p>
@@ -108,32 +113,32 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
         ) : (
           <div className="flex-1 overflow-y-auto scrollbar-hide relative">
             <table className="w-full">
-              <thead className="bg-gray-50/80 dark:bg-gray-800/80 sticky top-0 z-10">
+              <thead className="bg-surface-secondary/80 sticky top-0 z-10">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     Level
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     Time
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     API Call
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     HTTP Code
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     Reason
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">
                     Details
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-secondary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white/80 dark:bg-gray-900/80 divide-y divide-gray-200/50 dark:divide-gray-700/50">
+              <tbody className="bg-surface-primary/80 divide-y divide-theme-secondary/50">
                 {logs.map((log) => (
                   <LogRow
                     key={log.id}
@@ -161,7 +166,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -197,7 +202,7 @@ const LogRow: React.FC<LogRowProps> = ({
   return (
     <>
       <tr
-        className={`hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition-colors duration-150 cursor-pointer ${showDetails ? 'bg-gray-50 dark:bg-gray-800' : ''}`}
+        className={`hover:bg-surface-secondary/60 transition-colors duration-150 cursor-pointer ${showDetails ? 'bg-surface-secondary' : ''}`}
         onClick={handleRowClick}
         aria-expanded={showDetails}
         tabIndex={0}
@@ -216,55 +221,57 @@ const LogRow: React.FC<LogRowProps> = ({
             {log.level}
           </span>
         </td>
-        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+        <td className="px-4 py-3 text-sm text-primary">
           {formatTimestamp(log.timestamp)}
         </td>
         <td
-          className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono"
+          className="px-4 py-3 text-sm text-primary font-mono"
           data-testid={`log-row-${log.id}`}
         >
           {log.apiCall}
         </td>
-        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-          {httpStatus ? httpStatus : <span className="text-gray-400">—</span>}
+        <td className="px-4 py-3 text-sm text-primary">
+          {httpStatus ? httpStatus : <span className="text-tertiary">—</span>}
         </td>
-        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{log.reason}</td>
-        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+        <td className="px-4 py-3 text-sm text-primary">{log.reason}</td>
+        <td className="px-4 py-3 text-sm text-primary">
           {log.details ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleDetails();
               }}
-              className="underline text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-xs"
+              className="underline text-interactive-primary hover:text-interactive-hover text-xs"
               aria-expanded={showDetails}
               aria-controls={`log-details-${log.id}`}
             >
               {showDetails ? 'Hide' : 'Show'}
             </button>
           ) : (
-            <span className="text-gray-400">—</span>
+            <span className="text-tertiary">—</span>
           )}
         </td>
         <td className="px-4 py-3 text-right">
-          <button
+          <Button
+            variant="icon"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onRemove();
             }}
-            className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+            className="hover:text-status-error hover:bg-status-error/10"
             aria-label={`Remove log entry for ${log.apiCall}`}
             data-log-remove
           >
             <Icon name="trash" className="w-4 h-4" />
-          </button>
+          </Button>
         </td>
       </tr>
       {log.details && showDetails && (
         <tr id={`log-details-${log.id}`}>
           <td
             colSpan={7}
-            className="px-4 pb-4 pt-0 text-xs text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-800"
+            className="px-4 pb-4 pt-0 text-xs text-secondary bg-surface-secondary"
           >
             <pre className="whitespace-pre-wrap break-all">
               {JSON.stringify(log.details, null, 2)}

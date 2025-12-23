@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 export const LogoutButton: React.FC = () => {
@@ -19,13 +20,14 @@ export const LogoutButton: React.FC = () => {
   };
 
   return (
-    <button
+    <Button
+      variant="icon"
+      size="sm"
       onClick={handleLogout}
-      className="p-2 rounded-md text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary transition-colors duration-200"
       title="Logout"
       data-testid="logout-button"
     >
       <Icon name="logout" size="sm" />
-    </button>
+    </Button>
   );
 };

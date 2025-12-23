@@ -1,3 +1,4 @@
+import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 import { useLogContext } from './useLogContext';
@@ -13,15 +14,10 @@ export const LogButton: React.FC<LogButtonProps> = ({ isOpen, onToggle }) => {
   const warningCount = logs.filter((log) => log.level === 'warning').length;
 
   return (
-    <button
+    <Button
+      variant="secondary"
       onClick={onToggle}
-      className={`
-        relative flex items-center gap-2 px-3 py-2 rounded-lg
-        bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700
-        transition-colors duration-200 focus:outline-none focus:ring-2
-        focus:ring-blue-500 dark:focus:ring-blue-400
-        ${isOpen ? 'bg-blue-100 dark:bg-blue-900' : ''}
-      `}
+      className={`relative ${isOpen ? 'bg-accent-muted' : ''}`}
       aria-label={`API Logs (${errorCount} errors, ${warningCount} warnings)`}
       title={`API Logs - ${errorCount} errors, ${warningCount} warnings`}
     >
@@ -33,7 +29,7 @@ export const LogButton: React.FC<LogButtonProps> = ({ isOpen, onToggle }) => {
           {errorCount > 0 && (
             <span
               data-testid="log-error-bubble"
-              className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full"
+              className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-theme-inverse bg-status-error rounded-full"
             >
               {errorCount}
             </span>
@@ -41,13 +37,13 @@ export const LogButton: React.FC<LogButtonProps> = ({ isOpen, onToggle }) => {
           {warningCount > 0 && (
             <span
               data-testid="log-warning-bubble"
-              className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-yellow-500 rounded-full"
+              className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-theme-inverse bg-status-warning rounded-full"
             >
               {warningCount}
             </span>
           )}
         </div>
       )}
-    </button>
+    </Button>
   );
 };

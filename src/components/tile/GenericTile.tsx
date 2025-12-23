@@ -1,5 +1,6 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
 
+import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 
 import { LoadingComponent } from './LoadingComponent';
@@ -89,12 +90,12 @@ const StatusBar = ({
   const statusIcon = getStatusIcon();
 
   return (
-    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-surface-primary bg-surface-secondary text-secondary rounded-b-xl">
+    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-theme-primary bg-surface-secondary text-secondary rounded-b-xl">
       <div className="flex items-center space-x-2">
         {onManualRefresh && (
           <button
             onClick={onManualRefresh}
-            className="p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer"
+            className="p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer"
             aria-label="Refresh data"
             title="Refresh data"
           >
@@ -144,29 +145,22 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       }
     }, [tile.id, onRemove]);
 
-    const getTileClasses = useCallback(() => {
-      // Unified tile styling using Tailwind theme classes for theme support
-      const borderStatusClass =
-        status === TileStatus.Error
-          ? 'border-status-error'
-          : status === TileStatus.Stale
-            ? 'border-status-warning'
-            : 'border-surface-primary';
-      const baseClasses = [
-        'bg-surface-primary',
-        'text-primary',
-        'rounded-xl',
-        'shadow-md',
-        'hover:shadow-lg',
-        'transition-shadow',
-        'duration-200',
-        'relative',
-        'border',
-        borderStatusClass,
-        className || '',
-      ].join(' ');
-      return baseClasses;
-    }, [status, className]);
+    const getCardVariant = useCallback(() => {
+      if (status === TileStatus.Error || status === TileStatus.Stale) {
+        return 'outlined';
+      }
+      return 'elevated';
+    }, [status]);
+
+    const getBorderClass = useCallback(() => {
+      if (status === TileStatus.Error) {
+        return 'border-status-error';
+      }
+      if (status === TileStatus.Stale) {
+        return 'border-status-warning';
+      }
+      return '';
+    }, [status]);
 
     // Memoize the content based on status
     const content = useMemo(() => {
@@ -184,7 +178,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
     const headerProps = useMemo(
       () => ({
         className:
-          'flex items-center justify-between px-4 py-2 border-b border-surface-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
+          'flex items-center justify-between px-4 py-2 border-b border-theme-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
         ...dragHandleProps,
       }),
       [dragHandleProps],
@@ -192,9 +186,10 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
 
     return (
       <TileErrorBoundary>
-        <div
+        <Card
           ref={ref}
-          className={getTileClasses()}
+          variant={getCardVariant()}
+          className={`relative ${getBorderClass()} ${className || ''}`}
           data-tile-id={tile.id}
           data-tile-type={tile.type}
           role="gridcell"
@@ -217,7 +212,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           {onRemove && (
             <button
               onClick={handleRemove}
-              className="absolute top-1 right-1 p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer z-10"
+              className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
               aria-label={`Remove ${meta.title} tile`}
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -239,7 +234,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             onManualRefresh={onManualRefresh}
             isLoading={isLoading}
           />
-        </div>
+        </Card>
       </TileErrorBoundary>
     );
   },
