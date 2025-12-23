@@ -1,24 +1,18 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 
-import { useDragboard } from './DragboardProvider';
+import {
+  calculateViewportColumns,
+  calculateGridCellFromPosition,
+  calculateDropIndex,
+  clampDropIndex,
+  calculateDropZonePosition,
+} from './dragboardGridUtils';
 import { DRAGBOARD_CONSTANTS } from './constants';
+import { useDragboard } from './DragboardProvider';
 
 interface DragboardGridProps {
   children: React.ReactNode;
 }
-
-// Calculate viewport columns correctly
-const calculateViewportColumns = (containerWidth: number): number => {
-  const padding = 32; // p-4 = 16px each side
-  const availableWidth = containerWidth - padding;
-  // Formula: availableWidth = n * minWidth + (n-1) * gap
-  // Solving: n = (availableWidth + gap) / (minWidth + gap)
-  const columns = Math.floor(
-    (availableWidth + DRAGBOARD_CONSTANTS.GRID_GAP) /
-      (DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH + DRAGBOARD_CONSTANTS.GRID_GAP),
-  );
-  return Math.max(1, columns);
-};
 
 export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -67,27 +61,11 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
       const y = e.clientY - rect.top - 16;
 
       // Calculate which grid cell the mouse is over
-      // CSS Grid with gap: availableWidth = n * cellWidth + (n-1) * gap
-      // So: cellWidth = (availableWidth - (n-1) * gap) / n
-      const availableWidth = rect.width - 32; // Account for padding
-      const cellWidth = (availableWidth - (viewportColumns - 1) * DRAGBOARD_CONSTANTS.GRID_GAP) / viewportColumns;
-      const cellHeight = DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT;
-
-      // Calculate column: account for gaps between cells
-      const col = Math.min(
-        viewportColumns - 1,
-        Math.max(0, Math.floor(x / (cellWidth + DRAGBOARD_CONSTANTS.GRID_GAP))),
-      );
-      // Calculate row: account for gaps between rows
-      const row = Math.max(0, Math.floor(y / (cellHeight + DRAGBOARD_CONSTANTS.GRID_GAP)));
-
-      let dropIndex = row * viewportColumns + col;
+      const { row, col } = calculateGridCellFromPosition(x, y, rect.width, viewportColumns);
+      let dropIndex = calculateDropIndex(row, col, viewportColumns);
 
       // Clamp drop index to valid range
-      // For sidebar drags: allow up to tiles.length (insert at end)
-      // For tile drags: allow up to tiles.length - 1 (can't drop after removing self)
-      const maxIndex = dragState.sidebarTileType ? tiles.length : Math.max(0, tiles.length - 1);
-      dropIndex = Math.min(dropIndex, maxIndex);
+      dropIndex = clampDropIndex(dropIndex, tiles.length, !!dragState.sidebarTileType);
 
       setDropTarget(dropIndex);
     },
@@ -140,12 +118,10 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   }, [children, viewportColumns]);
 
   // Calculate drop zone position
-  const dropZonePosition = useMemo(() => {
-    if (dragState.dropIndex === null) return null;
-    const row = Math.floor(dragState.dropIndex / viewportColumns);
-    const col = dragState.dropIndex % viewportColumns;
-    return { row, col };
-  }, [dragState.dropIndex, viewportColumns]);
+  const dropZonePosition = useMemo(
+    () => calculateDropZonePosition(dragState.dropIndex, viewportColumns),
+    [dragState.dropIndex, viewportColumns],
+  );
 
   const isDragging = dragState.draggingTileId !== null || dragState.sidebarTileType !== undefined;
 
