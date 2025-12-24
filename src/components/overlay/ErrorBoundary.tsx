@@ -79,7 +79,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         const FallbackComponent = this.props.fallback;
         return (
           <FallbackComponent
-            error={new Error(ERROR_MESSAGES.TILE.UNKNOWN_ERROR)}
+            error={new Error(String(ERROR_MESSAGES.TILE.UNKNOWN_ERROR))}
             resetError={this.resetError}
           />
         );
@@ -89,14 +89,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       if (this.props.variant === 'component') {
         return (
           <div className="p-4 text-center text-red-600" data-testid="error-boundary-message">
-            {ERROR_MESSAGES.TILE.COMPONENT_LOAD_ERROR}
+            {String(ERROR_MESSAGES.TILE.COMPONENT_LOAD_ERROR)}
           </div>
         );
       }
 
       return (
         <div className="flex items-center justify-center h-screen w-full">
-          <div className="text-center">
+          <div className="text-center" aria-label={/* i18n */ 'errors.unknown'}>
             <div className="text-8xl mb-4">🍆</div>
           </div>
         </div>

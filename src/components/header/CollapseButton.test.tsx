@@ -15,7 +15,7 @@ describe('CollapseButton', () => {
 
     const button = screen.getByTestId('collapse-button');
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('aria-label', 'Toggle sidebar');
+    expect(button).toHaveAttribute('aria-label', 'header.toggleSidebar');
   });
 
   it('calls onToggle when clicked', () => {

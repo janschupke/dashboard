@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useDragboardActions } from '../dragboard';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
@@ -33,6 +35,8 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   const { startSidebarDrag } = useDragboardActions();
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   const handleClick = useCallback(async () => {
     if (disabled || isLoading) return;
@@ -69,7 +73,11 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       disabled={disabled || isLoading}
-      aria-label={`${isActive ? 'Remove' : 'Add'} ${name} tile ${isActive ? 'from' : 'to'} dashboard`}
+      aria-label={t('sidebar.toggleItemAria', {
+        action: isActive ? t('general.remove') : t('general.add'),
+        name,
+        preposition: isActive ? t('general.from') : t('general.to'),
+      })}
       aria-pressed={isActive}
       aria-busy={isLoading}
       data-tile-type={tileType}
@@ -90,7 +98,11 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           void handleClick();
         }
       }}
-      title={`${isActive ? 'Remove' : 'Add'} ${name} tile ${isActive ? 'from' : 'to'} dashboard`}
+      title={t('sidebar.toggleItemTitle', {
+        action: isActive ? t('general.remove') : t('general.add'),
+        name,
+        preposition: isActive ? t('general.from') : t('general.to'),
+      })}
       aria-grabbed={false}
     >
       <span className="flex items-center flex-1 min-w-0">

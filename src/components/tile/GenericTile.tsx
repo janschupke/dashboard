@@ -108,7 +108,9 @@ const StatusBar = ({
             <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
           </button>
         )}
-        <span>Last request: {formatLastUpdate(isLoading, lastUpdate)}</span>
+        <span>
+          {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate)}
+        </span>
       </div>
       {statusIcon && (
         <span onClick={logTileState} className="cursor-pointer">
@@ -192,6 +194,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       [dragHandleProps],
     );
 
+    const { t } = useTranslation();
     return (
       <TileErrorBoundary>
         <Card
@@ -231,7 +234,11 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           )}
 
           {/* Tile Content */}
-          <div className="flex-1 p-2" role="region" aria-label={`${meta.title} content`}>
+          <div
+            className="flex-1 p-2"
+            role="region"
+            aria-label={`${meta.title} ${t('tile.content')}`}
+          >
             {content}
           </div>
 

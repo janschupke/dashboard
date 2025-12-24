@@ -42,8 +42,8 @@ describe('App', () => {
     );
 
     // The app should show login form in test environment
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Enter your password to continue')).toBeInTheDocument();
+    expect(screen.getByText('header.title')).toBeInTheDocument();
+    expect(screen.getByText('auth.prompt')).toBeInTheDocument();
   });
 
   it('renders loading spinner when authentication is loading', () => {

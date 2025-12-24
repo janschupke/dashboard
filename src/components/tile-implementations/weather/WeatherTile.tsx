@@ -79,8 +79,18 @@ const WeatherIcon = memo(function WeatherIcon({
 });
 
 const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTileData }) {
+  const { t } = useTranslation();
   const getWindDirection = (degrees: number) => {
-    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const directions = [
+      t('weather.N'),
+      t('weather.NE'),
+      t('weather.E'),
+      t('weather.SE'),
+      t('weather.S'),
+      t('weather.SW'),
+      t('weather.W'),
+      t('weather.NW'),
+    ];
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   };
@@ -88,23 +98,23 @@ const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTil
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Feels like</span>
+        <span className="text-theme-tertiary">{t('weather.feelsLike')}</span>
         <span className="text-theme-primary font-medium">
           {Math.round(data.temperature.feels_like)}°C
         </span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Humidity</span>
+        <span className="text-theme-tertiary">{t('weather.humidity')}</span>
         <span className="text-theme-primary font-medium">{data.humidity}%</span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Wind</span>
+        <span className="text-theme-tertiary">{t('weather.wind')}</span>
         <span className="text-theme-primary font-medium">
           {data.wind.speed} m/s {getWindDirection(data.wind.direction)}
         </span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Pressure</span>
+        <span className="text-theme-tertiary">{t('weather.pressure')}</span>
         <span className="text-theme-primary font-medium">{data.pressure} hPa</span>
       </div>
     </div>
@@ -210,12 +220,12 @@ const WeatherTileContent = memo(function WeatherTileContent({
 
       {/* Forecast Toggle */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-theme-tertiary">Forecast</span>
+        <span className="text-xs text-theme-tertiary">{t('weather.forecast')}</span>
         <button
           onClick={onToggleForecast}
           className="text-xs text-theme-tertiary hover:text-theme-secondary"
         >
-          {showForecast ? 'Hide' : 'Show'}
+          {showForecast ? t('general.hide') : t('general.show')}
         </button>
       </div>
 

@@ -2,6 +2,15 @@ import '@testing-library/jest-dom';
 import { vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 
 import { server } from './mocks/server';
+import '../i18n/config';
+// Mock i18n t to return keys for predictable testing
+vi.mock('react-i18next', async (orig) => {
+  const actual = await (orig() as Promise<Record<string, unknown>>);
+  return {
+    ...actual,
+    useTranslation: () => ({ t: (k: string) => k, i18n: { language: 'en' } }),
+  };
+});
 
 // Patch fetch to handle relative URLs in test environment
 // This patch only normalizes the URL and then calls the current global fetch (which may be a mock)

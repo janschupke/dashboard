@@ -4,6 +4,8 @@
     "invalidPassword": "Invalid password",
     "loginFailed": "Login failed. Please try again.",
     "logoutFailed": "Logout failed. Please try again.",
+    "logoutSuccess": "Successfully logged out",
+    "prompt": "Enter your password to continue",
     "signingIn": "Signing in...",
     "signIn": "Sign in"
   },
@@ -30,15 +32,81 @@
     "mappingFailed": "Failed to map GDX ETF data: {{error}}"
   },
   "general": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "add": "Add",
+    "remove": "Remove",
+    "to": "to",
+    "from": "from",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "header": {
+    "title": "Dashboard",
+    "tilesCount": "{{count}} tiles",
+    "toggleSidebar": "Toggle sidebar",
+    "refreshAll": "Refresh all tiles",
+    "refreshShortcut": "Refresh all tiles (R)",
+    "toggleTheme": "Toggle theme"
+  },
+  "weather": {
+    "N": "N",
+    "NE": "NE",
+    "E": "E",
+    "SE": "SE",
+    "S": "S",
+    "SW": "SW",
+    "W": "W",
+    "NW": "NW",
+    "feelsLike": "Feels like",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "pressure": "Pressure",
+    "forecast": "Forecast"
   },
   "weatherAlerts": {
     "noActiveAlerts": "No active weather alerts."
+  },
+  "ui": {
+    "closeNotification": "Close notification"
   },
   "tiles": {
     "refreshData": "Refresh data",
     "noDataAvailable": "No data available",
     "unknownLocation": "Unknown Location",
-    "gdxEtfName": "VanEck Gold Miners ETF"
+    "gdxEtfName": "VanEck Gold Miners ETF",
+    "unknownTile": "Unknown Tile",
+    "unknownTileType": "Unknown tile type"
+  },
+  "tile": {
+    "content": "content",
+    "pending": "pending",
+    "never": "never",
+    "invalidDate": "invalid date",
+    "lastRequest": "Last request"
+  },
+  "errors": {
+    "dataFetchFailed": "Data failed to fetch",
+    "componentLoad": "There was an error loading this component.",
+    "tileError": "Tile Error",
+    "unknown": "Unknown error",
+    "noGlobalQuote": "No Global Quote data found in API response",
+    "missingGlobalQuoteFields": "Missing required fields in Global Quote data"
+  },
+  "log": {
+    "button": "Logs",
+    "aria": "API Logs ({{errorCount}} errors, {{warningCount}} warnings)",
+    "title": "API Logs - {{errorCount}} errors, {{warningCount}} warnings"
+  },
+  "tileCategories": {
+    "Weather": "Weather",
+    "Time": "Time",
+    "Macroeconomics": "Macroeconomics",
+    "Finance": "Finance"
+  },
+  "sidebar": {
+    "availableTiles": "Available Tiles ({{count}})",
+    "toggleItemAria": "{{action}} {{name}} tile {{preposition}} dashboard",
+    "toggleItemTitle": "{{action}} {{name}} tile {{preposition}} dashboard",
+    "ariaLabel": "Tile catalog sidebar"
   }
 }

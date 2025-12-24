@@ -89,7 +89,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
           <button
             onClick={handleRemove}
             className="inline-flex text-white hover:text-theme-secondary focus:outline-none focus:text-theme-secondary transition-colors duration-200"
-            aria-label="Close notification"
+            aria-label={/* i18n */ 'ui.closeNotification'}
           >
             <Icon name="close" size="sm" />
           </button>

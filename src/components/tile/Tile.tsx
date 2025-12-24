@@ -24,7 +24,7 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
       <GenericTile
         tile={tile}
         meta={{
-          title: 'Unknown Tile',
+          title: 'tiles.unknownTile', // i18n key consumed downstream if needed
           icon: 'warning',
         }}
         dragHandleProps={dragHandleProps}
@@ -32,7 +32,9 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
         data={null}
       >
         <div className="flex items-center justify-center h-full p-4 text-tertiary">
-          <p>Unknown tile type: {tile.type}</p>
+          <p>
+            {'tiles.unknownTileType'}: {tile.type}
+          </p>
         </div>
       </GenericTile>
     );

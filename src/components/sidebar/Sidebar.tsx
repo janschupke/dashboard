@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useCallback } from 'react';
 
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { TILE_CATEGORIES } from '../../types/tileCategories';
@@ -73,6 +74,8 @@ export function Sidebar({
     [tilesByCategory],
   );
 
+  const { t } = useTranslation();
+
   const isTileActive = useCallback(
     (tileType: TileType) => tiles.some((tile) => tile.type === tileType),
     [tiles],
@@ -124,7 +127,7 @@ export function Sidebar({
     <>
       <aside
         role="complementary"
-        aria-label="Tile catalog sidebar"
+        aria-label={/* i18n */ 'sidebar.ariaLabel'}
         className={
           variant === 'desktop'
             ? `h-full bg-surface-primary shadow-lg border-r border-theme-primary transition-all duration-300 ease-in-out flex-shrink-0 ${isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-64 opacity-100'}`
@@ -139,7 +142,7 @@ export function Sidebar({
             <>
               <div className="flex-shrink-0 p-4 border-b border-theme-primary">
                 <h2 className="text-lg font-semibold text-theme-primary" id="tiles-heading">
-                  Available Tiles ({flatTiles.length})
+                  {t('sidebar.availableTiles', { count: flatTiles.length })}
                 </h2>
               </div>
               <div className="relative flex-1 p-4 overflow-y-auto scrollbar-hide">
@@ -155,7 +158,7 @@ export function Sidebar({
                         role="heading"
                         aria-level={3}
                       >
-                        {category}
+                        {t(`tileCategories.${category}`)}
                       </h3>
                       <hr className="border-theme-primary mb-2" />
                       <div className="space-y-3">

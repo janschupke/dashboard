@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
@@ -7,14 +9,17 @@ export interface ThemeButtonProps {
   disabled?: boolean;
 }
 
-export const ThemeButton: React.FC<ThemeButtonProps> = ({ theme, onToggle, disabled = false }) => (
-  <Button
-    variant="icon"
-    onClick={onToggle}
-    disabled={disabled}
-    aria-label="Toggle theme"
-    data-testid="theme-button"
-  >
-    {theme === 'dark' ? <Icon name="sun" size="md" /> : <Icon name="moon" size="md" />}
-  </Button>
-);
+export const ThemeButton: React.FC<ThemeButtonProps> = ({ theme, onToggle, disabled = false }) => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      variant="icon"
+      onClick={onToggle}
+      disabled={disabled}
+      aria-label={t('header.toggleTheme')}
+      data-testid="theme-button"
+    >
+      {theme === 'dark' ? <Icon name="sun" size="md" /> : <Icon name="moon" size="md" />}
+    </Button>
+  );
+};

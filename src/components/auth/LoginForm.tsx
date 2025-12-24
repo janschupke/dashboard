@@ -43,8 +43,8 @@ export const LoginForm: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-theme-primary">
       <div className="max-w-md w-full space-y-8 p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-theme-primary mb-2">Dashboard</h1>
-          <p className="text-theme-secondary">Enter your password to continue</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">{t('header.title')}</h1>
+          <p className="text-theme-secondary">{t('auth.prompt')}</p>
         </div>
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">

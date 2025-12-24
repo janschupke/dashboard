@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
@@ -12,17 +14,18 @@ export const LogButton: React.FC<LogButtonProps> = ({ isOpen, onToggle }) => {
   const { logs } = useLogContext();
   const errorCount = logs.filter((log) => log.level === 'error').length;
   const warningCount = logs.filter((log) => log.level === 'warning').length;
+  const { t } = useTranslation();
 
   return (
     <Button
       variant="secondary"
       onClick={onToggle}
       className={`relative ${isOpen ? 'bg-accent-muted' : ''}`}
-      aria-label={`API Logs (${errorCount} errors, ${warningCount} warnings)`}
-      title={`API Logs - ${errorCount} errors, ${warningCount} warnings`}
+      aria-label={t('log.aria', { errorCount, warningCount })}
+      title={t('log.title', { errorCount, warningCount })}
     >
       <Icon name="clipboard-list" className="w-4 h-4" />
-      <span className="text-sm font-medium">Logs</span>
+      <span className="text-sm font-medium">{t('log.button')}</span>
 
       {(errorCount > 0 || warningCount > 0) && (
         <div className="flex gap-1">
