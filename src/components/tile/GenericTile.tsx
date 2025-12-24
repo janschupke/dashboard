@@ -202,9 +202,10 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           data-tile-type={tile.type}
           role="gridcell"
           aria-label={`${meta.title} tile`}
+          draggable={false}
         >
           {/* Tile Header - Grabbable */}
-          <div {...headerProps}>
+          <div {...headerProps} data-tile-drag-handle="true">
             <div className="flex items-center space-x-3">
               <Icon
                 name={meta.icon}

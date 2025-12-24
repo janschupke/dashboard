@@ -59,18 +59,17 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
         gridColumn: `${col + 1} / span 1`, // Always span 1
         gridRow: `${row + 1} / span 1`, // Always span 1
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'move',
       }}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       data-tile-id={id}
       role="gridcell"
       aria-label={`Tile ${id}`}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <button
         onClick={handleRemove}
-        className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
+        className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
         aria-label="Remove tile"
         type="button"
         onMouseDown={(e) => e.stopPropagation()}

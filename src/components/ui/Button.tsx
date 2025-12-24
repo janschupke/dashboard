@@ -12,7 +12,7 @@ const variantClasses = {
   secondary:
     'bg-surface-secondary text-theme-primary hover:bg-surface-tertiary border border-theme-primary',
   ghost: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary',
-  icon: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary',
+  icon: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary focus:ring-0 focus:ring-offset-0',
 };
 
 const sizeClasses = {
