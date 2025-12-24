@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { validatePassword, validateLoginResponse } from './authValidation';
 
 describe('authValidation', () => {

@@ -1,5 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { useKeyboardNavigation } from './useKeyboardNavigation';
 
 const press = (key: string, target: EventTarget = document) => {
@@ -47,7 +48,7 @@ describe('useKeyboardNavigation', () => {
         navigation: { items: ['a', 'b', 'c'], onToggle },
         selectedIndex: idx,
         setSelectedIndex: (n) => {
-          idx = n as number;
+          idx = n;
         },
       }),
     );

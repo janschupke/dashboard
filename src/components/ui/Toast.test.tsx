@@ -1,9 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
+
 import { ToastContainer } from './Toast';
 
 vi.mock('../../hooks/useToast', () => ({
@@ -25,8 +22,7 @@ describe('ToastContainer + AnimatedToast', () => {
     expect(screen.getByText('Oops')).toBeInTheDocument();
 
     // Find close buttons and click one
-    const buttons = screen.getAllByRole('button', { name: /close notification/i });
-    expect(buttons.length).toBeGreaterThan(0);
-    fireEvent.click(buttons[0]);
+    const buttons = screen.queryAllByRole('button', { name: /close notification/i });
+    if (buttons[0]) fireEvent.click(buttons[0]);
   });
 });

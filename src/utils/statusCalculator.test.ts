@@ -1,16 +1,26 @@
-import { describe, it, expect } from 'vitest';
 import { DateTime } from 'luxon';
-import { calculateTileStatus } from './statusCalculator';
+import { describe, it, expect } from 'vitest';
+
 import { TileStatus } from '../components/tile/useTileData';
 
-const makeCached = (overrides: Partial<any> = {}) => ({
-  data: overrides.data ?? { v: 1 },
+import { calculateTileStatus } from './statusCalculator';
+
+import type { TileConfig, TileState } from '../services/storageManager';
+
+type Data = { v: number } | null;
+
+const makeCached = (
+  overrides: Partial<TileState<NonNullable<Data>>> = {},
+): TileState<NonNullable<Data>> => ({
+  data: (overrides.data as NonNullable<Data>) ?? { v: 1 },
   lastDataRequest: overrides.lastDataRequest ?? DateTime.utc().toMillis(),
   lastDataRequestSuccessful: overrides.lastDataRequestSuccessful ?? true,
 });
 
-const makeResult = (overrides: Partial<any> = {}) => ({
-  data: overrides.data ?? { v: 2 },
+const makeResult = (
+  overrides: Partial<TileConfig<NonNullable<Data>>> = {},
+): TileConfig<NonNullable<Data>> => ({
+  data: (overrides.data as NonNullable<Data>) ?? { v: 2 },
   lastDataRequest: overrides.lastDataRequest ?? DateTime.utc().toMillis(),
   lastDataRequestSuccessful: overrides.lastDataRequestSuccessful ?? true,
 });
@@ -82,7 +92,7 @@ describe('statusCalculator.calculateTileStatus', () => {
   it('returns Error when no data', () => {
     const result = makeResult({});
     // Explicitly set data to null to simulate no data
-    (result as any).data = null;
+    result.data = null as unknown as NonNullable<Data>;
     const res = calculateTileStatus({
       showLoading: false,
       error: null,

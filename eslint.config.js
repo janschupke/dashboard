@@ -84,6 +84,7 @@ export default [
   },
   {
     files: ['src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.ts', '**/*.test.tsx', 'src/test/**'],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.app.json',
@@ -101,6 +102,12 @@ export default [
   },
   {
     files: ['**/*.test.ts', '**/*.test.tsx'],
+    languageOptions: {
+      parserOptions: {
+        // Do not use the project tsconfig for tests to avoid typed linting conflicts
+        project: null,
+      },
+    },
     rules: {
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-floating-promises': 'off',

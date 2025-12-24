@@ -24,7 +24,8 @@ const config: KnipConfig = {
     // Index file is not used but keeps exports organized
     'src/components/ui/index.ts',
   ],
-  ignoreDependencies: [],
+  // These are used in CI workflows and local scripts even if not imported in code
+  ignoreDependencies: ['@lhci/cli', 'wait-on'],
   ignoreBinaries: [],
   // Ignore specific exports that are used but knip doesn't detect properly
   ignoreIssues: {
