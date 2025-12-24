@@ -1,6 +1,7 @@
 import { useMemo, memo } from 'react';
 
 import { format } from 'date-fns';
+import { DateTime } from 'luxon';
 import {
   LineChart,
   Line,
@@ -10,6 +11,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+
+import { fromDate, fromISO } from '../../utils/luxonUtils';
 
 export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '5Y' | 'Max';
 
@@ -46,40 +49,50 @@ export const MarketChart = memo<MarketChartProps>(
     const chartData = useMemo(() => {
       if (!data || data.length === 0) return [];
 
-      // Filter data based on time range
-      const now = new Date();
-      const filterDate = new Date();
+      // Filter data based on time range using Luxon
+      const now = DateTime.now();
+      let filterDate: DateTime;
 
       switch (timeRange) {
         case '1M':
-          filterDate.setMonth(now.getMonth() - 1);
+          filterDate = now.minus({ months: 1 });
           break;
         case '3M':
-          filterDate.setMonth(now.getMonth() - 3);
+          filterDate = now.minus({ months: 3 });
           break;
         case '6M':
-          filterDate.setMonth(now.getMonth() - 6);
+          filterDate = now.minus({ months: 6 });
           break;
         case '1Y':
-          filterDate.setFullYear(now.getFullYear() - 1);
+          filterDate = now.minus({ years: 1 });
           break;
         case '5Y':
-          filterDate.setFullYear(now.getFullYear() - 5);
+          filterDate = now.minus({ years: 5 });
           break;
         case 'Max':
         default:
-          return data.map((entry) => ({
-            date: entry.label || format(new Date(entry.date), 'MMM dd'),
-            value: entry.value,
-          }));
+          return data.map((entry) => {
+            const entryDate =
+              entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+            return {
+              date: entry.label ?? format(entryDate.toJSDate(), 'MMM dd'),
+              value: entry.value,
+            };
+          });
       }
 
       return data
-        .filter((entry) => new Date(entry.date) >= filterDate)
-        .map((entry) => ({
-          date: entry.label || format(new Date(entry.date), 'MMM dd'),
-          value: entry.value,
-        }));
+        .filter((entry) => {
+          const entryDate = entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+          return entryDate >= filterDate;
+        })
+        .map((entry) => {
+          const entryDate = entry.date instanceof Date ? fromDate(entry.date) : fromISO(entry.date);
+          return {
+            date: entry.label ?? format(entryDate.toJSDate(), 'MMM dd'),
+            value: entry.value,
+          };
+        });
     }, [data, timeRange]);
 
     const CustomTooltip = ({
@@ -91,7 +104,7 @@ export const MarketChart = memo<MarketChartProps>(
       payload?: Array<{ value: number }>;
       label?: string;
     }) => {
-      if (active && payload && payload.length) {
+      if (active && payload?.length && payload[0]) {
         return (
           <div className="bg-surface-primary border border-border-primary rounded-lg p-2 shadow-lg">
             <p className="text-theme-primary font-medium">{`Date: ${label}`}</p>
@@ -107,7 +120,7 @@ export const MarketChart = memo<MarketChartProps>(
         {/* Time Range Controls */}
         {showTimeRangeControls && (
           <div className="flex items-center justify-between p-2 border-b border-border-secondary">
-            <span className="text-xs text-theme-tertiary">{title || 'Time Range'}</span>
+            <span className="text-xs text-theme-tertiary">{title ?? 'Time Range'}</span>
             <div className="flex space-x-1">
               {(['1M', '3M', '6M', '1Y', '5Y', 'Max'] as TimeRange[]).map((range) => (
                 <button

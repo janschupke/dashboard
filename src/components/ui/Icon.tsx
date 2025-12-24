@@ -48,7 +48,7 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
     x: '✕',
   };
 
-  const icon = iconMap[name] || '?';
+  const icon = iconMap[name] ?? '?';
   const classes = `${sizeClasses[size]} flex items-center justify-center ${className}`;
 
   return (

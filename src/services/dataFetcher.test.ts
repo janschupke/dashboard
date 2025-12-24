@@ -1,14 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { DataFetcher } from './dataFetcher';
 import { DataMapperRegistry } from './dataMapper';
 import { DataParserRegistry, BaseDataParser } from './dataParser';
 import { storageManager } from './storageManager';
 
-// Mock fetch globally, allow any return type for test mocks
-global.fetch = vi.fn() as unknown as typeof fetch;
-
 // Only keep tests for fetchAndParse and DataParserRegistry
+// Note: This test doesn't make actual HTTP requests - it passes mock functions to fetchAndParse
 
 describe('DataFetcher.fetchAndParse', () => {
   type RawData = { value: number };

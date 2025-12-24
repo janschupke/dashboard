@@ -1,158 +1,164 @@
-import React, { useMemo, useCallback, memo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 
-import { useDragboard, useDragboardDrag } from './DragboardContext';
+import { DRAGBOARD_CONSTANTS } from './constants';
+import {
+  calculateViewportColumns,
+  calculateGridCellFromPosition,
+  calculateDropIndex,
+  clampDropIndex,
+  calculateDropZonePosition,
+} from './dragboardGridUtils';
+import { useTiles, useDragState, useDragboardActions } from './DragboardProvider';
 
 interface DragboardGridProps {
   children: React.ReactNode;
 }
 
-// Utility to get valid drop positions for a given tile size
-function getValidDropPositions(
-  config: {
-    columns: number;
-    rows: number;
-    tileSizes: Record<'small' | 'medium' | 'large', { colSpan: number; rowSpan: number }>;
-  },
-  tileSize: 'small' | 'medium' | 'large',
-): Array<{ x: number; y: number }> {
-  const { columns, rows, tileSizes } = config;
-  const { colSpan, rowSpan } = tileSizes[tileSize] || tileSizes['medium'];
-  const positions = [];
-  for (let y = 0; y <= rows - rowSpan; y += rowSpan) {
-    for (let x = 0; x <= columns - colSpan; x += colSpan) {
-      positions.push({ x, y });
+export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [viewportColumns, setViewportColumns] = useState(1);
+  const tiles = useTiles();
+  const dragState = useDragState();
+  const { endTileDrag, endSidebarDrag, setDropTarget } = useDragboardActions();
+
+  useEffect(() => {
+    const updateColumns = () => {
+      if (!gridRef.current) return;
+      const width = gridRef.current.getBoundingClientRect().width;
+      const columns = calculateViewportColumns(width);
+      setViewportColumns(columns);
+    };
+
+    updateColumns();
+    const observer = new ResizeObserver(() => {
+      requestAnimationFrame(updateColumns);
+    });
+
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
     }
-  }
-  return positions;
-}
 
-export const DragboardGrid = memo<DragboardGridProps>(({ children }) => {
-  const { config } = useDragboard();
-  const { dragState, endTileDrag, endSidebarDrag, setDropTarget, startSidebarDrag } =
-    useDragboardDrag();
+    window.addEventListener('resize', updateColumns);
 
-  // Unified grid style - both tiles and drop zones use this
-  const gridStyle: React.CSSProperties = useMemo(
-    () => ({
-      display: 'grid',
-      gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
-      gridAutoRows: 'minmax(min-content, auto)', // Auto-expand rows to fit tallest content
-      gap: '1rem',
-      width: '100%',
-      height: '100%',
-      position: 'relative',
-      alignContent: 'start',
-    }),
-    [config.columns],
-  );
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateColumns);
+    };
+  }, []);
 
-  // Memoize the dragging tile size detection
-  const draggingTileSize = useMemo<'small' | 'medium' | 'large'>(() => {
-    if (dragState.isSidebarDrag && dragState.sidebarTileType) {
-      return 'medium';
-    } else if (dragState.draggingTileId) {
-      return 'medium';
-    }
-    return 'medium';
-  }, [dragState.draggingTileId, dragState.isSidebarDrag, dragState.sidebarTileType]);
-
-  // Memoize drop target handlers
   const handleDragOver = useCallback(
-    (e: React.DragEvent, x: number, y: number) => {
+    (e: React.DragEvent) => {
       e.preventDefault();
-      const sidebarTileType = e.dataTransfer.getData('application/dashboard-tile-type');
-      if (sidebarTileType && !dragState.isSidebarDrag && startSidebarDrag) {
-        startSidebarDrag(sidebarTileType);
+      // Set dropEffect based on drag source
+      if (dragState.sidebarTileType) {
+        e.dataTransfer.dropEffect = 'copy';
+      } else {
+        e.dataTransfer.dropEffect = 'move';
       }
-      setDropTarget({ x, y });
-    },
-    [dragState.isSidebarDrag, startSidebarDrag, setDropTarget],
-  );
 
-  const handleDragLeave = useCallback(() => {
-    setDropTarget(null);
-  }, [setDropTarget]);
+      if (!gridRef.current) return;
+
+      const rect = gridRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left - 16; // Account for padding
+      const y = e.clientY - rect.top - 16;
+
+      // Calculate which grid cell the mouse is over
+      const { row, col } = calculateGridCellFromPosition(x, y, rect.width, viewportColumns);
+      let dropIndex = calculateDropIndex(row, col, viewportColumns);
+
+      // Clamp drop index to valid range
+      dropIndex = clampDropIndex(dropIndex, tiles.length, !!dragState.sidebarTileType);
+
+      setDropTarget(dropIndex);
+    },
+    [viewportColumns, setDropTarget, dragState, tiles],
+  );
 
   const handleDrop = useCallback(
-    (e: React.DragEvent, x: number, y: number) => {
+    (e: React.DragEvent) => {
       e.preventDefault();
-      const sidebarTileType = e.dataTransfer.getData('application/dashboard-tile-type');
-      const tileId = e.dataTransfer.getData('application/dashboard-tile-id');
-      if (sidebarTileType && endSidebarDrag && startSidebarDrag) {
-        startSidebarDrag(sidebarTileType);
-        endSidebarDrag({ x, y }, sidebarTileType);
-      } else if (tileId && endTileDrag) {
-        endTileDrag({ x, y }, tileId);
+
+      if (!gridRef.current) return;
+
+      // Use the dropIndex from dragState (set by handleDragOver)
+      const dropIndex = dragState.dropIndex ?? 0;
+
+      setDropTarget(null); // Clear drop target on drop
+
+      if (dragState.draggingTileId) {
+        endTileDrag(dropIndex);
+      } else if (dragState.sidebarTileType) {
+        endSidebarDrag(dropIndex, dragState.sidebarTileType);
       }
-      setDropTarget(null);
     },
-    [endSidebarDrag, startSidebarDrag, endTileDrag, setDropTarget],
+    [dragState, endTileDrag, endSidebarDrag, setDropTarget],
   );
 
-  // Render drop zones as grid items (not overlays)
-  const dropZones = useMemo(() => {
-    if (!config.movementEnabled) return null;
-    if (!dragState.draggingTileId && !dragState.isSidebarDrag) {
-      return null;
-    }
-    const validPositions = getValidDropPositions(config, draggingTileSize);
-    return validPositions.map(({ x, y }) => {
-      const { colSpan, rowSpan } = config.tileSizes[draggingTileSize];
-      const isActive =
-        dragState.dropTarget && dragState.dropTarget.x === x && dragState.dropTarget.y === y;
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent) => {
+      // Only cancel if leaving the grid entirely
+      if (!gridRef.current?.contains(e.relatedTarget as Node)) {
+        setDropTarget(null);
+        if (dragState.draggingTileId) {
+          endTileDrag(null);
+        } else if (dragState.sidebarTileType) {
+          endSidebarDrag(null, dragState.sidebarTileType);
+        }
+      }
+    },
+    [dragState, endTileDrag, endSidebarDrag, setDropTarget],
+  );
 
-      return (
-        <div
-          key={`drop-${x}-${y}`}
-          className="pointer-events-auto"
-          style={{
-            gridColumn: `${x + 1} / span ${colSpan}`,
-            gridRow: `${y + 1} / span ${rowSpan}`,
-            border: isActive ? '2px solid #facc15' : 'none',
-            borderRadius: '0.5rem',
-            background: isActive ? 'rgba(250, 204, 21, 0.1)' : 'transparent',
-            transition: 'border 0.2s, background 0.2s',
-            height: '100%',
-            minHeight: '100px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '0.875rem',
-            color: isActive ? '#facc15' : 'transparent',
-          }}
-          aria-label={`Drop target (${x + 1}, ${y + 1})`}
-          aria-dropeffect="move"
-          onDragOver={(e) => handleDragOver(e, x, y)}
-          onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e, x, y)}
-        >
-          {isActive && 'Drop here'}
-        </div>
-      );
+  // Clone children and pass viewportColumns as prop
+  const childrenWithProps = useMemo(() => {
+    return React.Children.map(children, (child) => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, { viewportColumns } as { viewportColumns: number });
+      }
+      return child;
     });
-  }, [
-    config,
-    draggingTileSize,
-    dragState.draggingTileId,
-    dragState.isSidebarDrag,
-    dragState.dropTarget,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-  ]);
+  }, [children, viewportColumns]);
+
+  // Calculate drop zone position
+  const dropZonePosition = useMemo(
+    () => calculateDropZonePosition(dragState.dropIndex, viewportColumns),
+    [dragState.dropIndex, viewportColumns],
+  );
+
+  const isDragging = dragState.draggingTileId !== null || dragState.sidebarTileType !== undefined;
 
   return (
     <div
-      className="relative w-full h-full p-4"
-      style={gridStyle}
+      ref={gridRef}
+      className="relative w-full min-h-full p-4 grid gap-4 content-start"
+      style={{
+        gridTemplateColumns: `repeat(${viewportColumns}, minmax(${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px, 1fr))`,
+        gridAutoRows: `minmax(${DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT}px, auto)`,
+        alignItems: 'stretch',
+        gap: `${DRAGBOARD_CONSTANTS.GRID_GAP}px`,
+      }}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onDragLeave={handleDragLeave}
       role="grid"
       data-testid="dragboard-grid"
     >
-      {/* Render tiles and drop zones together in the same grid */}
-      {children}
-      {dropZones}
+      {childrenWithProps}
+      {isDragging && dropZonePosition && (
+        <div
+          className="border-2 border-dashed rounded-lg pointer-events-none z-10 transition-all duration-150"
+          style={{
+            gridColumn: `${dropZonePosition.col + 1} / span 1`,
+            gridRow: `${dropZonePosition.row + 1} / span 1`,
+            minWidth: `${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px`,
+            minHeight: `${DRAGBOARD_CONSTANTS.MIN_TILE_HEIGHT}px`,
+            borderColor: 'var(--interactive-primary)',
+            backgroundColor: 'var(--interactive-primary)',
+            opacity: 0.1,
+          }}
+          data-testid="drop-zone-indicator"
+        />
+      )}
     </div>
   );
-});
-
-DragboardGrid.displayName = 'DragboardGrid';
+};

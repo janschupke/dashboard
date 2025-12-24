@@ -1,3 +1,9 @@
+import { DateTime } from 'luxon';
+
+import { ALPHA_VANTAGE_ERROR_FIELDS } from '../constants/apiFields';
+import { ERROR_MESSAGES } from '../constants/errorMessages';
+import { secondsToMs } from '../utils/timeUtils';
+
 import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
 import { DataParserRegistry } from './dataParser';
 import {
@@ -9,7 +15,7 @@ import {
   type TileState,
 } from './storageManager';
 
-export const DATA_FETCH_TIMEOUT_MS = 15 * 1000;
+const DATA_FETCH_TIMEOUT_MS = secondsToMs(15);
 
 function timeoutPromise<T>(promise: Promise<T>, ms: number, errorMessage: string): Promise<T> {
   let timeoutId: NodeJS.Timeout;
@@ -63,20 +69,20 @@ export class DataFetcher {
     transform: (input: unknown) => TTileData,
     requestUrl: string,
   ): Promise<TileConfig<TTileData>> {
-    const now = Date.now();
+    const now = DateTime.now().toMillis();
     let httpStatus: number | undefined;
 
     try {
       let apiResponse: unknown = await timeoutPromise(
         fetchFunction(),
         DATA_FETCH_TIMEOUT_MS,
-        `API request timed out after ${DATA_FETCH_TIMEOUT_MS / 1000} seconds`,
+        ERROR_MESSAGES.API.TIMEOUT(15),
       );
       // If fetchFunction returns a Response, extract status and data
       if (apiResponse instanceof Response) {
         httpStatus = apiResponse.status;
         const contentType = apiResponse.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        if (contentType?.includes('application/json')) {
           apiResponse = await apiResponse.json();
         } else {
           apiResponse = await apiResponse.text();
@@ -94,17 +100,16 @@ export class DataFetcher {
       // If the API response contains an 'error' property, treat as error
       if (apiResponse && typeof apiResponse === 'object' && 'error' in apiResponse) {
         throw Object.assign(
-          new Error(((apiResponse as Record<string, unknown>).error as string) || 'API error'),
+          new Error(((apiResponse as Record<string, unknown>)['error'] as string) || 'API error'),
           { status: httpStatus },
         );
       }
-      // Alpha Vantage and similar APIs: treat 'Information', 'Error Message', 'Note' as errors
+      // Alpha Vantage and similar APIs: treat error fields as errors
       if (apiResponse && typeof apiResponse === 'object') {
-        const avErrorFields = ['Information', 'Error Message', 'Note'];
         const responseObj = apiResponse as Record<string, unknown>;
-        for (const field of avErrorFields) {
+        for (const field of ALPHA_VANTAGE_ERROR_FIELDS) {
           if (field in responseObj && typeof responseObj[field] === 'string') {
-            const error = new Error(responseObj[field] as string);
+            const error = new Error(responseObj[field]);
             // Preserve the HTTP status code for logging
             Object.assign(error, { status: httpStatus });
             throw error;
@@ -145,9 +150,10 @@ export class DataFetcher {
         details: logDetails,
       });
 
-      const cachedTileState = storageManager.getTileState<TTileData>(storageKey);
+      // On error, try to return cached data if available (stale data is better than nothing)
+      const cachedState = storageManager.getTileState<TTileData>(storageKey);
       const tileState: TileState<TTileData> = {
-        data: cachedTileState?.data || null,
+        data: cachedState?.data ?? null,
         lastDataRequest: now,
         lastDataRequestSuccessful: false,
       };
@@ -170,7 +176,7 @@ export class DataFetcher {
     const { apiCall = tileType } = options;
     const mapper = this.mapperRegistry.get<TTileType, TApiResponse, TTileData>(tileType);
     if (!mapper) {
-      throw new Error(`No data mapper found for tile type: ${tileType}`);
+      throw new Error(ERROR_MESSAGES.API.NO_MAPPER_FOUND(tileType));
     }
     return this.handleFetchAndTransform(
       fetchFunction,
@@ -191,7 +197,7 @@ export class DataFetcher {
     const { apiCall = tileType } = options;
     const parser = this.parserRegistry.get<TTileType, TRawData, TTileData>(tileType);
     if (!parser) {
-      throw new Error(`No parser registered for tile type: ${tileType}`);
+      throw new Error(ERROR_MESSAGES.API.NO_PARSER_FOUND(tileType));
     }
     return this.handleFetchAndTransform(
       fetchFunction,

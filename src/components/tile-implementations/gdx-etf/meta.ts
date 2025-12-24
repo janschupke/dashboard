@@ -5,4 +5,3 @@ export const gdxEtfTileMeta: TileMeta = {
   icon: 'chart',
   category: 'Finance' as TileCategory,
 };
-export const meta = gdxEtfTileMeta;

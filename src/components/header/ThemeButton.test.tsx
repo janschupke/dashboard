@@ -15,7 +15,7 @@ describe('ThemeButton', () => {
 
     const button = screen.getByTestId('theme-button');
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('aria-label', 'Toggle theme');
+    expect(button).toHaveAttribute('aria-label', 'header.toggleTheme');
   });
 
   it('calls onToggle when clicked', () => {

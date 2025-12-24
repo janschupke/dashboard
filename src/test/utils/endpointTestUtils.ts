@@ -1,3 +1,12 @@
+/**
+ * @deprecated This file is deprecated. All tests should use MSW (Mock Service Worker) via mswTestUtils.ts instead.
+ * This file will be removed in a future version.
+ *
+ * Migration guide:
+ * - Replace imports from 'endpointTestUtils' with imports from 'mswTestUtils'
+ * - Use setupSuccessMock(), setupFailureMock(), etc. from mswTestUtils instead of EndpointTestUtils methods
+ */
+
 import { beforeEach, afterEach } from 'vitest';
 
 import { storageManager } from '../../services/storageManager';
@@ -11,7 +20,7 @@ export const API_ENDPOINTS = {
   OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/3.0/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
   FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
-  ECB_EURIBOR_12M: '/api/ecb/euribor-12m',
+  ECB_EURIBOR_12M: '/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
   URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',
   TIME_API: '/api/timezonedb/v2.1/get-time-zone',

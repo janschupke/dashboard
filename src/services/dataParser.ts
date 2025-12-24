@@ -31,9 +31,10 @@ export interface DataParser<TRawData, TTileData> {
  * @template TRawData - The type of raw (scraped) data.
  * @template TTileData - The type of parsed tile data.
  */
-export abstract class BaseDataParser<TRawData, TTileData>
-  implements DataParser<TRawData, TTileData>
-{
+export abstract class BaseDataParser<TRawData, TTileData> implements DataParser<
+  TRawData,
+  TTileData
+> {
   abstract parse(rawData: TRawData): TTileData;
   abstract validate(rawData: unknown): rawData is TRawData;
 

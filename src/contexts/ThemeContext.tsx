@@ -12,7 +12,7 @@ export const ThemeProvider = React.memo<{ children: React.ReactNode }>(({ childr
   // Get initial theme from storage manager or system preference
   const getInitialTheme = (): AppTheme => {
     const config = storage.getAppConfig();
-    if (config && config.theme) return config.theme;
+    if (config?.theme) return config.theme;
     if (typeof window !== 'undefined') {
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         return AppTheme.dark;

@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
+
+import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 export interface RefreshButtonProps {
-  onRefresh: () => void;
+  onRefresh: () => void | Promise<void>;
   isRefreshing: boolean;
   disabled?: boolean;
 }
@@ -11,17 +14,18 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
   onRefresh,
   isRefreshing,
   disabled = false,
-}) => (
-  <button
-    onClick={onRefresh}
-    disabled={disabled || isRefreshing}
-    className={`p-2 text-theme-secondary hover:text-theme-primary hover:bg-theme-tertiary rounded-lg transition-colors ${
-      disabled || isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
-    }`}
-    aria-label="Refresh all tiles"
-    title="Refresh all tiles (R)"
-    data-testid="refresh-button"
-  >
-    <Icon name={isRefreshing ? 'hourglass' : 'refresh'} size="md" />
-  </button>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Button
+      variant="icon"
+      onClick={() => void onRefresh()}
+      disabled={disabled || isRefreshing}
+      aria-label={t('header.refreshAll')}
+      title={t('header.refreshShortcut')}
+      data-testid="refresh-button"
+    >
+      <Icon name={isRefreshing ? 'hourglass' : 'refresh'} size="md" />
+    </Button>
+  );
+};

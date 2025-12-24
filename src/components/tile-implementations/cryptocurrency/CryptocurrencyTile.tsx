@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { formatDateTimeToISO } from '../../../utils/dateFormatters';
+import { fromDate } from '../../../utils/luxonUtils';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 import { DataRow } from '../../ui/DataRow';
@@ -8,7 +10,7 @@ import { DataRow } from '../../ui/DataRow';
 import { useCryptoApi } from './useCryptoApi';
 
 import type { CryptocurrencyTileData } from './types';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
   if (data && data.coins.length > 0) {
@@ -77,7 +79,7 @@ export const CryptocurrencyTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={lastUpdated ? formatDateTimeToISO(fromDate(lastUpdated)) : undefined}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

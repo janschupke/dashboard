@@ -23,7 +23,7 @@ describe('LogButton', () => {
 
   it('renders with no bubbles when there are no logs', () => {
     renderWithProvider(<LogButton isOpen={false} onToggle={() => {}} />);
-    expect(screen.getByText('Logs')).toBeInTheDocument();
+    expect(screen.getByText('log.button')).toBeInTheDocument();
     expect(screen.queryByText('0')).not.toBeInTheDocument();
   });
 
@@ -67,7 +67,7 @@ describe('LogButton', () => {
     renderWithProvider(<LogButton isOpen={false} onToggle={() => {}} />);
     expect(screen.getByTestId('log-error-bubble')).toHaveTextContent('1');
     storageManager.clearLogs();
-    await screen.findByText('Logs'); // wait for update
+    await screen.findByText('log.button'); // wait for update
     expect(screen.queryByTestId('log-error-bubble')).toBeNull();
   });
 });

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 import { DataRow } from '../../ui/DataRow';
@@ -9,7 +10,7 @@ import { usePreciousMetalsApi } from './usePreciousMetalsApi';
 
 import type { PreciousMetalsTileData } from './types';
 import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const PreciousMetalsTileContent = ({ data }: { data: PreciousMetalsTileData | null }) => {
   if (data) {
@@ -73,7 +74,7 @@ export const PreciousMetalsTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

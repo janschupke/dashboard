@@ -158,21 +158,6 @@ export class MockResponseData {
     };
   }
 
-  static getPreciousMetalsData(): PreciousMetalsApiResponse {
-    return {
-      gold: {
-        price: 2050.75,
-        change_24h: 15.25,
-        change_percentage_24h: 0.75,
-      },
-      silver: {
-        price: 23.45,
-        change_24h: -0.15,
-        change_percentage_24h: -0.64,
-      },
-    };
-  }
-
   static getGdxEtfData(): GdxEtfApiResponse {
     return {
       symbol: 'GDX',
@@ -216,6 +201,123 @@ export class MockResponseData {
             },
           ],
         },
+      },
+    };
+  }
+
+  static getWeatherAlertsData(): {
+    alerts: Array<{
+      sender_name: string;
+      event: string;
+      start: number;
+      end: number;
+      description: string;
+      tags?: string[];
+    }>;
+  } {
+    return {
+      alerts: [
+        {
+          sender_name: 'CWA',
+          event: 'Severe Weather Warning',
+          start: 1721000000,
+          end: 1721100000,
+          description: 'A severe weather event is expected.',
+          tags: ['weather', 'warning'],
+        },
+      ],
+    };
+  }
+
+  static getEarthquakeData(): {
+    type: string;
+    metadata: {
+      generated: number;
+      url: string;
+      title: string;
+      status: number;
+      api: string;
+      count: number;
+    };
+    features: Array<{
+      type: string;
+      properties: {
+        mag: number;
+        place: string;
+        time: number;
+        updated: number;
+        url: string;
+        status: string;
+        code: string;
+        title: string;
+        type: string;
+      };
+      geometry: { type: string; coordinates: number[] };
+      id: string;
+    }>;
+    bbox: number[];
+  } {
+    return {
+      type: 'FeatureCollection',
+      metadata: {
+        generated: 1234567890,
+        url: 'https://earthquake.usgs.gov/fdsnws/event/1/query',
+        title: 'USGS Earthquakes',
+        status: 200,
+        api: '1.10.3',
+        count: 1,
+      },
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            mag: 5.2,
+            place: '100km S of Randomville',
+            time: 1620000000000,
+            updated: 1620000001000,
+            url: 'https://earthquake.usgs.gov/earthquakes/eventpage/abcd1234',
+            status: 'reviewed',
+            code: 'abcd1234',
+            title: 'M 5.2 - 100km S of Randomville',
+            type: 'earthquake',
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [140.123, 35.678, 10],
+          },
+          id: 'abcd1234',
+        },
+      ],
+      bbox: [140.123, 35.678, 10, 140.123, 35.678, 10],
+    };
+  }
+
+  static getPreciousMetalsData(symbol?: string): PreciousMetalsApiResponse {
+    // Return data based on symbol if provided
+    if (symbol === 'XAG') {
+      return {
+        gold: {
+          price: 3350.699951,
+          change_24h: 15.25,
+          change_percentage_24h: 0.75,
+        },
+        silver: {
+          price: 23.45,
+          change_24h: -0.15,
+          change_percentage_24h: -0.64,
+        },
+      };
+    }
+    return {
+      gold: {
+        price: 3350.699951,
+        change_24h: 15.25,
+        change_percentage_24h: 0.75,
+      },
+      silver: {
+        price: 23.45,
+        change_24h: -0.15,
+        change_percentage_24h: -0.64,
       },
     };
   }
@@ -270,7 +372,7 @@ export class EndpointMockService {
 
     // Simulate failures
     if (config.shouldFail) {
-      throw this.createMockError(config.errorType || 'network');
+      throw this.createMockError(config.errorType ?? 'network');
     }
 
     // Handle empty/null/undefined responseData cases:
@@ -285,7 +387,7 @@ export class EndpointMockService {
     } else {
       mockData = config.responseData;
     }
-    const status = config.status || 200;
+    const status = config.status ?? 200;
 
     return new Response(JSON.stringify(mockData), {
       status,

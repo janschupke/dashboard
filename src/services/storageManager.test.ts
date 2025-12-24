@@ -1,4 +1,7 @@
+import { DateTime } from 'luxon';
 import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
+
+import { hoursToMs } from '../utils/timeUtils';
 
 import { StorageManager, STORAGE_KEYS, DEFAULT_APPCONFIG } from './storageManager';
 
@@ -57,8 +60,7 @@ describe('StorageManager', () => {
         {
           id: '1',
           type: 'foo',
-          position: { x: 0, y: 0 },
-          size: 'medium',
+          order: 0,
           createdAt: 123,
           config: { a: 1 },
         },
@@ -136,11 +138,11 @@ describe('StorageManager', () => {
       storageManager.addLog(logEntry);
       let logs = storageManager.getLogs();
       expect(logs.length).toBe(1);
-      expect(logs[0].level).toBe('error');
+      expect(logs[0]!.level).toBe('error');
       // Simulate an old log in storage
       const oldLog = {
         id: 'old',
-        timestamp: Date.now() - 2 * 60 * 60 * 1000,
+        timestamp: DateTime.now().toMillis() - hoursToMs(2),
         level: 'error',
         apiCall: 'testApi',
         reason: 'fail',

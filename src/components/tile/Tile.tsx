@@ -1,5 +1,7 @@
 import React, { Suspense, memo } from 'react';
 
+import { TileType } from '../../types/tile';
+
 import { GenericTile } from './GenericTile';
 import { LoadingComponent } from './LoadingComponent';
 import { getLazyTileComponent, getTileMeta } from './TileFactoryRegistry';
@@ -14,23 +16,25 @@ export interface TileProps {
 }
 
 const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProps) => {
-  const LazyTileComponent = getLazyTileComponent(tile.type);
-  const meta = getTileMeta(tile.type);
+  const LazyTileComponent = getLazyTileComponent(tile.type as TileType);
+  const meta = getTileMeta(tile.type as TileType);
 
   if (!LazyTileComponent || !meta) {
     return (
       <GenericTile
         tile={tile}
         meta={{
-          title: 'Unknown Tile',
+          title: 'tiles.unknownTile', // i18n key consumed downstream if needed
           icon: 'warning',
         }}
         dragHandleProps={dragHandleProps}
         onRemove={onRemove}
         data={null}
       >
-        <div className="flex items-center justify-center h-full p-4 text-theme-text-tertiary">
-          <p>Unknown tile type: {tile.type}</p>
+        <div className="flex items-center justify-center h-full p-4 text-tertiary">
+          <p>
+            {'tiles.unknownTileType'}: {tile.type}
+          </p>
         </div>
       </GenericTile>
     );
@@ -61,4 +65,11 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
   );
 };
 
-export const Tile = memo(TileComponent);
+export const Tile = memo(TileComponent, (prevProps, nextProps) => {
+  // Only re-render if tile object reference changed or other props changed
+  return (
+    prevProps.tile === nextProps.tile &&
+    prevProps.onRemove === nextProps.onRemove &&
+    prevProps.refreshKey === nextProps.refreshKey
+  );
+});

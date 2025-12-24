@@ -1,3 +1,7 @@
+import { ALPHA_VANTAGE_FIELDS } from '../../../constants/apiFields';
+import { TradingStatus } from '../../../constants/enums';
+import { ERROR_MESSAGES } from '../../../constants/errorMessages';
+
 import type { GdxEtfApiResponse, GdxEtfTileData } from './types';
 import type { DataMapper } from '../../../services/dataMapper';
 
@@ -7,36 +11,37 @@ import type { DataMapper } from '../../../services/dataMapper';
 export const gdxEtfDataMapper: DataMapper<GdxEtfApiResponse, GdxEtfTileData> = {
   map: (apiResponse: GdxEtfApiResponse): GdxEtfTileData => {
     // Only handle Alpha Vantage GLOBAL_QUOTE response format
-    const globalQuote = apiResponse['Global Quote'];
+    const globalQuote = apiResponse[ALPHA_VANTAGE_FIELDS.GLOBAL_QUOTE];
     if (!globalQuote) {
-      throw new Error('No Global Quote data found in API response');
+      throw new Error(ERROR_MESSAGES.API.NO_GLOBAL_QUOTE);
     }
-    if (!globalQuote['01. symbol'] || !globalQuote['05. price']) {
-      throw new Error('Missing required fields in Global Quote data');
+    if (!globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL] || !globalQuote[ALPHA_VANTAGE_FIELDS.PRICE]) {
+      throw new Error(ERROR_MESSAGES.API.MISSING_REQUIRED_FIELDS);
     }
     return {
-      symbol: globalQuote['01. symbol'],
-      name: 'VanEck Gold Miners ETF',
-      currentPrice: parseFloat(globalQuote['05. price']),
-      previousClose: parseFloat(globalQuote['08. previous close'] || '0'),
-      priceChange: parseFloat(globalQuote['09. change'] || '0'),
-      priceChangePercent: parseFloat(globalQuote['10. change percent']?.replace('%', '') || '0'),
-      volume: parseInt(globalQuote['06. volume'] || '0'),
+      symbol: globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL],
+      name: 'VanEck Gold Miners ETF', // TODO: Move to i18n when dataMapper supports it
+      currentPrice: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.PRICE]),
+      previousClose: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.PREVIOUS_CLOSE] || '0'),
+      priceChange: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.CHANGE] || '0'),
+      priceChangePercent: parseFloat(
+        globalQuote[ALPHA_VANTAGE_FIELDS.CHANGE_PERCENT]?.replace('%', '') || '0',
+      ),
+      volume: parseInt(globalQuote[ALPHA_VANTAGE_FIELDS.VOLUME] || '0'),
       marketCap: 0, // Alpha Vantage doesn't provide market cap in GLOBAL_QUOTE
-      high: parseFloat(globalQuote['03. high'] || '0'),
-      low: parseFloat(globalQuote['04. low'] || '0'),
-      open: parseFloat(globalQuote['02. open'] || '0'),
-      lastUpdated: globalQuote['07. latest trading day'] || '',
-      tradingStatus: 'open' as const,
+      high: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.HIGH] || '0'),
+      low: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.LOW] || '0'),
+      open: parseFloat(globalQuote[ALPHA_VANTAGE_FIELDS.OPEN] || '0'),
+      lastUpdated: globalQuote[ALPHA_VANTAGE_FIELDS.LATEST_TRADING_DAY] || '',
+      tradingStatus: TradingStatus.OPEN,
     };
   },
   safeMap(apiResponse: GdxEtfApiResponse): GdxEtfTileData {
     try {
       return this.map(apiResponse);
     } catch (error) {
-      throw new Error(
-        `Failed to map GDX ETF data: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(ERROR_MESSAGES.API.MAPPING_FAILED(errorMessage));
     }
   },
   validate: (data: unknown): data is GdxEtfApiResponse => {
@@ -45,15 +50,15 @@ export const gdxEtfDataMapper: DataMapper<GdxEtfApiResponse, GdxEtfTileData> = {
     }
     const response = data as GdxEtfApiResponse;
     // Only validate Alpha Vantage GLOBAL_QUOTE format
-    if (!response['Global Quote']) {
+    const globalQuote = response[ALPHA_VANTAGE_FIELDS.GLOBAL_QUOTE];
+    if (!globalQuote) {
       return false;
     }
-    const globalQuote = response['Global Quote'];
     return (
-      typeof globalQuote['01. symbol'] === 'string' &&
-      typeof globalQuote['05. price'] === 'string' &&
-      globalQuote['01. symbol'].length > 0 &&
-      globalQuote['05. price'].length > 0
+      typeof globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL] === 'string' &&
+      typeof globalQuote[ALPHA_VANTAGE_FIELDS.PRICE] === 'string' &&
+      globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL].length > 0 &&
+      globalQuote[ALPHA_VANTAGE_FIELDS.PRICE].length > 0
     );
   },
 };

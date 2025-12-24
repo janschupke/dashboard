@@ -5,4 +5,3 @@ export const uraniumTileMeta: TileMeta = {
   icon: 'chart',
   category: 'Finance' as TileCategory,
 };
-export const meta = uraniumTileMeta;

@@ -1,5 +1,11 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
+import { formatRelativeTime, now, fromISO } from '../../utils/luxonUtils';
+import { minutesToMs } from '../../utils/timeUtils';
+import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 
 import { LoadingComponent } from './LoadingComponent';
@@ -8,7 +14,7 @@ import { TileStatus } from './useTileData';
 
 import type { TileDataType } from '../../services/storageManager';
 import type { TileCategory } from '../../types/tileCategories';
-import type { DragboardTileData, DraggableTileProps } from '../dragboard';
+import type { DragboardTileData } from '../dragboard';
 
 export interface TileMeta {
   title: string;
@@ -16,7 +22,7 @@ export interface TileMeta {
   category?: TileCategory;
 }
 
-export interface GenericTileProps extends DraggableTileProps {
+export interface GenericTileProps {
   tile: DragboardTileData;
   meta: TileMeta;
   children?: React.ReactNode;
@@ -25,6 +31,9 @@ export interface GenericTileProps extends DraggableTileProps {
   data: TileDataType | null;
   onManualRefresh?: () => void;
   isLoading?: boolean;
+  onRemove?: (id: string) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
+  className?: string;
 }
 
 const StatusBar = ({
@@ -40,13 +49,13 @@ const StatusBar = ({
   onManualRefresh?: () => void;
   isLoading?: boolean;
 }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(now());
 
   // Update current time every minute to keep elapsed time accurate
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
+      setCurrentTime(now());
+    }, minutesToMs(1)); // Update every minute
 
     return () => clearInterval(interval);
   }, []);
@@ -65,20 +74,18 @@ const StatusBar = ({
     }
   };
 
-  // Format last update time
+  const { t } = useTranslation();
+
+  // Format last update time using Luxon and i18n
   const formatLastUpdate = (isLoading?: boolean, timestamp?: string) => {
-    if (isLoading) return 'Pending';
-    if (!timestamp) return 'Never';
+    if (isLoading) return t('tile.pending');
+    if (!timestamp) return t('tile.never');
     try {
-      const date = new Date(timestamp);
-      const diffMs = currentTime.getTime() - date.getTime();
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      if (diffMins < 1) return 'Just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
-      return date.toLocaleDateString();
+      const date = fromISO(timestamp);
+      if (!date.isValid) return t('tile.invalidDate');
+      return formatRelativeTime(date, currentTime);
     } catch {
-      return 'Invalid date';
+      return t('tile.invalidDate');
     }
   };
 
@@ -89,19 +96,21 @@ const StatusBar = ({
   const statusIcon = getStatusIcon();
 
   return (
-    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-surface-primary bg-surface-secondary text-secondary rounded-b-xl">
+    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-theme-primary bg-surface-secondary text-secondary rounded-b-xl">
       <div className="flex items-center space-x-2">
         {onManualRefresh && (
           <button
             onClick={onManualRefresh}
-            className="p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer"
-            aria-label="Refresh data"
-            title="Refresh data"
+            className="p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer"
+            aria-label={t('tiles.refreshData')}
+            title={t('tiles.refreshData')}
           >
             <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
           </button>
         )}
-        <span>Last request: {formatLastUpdate(isLoading, lastUpdate)}</span>
+        <span>
+          {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate)}
+        </span>
       </div>
       {statusIcon && (
         <span onClick={logTileState} className="cursor-pointer">
@@ -115,7 +124,9 @@ const StatusBar = ({
 const ErrorContent = React.memo(() => (
   <div className="flex flex-col items-center justify-center h-full space-y-1">
     <div className="text-4xl mb-4">🍆</div>
-    <p className="text-theme-status-error text-sm text-center">Data failed to fetch</p>
+    <p className="text-theme-status-error text-sm text-center">
+      {ERROR_MESSAGES.TILE.DATA_FETCH_FAILED}
+    </p>
   </div>
 ));
 
@@ -144,29 +155,22 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       }
     }, [tile.id, onRemove]);
 
-    const getTileClasses = useCallback(() => {
-      // Unified tile styling using Tailwind theme classes for theme support
-      const borderStatusClass =
-        status === TileStatus.Error
-          ? 'border-status-error'
-          : status === TileStatus.Stale
-            ? 'border-status-warning'
-            : 'border-surface-primary';
-      const baseClasses = [
-        'bg-surface-primary',
-        'text-primary',
-        'rounded-xl',
-        'shadow-md',
-        'hover:shadow-lg',
-        'transition-shadow',
-        'duration-200',
-        'relative',
-        'border',
-        borderStatusClass,
-        className || '',
-      ].join(' ');
-      return baseClasses;
-    }, [status, className]);
+    const getCardVariant = useCallback((): 'default' | 'elevated' | 'outlined' => {
+      if (status === TileStatus.Error || status === TileStatus.Stale) {
+        return 'outlined';
+      }
+      return 'elevated';
+    }, [status]);
+
+    const getBorderClass = useCallback(() => {
+      if (status === TileStatus.Error) {
+        return 'border-status-error';
+      }
+      if (status === TileStatus.Stale) {
+        return 'border-status-warning';
+      }
+      return '';
+    }, [status]);
 
     // Memoize the content based on status
     const content = useMemo(() => {
@@ -184,24 +188,27 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
     const headerProps = useMemo(
       () => ({
         className:
-          'flex items-center justify-between px-4 py-2 border-b border-surface-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
+          'flex items-center justify-between px-4 py-2 border-b border-theme-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
         ...dragHandleProps,
       }),
       [dragHandleProps],
     );
 
+    const { t } = useTranslation();
     return (
       <TileErrorBoundary>
-        <div
+        <Card
           ref={ref}
-          className={getTileClasses()}
+          variant={getCardVariant()}
+          className={`relative h-full flex flex-col ${getBorderClass()} ${className ?? ''}`}
           data-tile-id={tile.id}
           data-tile-type={tile.type}
           role="gridcell"
           aria-label={`${meta.title} tile`}
+          draggable={false}
         >
           {/* Tile Header - Grabbable */}
-          <div {...headerProps}>
+          <div {...headerProps} data-tile-drag-handle="true">
             <div className="flex items-center space-x-3">
               <Icon
                 name={meta.icon}
@@ -216,8 +223,8 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           {/* Close Button - Positioned in top right corner */}
           {onRemove && (
             <button
-              onClick={handleRemove}
-              className="absolute top-1 right-1 p-1 text-theme-text-tertiary hover:text-primary hover:bg-theme-text-tertiary rounded transition-colors cursor-pointer z-10"
+              onClick={() => void handleRemove()}
+              className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
               aria-label={`Remove ${meta.title} tile`}
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -227,7 +234,11 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           )}
 
           {/* Tile Content */}
-          <div className="flex-1 p-2" role="region" aria-label={`${meta.title} content`}>
+          <div
+            className="flex-1 p-2"
+            role="region"
+            aria-label={`${meta.title} ${t('tile.content')}`}
+          >
             {content}
           </div>
 
@@ -239,7 +250,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             onManualRefresh={onManualRefresh}
             isLoading={isLoading}
           />
-        </div>
+        </Card>
       </TileErrorBoundary>
     );
   },

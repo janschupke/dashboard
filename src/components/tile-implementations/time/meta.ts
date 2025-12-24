@@ -17,4 +17,3 @@ export const timeTileMeta = (city?: string): TileMeta => {
   }
   return { title, icon: 'clock', category: 'Time' as TileCategory };
 };
-export const meta: TileMeta = timeTileMeta();

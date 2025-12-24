@@ -1,5 +1,14 @@
 import { useMemo, useState, useCallback, memo } from 'react';
 
+import { DateTime } from 'luxon';
+
+import { formatDateToISO } from '../../../utils/dateFormatters';
+import {
+  fromUnixTimestampMs,
+  diffInHours,
+  toLocaleDateString,
+  now,
+} from '../../../utils/luxonUtils';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 
@@ -7,7 +16,7 @@ import { useEarthquakeApi } from './useEarthquakeApi';
 
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
 import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data,
@@ -19,7 +28,7 @@ const EarthquakeTileContent = memo(function EarthquakeTileContent({
   onThresholdChange: (value: number) => void;
 }) {
   // Handle the case where data might be an array directly or have items property
-  const earthquakes = data?.items || (Array.isArray(data) ? data : []);
+  const earthquakes = data?.items ?? (Array.isArray(data) ? data : []);
 
   // Filter earthquakes by magnitude threshold and sort by time (most recent first)
   const filteredEarthquakes = earthquakes
@@ -28,16 +37,17 @@ const EarthquakeTileContent = memo(function EarthquakeTileContent({
     .slice(0, 5);
 
   const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const date = fromUnixTimestampMs(timestamp);
+    const currentTime = now();
+    const hours = diffInHours(date, currentTime);
 
-    if (diffInHours < 1) {
-      return `${Math.round(diffInHours * 60)}m ago`;
-    } else if (diffInHours < 24) {
-      return `${Math.round(diffInHours)}h ago`;
+    if (hours < 1) {
+      const minutes = Math.round(hours * 60);
+      return `${minutes}m ago`;
+    } else if (hours < 24) {
+      return `${Math.round(hours)}h ago`;
     } else {
-      return date.toLocaleDateString();
+      return toLocaleDateString(date);
     }
   };
 
@@ -121,12 +131,11 @@ export const EarthquakeTile = ({
   const { getEarthquakes } = useEarthquakeApi();
 
   const params = useMemo<UsgsEarthquakeQueryParams>(() => {
-    // Calculate start/end time for the last 7 days
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 7);
-    const starttime = start.toISOString().slice(0, 10);
-    const endtime = end.toISOString().slice(0, 10);
+    // Calculate start/end time for the last 7 days using Luxon
+    const end = DateTime.now();
+    const start = end.minus({ days: 7 });
+    const starttime = start.toISODate() || '';
+    const endtime = end.toISODate() || '';
 
     return {
       format: 'geojson',
@@ -151,7 +160,7 @@ export const EarthquakeTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

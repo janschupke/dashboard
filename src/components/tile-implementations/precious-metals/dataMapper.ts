@@ -1,41 +1,28 @@
 import { BaseDataMapper } from '../../../services/dataMapper';
 
-import type { PreciousMetalsTileData } from './types';
-import type { BaseApiResponse } from '../../../services/dataMapper';
-
-interface GoldApiResponse extends BaseApiResponse {
-  name: string;
-  price: number;
-  symbol: string;
-  updatedAt: string;
-  updatedAtReadable: string;
-}
+import type { PreciousMetalsApiResponse, PreciousMetalsTileData } from './types';
 
 export class PreciousMetalsDataMapper extends BaseDataMapper<
-  GoldApiResponse,
+  PreciousMetalsApiResponse,
   PreciousMetalsTileData
 > {
-  map(apiResponse: GoldApiResponse): PreciousMetalsTileData {
+  map(apiResponse: PreciousMetalsApiResponse): PreciousMetalsTileData {
     return {
-      gold: {
-        price: apiResponse.price,
-        change_24h: 0, // API doesn't provide 24h change data
-        change_percentage_24h: 0, // API doesn't provide 24h change data
-      },
-      silver: {
-        price: 0, // Only gold data available
-        change_24h: 0,
-        change_percentage_24h: 0,
-      },
+      gold: apiResponse.gold,
+      silver: apiResponse.silver,
     };
   }
 
-  validate(apiResponse: unknown): apiResponse is GoldApiResponse {
+  validate(apiResponse: unknown): apiResponse is PreciousMetalsApiResponse {
     return (
       !!apiResponse &&
       typeof apiResponse === 'object' &&
-      'price' in apiResponse &&
-      typeof (apiResponse as { price: unknown }).price === 'number'
+      'gold' in apiResponse &&
+      'silver' in apiResponse &&
+      typeof (apiResponse as { gold: unknown }).gold === 'object' &&
+      typeof (apiResponse as { silver: unknown }).silver === 'object' &&
+      (apiResponse as { gold: { price?: unknown } }).gold?.price !== undefined &&
+      typeof (apiResponse as { gold: { price: unknown } }).gold.price === 'number'
     );
   }
 }

@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { AuthenticatedApp } from './components/auth/AuthenticatedApp';
 import { LoginForm } from './components/auth/LoginForm';
 import { ToastContainer } from './components/ui/Toast';
@@ -8,6 +10,7 @@ import { useAuth } from './hooks/useAuth';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
 
 function AppContent() {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
@@ -18,7 +21,7 @@ function AppContent() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-theme-primary">
-        <div className="text-theme-primary">Loading...</div>
+        <div className="text-theme-primary">{t('general.loading')}</div>
       </div>
     );
   }

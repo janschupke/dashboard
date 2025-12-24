@@ -3,13 +3,12 @@ import { describe, it, expect, beforeAll } from 'vitest';
 
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import {
-  EndpointTestUtils,
   API_ENDPOINTS,
   setupTimeSuccessMock,
   setupSuccessMock,
   setupDelayedMock,
   setupFailureMock,
-} from '../../../test/utils/endpointTestUtils';
+} from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { TimeDataMapper } from './dataMapper';
@@ -61,7 +60,6 @@ describe('useTimeApi', () => {
   describe('getTime - Success Scenarios', () => {
     it('should successfully fetch time data', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupTimeSuccessMock();
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
@@ -86,7 +84,6 @@ describe('useTimeApi', () => {
 
     it('should handle delayed response', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       const delayedApiData = {
         status: 'OK',
         message: '',
@@ -117,7 +114,6 @@ describe('useTimeApi', () => {
   describe('getTime - Failure Scenarios', () => {
     it('should handle network errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.TIME_API, 'network');
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
@@ -131,7 +127,6 @@ describe('useTimeApi', () => {
 
     it('should handle timeout errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.TIME_API, 'timeout');
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
@@ -145,7 +140,6 @@ describe('useTimeApi', () => {
 
     it('should handle API errors (500)', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.TIME_API, 'api');
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
@@ -159,7 +153,6 @@ describe('useTimeApi', () => {
 
     it('should handle malformed JSON responses', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.TIME_API, 'malformed');
       const { result } = renderHook(() => useTimeApi(), { wrapper });
 
@@ -186,7 +179,6 @@ describe('useTimeApi', () => {
         timestamp: 1705331400,
         formatted: '2024-01-15 14:30:00',
       };
-      EndpointTestUtils.clearMocks();
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', businessHoursApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act
@@ -213,7 +205,6 @@ describe('useTimeApi', () => {
         timestamp: 1705507530,
         formatted: '2024-01-17 18:45:30',
       };
-      EndpointTestUtils.clearMocks();
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timeApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act
@@ -239,7 +230,6 @@ describe('useTimeApi', () => {
         timestamp: 1705319700,
         formatted: '2024-01-15 09:15:00',
       };
-      EndpointTestUtils.clearMocks();
       setupSuccessMock('/api/timezonedb/v2.1/get-time-zone', timezoneApiData);
       const { result } = renderHook(() => useTimeApi(), { wrapper });
       // Act

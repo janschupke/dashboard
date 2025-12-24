@@ -1,20 +1,21 @@
 import { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 
 import { useUraniumApi } from './useUraniumApi';
 
 import type { UraniumTileData } from './types';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 const UraniumTileContent = ({ data }: { data: UraniumTileData | null }) => {
   if (data) {
     return (
       <div className="flex flex-col items-center justify-center h-full space-y-2">
-        <div className="text-2xl font-bold text-theme-text-primary">${data.spotPrice}</div>
-        <div className="text-sm text-theme-text-secondary">Uranium Price</div>
+        <div className="text-2xl font-bold text-primary">${data.spotPrice}</div>
+        <div className="text-sm text-secondary">Uranium Price</div>
       </div>
     );
   }
@@ -52,7 +53,7 @@ export const UraniumTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

@@ -4,12 +4,11 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
 import {
-  EndpointTestUtils,
   API_ENDPOINTS,
   setupFederalFundsRateSuccessMock,
   setupDelayedMock,
   setupFailureMock,
-} from '../../../test/utils/endpointTestUtils';
+} from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { FederalFundsRateDataMapper } from './dataMapper';
@@ -40,7 +39,6 @@ describe('useFederalFundsApi', () => {
 
   describe('getFederalFundsRate - Success Scenarios', () => {
     it('should successfully fetch mapped federal funds rate tile data', async () => {
-      EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
@@ -67,7 +65,6 @@ describe('useFederalFundsApi', () => {
     });
 
     it('should handle delayed response', async () => {
-      EndpointTestUtils.clearMocks();
       setupDelayedMock(
         API_ENDPOINTS.FRED_SERIES_OBSERVATIONS,
         MockResponseData.getFederalFundsRateData(),
@@ -88,7 +85,6 @@ describe('useFederalFundsApi', () => {
 
   describe('getFederalFundsRate - Failure Scenarios', () => {
     it('should handle network errors', async () => {
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'network');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
@@ -99,7 +95,6 @@ describe('useFederalFundsApi', () => {
     });
 
     it('should handle timeout errors', async () => {
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'timeout');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
@@ -110,7 +105,6 @@ describe('useFederalFundsApi', () => {
     });
 
     it('should handle API errors (500)', async () => {
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'api');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
@@ -121,7 +115,6 @@ describe('useFederalFundsApi', () => {
     });
 
     it('should handle malformed JSON responses', async () => {
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.FRED_SERIES_OBSERVATIONS, 'malformed');
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);
@@ -134,7 +127,6 @@ describe('useFederalFundsApi', () => {
 
   describe('getFederalFundsRate - Edge Cases', () => {
     it('should handle different series IDs', async () => {
-      EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const testParams: FredQueryParams[] = [
@@ -156,7 +148,6 @@ describe('useFederalFundsApi', () => {
 
   describe('getFederalFundsRate - Data Validation', () => {
     it('should return properly structured mapped federal funds rate tile data', async () => {
-      EndpointTestUtils.clearMocks();
       setupFederalFundsRateSuccessMock();
       const { result } = renderHook(() => useFederalFundsApi(), { wrapper });
       const fetchResult = await result.current.getFederalFundsRate(mockTileId, {}, mockParams);

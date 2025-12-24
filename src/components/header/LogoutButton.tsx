@@ -1,31 +1,36 @@
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 
 export const LogoutButton: React.FC = () => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const { addToast } = useToast();
 
   const handleLogout = async () => {
     try {
       await logout();
-      addToast('Successfully logged out', 'success');
+      addToast(t('auth.logoutSuccess'), 'success');
     } catch (error) {
       console.error('Logout error:', error);
-      addToast('Failed to logout. Please try again.', 'error');
+      addToast(t('auth.logoutFailed'), 'error');
     }
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      className="p-2 rounded-md text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary transition-colors duration-200"
+    <Button
+      variant="icon"
+      size="sm"
+      onClick={() => void handleLogout()}
       title="Logout"
       data-testid="logout-button"
     >
       <Icon name="logout" size="sm" />
-    </button>
+    </Button>
   );
 };

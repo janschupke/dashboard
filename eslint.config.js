@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 
 export default [
   globalIgnores(['dist']),
-  { ignores: ['coverage', 'api', 'scripts'] },
+  { ignores: ['coverage', 'api', 'scripts', 'eslint.config.js'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs['recommended-latest'],
@@ -26,6 +26,14 @@ export default [
     },
     rules: {
       '@typescript-eslint/no-unused-vars': ['error'],
+      '@typescript-eslint/no-explicit-any': 'error',
+      // Disable type-aware rules in base config (they're enabled with stricter settings in src/ config)
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',
@@ -75,9 +83,35 @@ export default [
     },
   },
   {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.ts', '**/*.test.tsx', 'src/test/**'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.app.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+    },
+  },
+  {
     files: ['**/*.test.ts', '**/*.test.tsx'],
+    languageOptions: {
+      parserOptions: {
+        // Do not use the project tsconfig for tests to avoid typed linting conflicts
+        project: null,
+      },
+    },
     rules: {
       '@typescript-eslint/no-unsafe-function-type': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
     },
   },
 ];

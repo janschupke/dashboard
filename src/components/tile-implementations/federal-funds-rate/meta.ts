@@ -5,4 +5,3 @@ export const federalFundsRateTileMeta: TileMeta = {
   icon: 'chart',
   category: 'Macroeconomics' as TileCategory,
 };
-export const meta = federalFundsRateTileMeta;

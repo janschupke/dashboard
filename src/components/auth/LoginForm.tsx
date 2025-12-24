@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
+import { validatePassword, validateLoginResponse } from '../../utils/authValidation';
+import { Button } from '../ui/Button';
 
 export const LoginForm: React.FC = () => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -11,8 +16,11 @@ export const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) {
-      addToast('Password is required', 'error');
+
+    // Validate password using extracted validation logic
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      addToast(validation.error ?? t('auth.passwordRequired'), 'error');
       return;
     }
 
@@ -20,11 +28,12 @@ export const LoginForm: React.FC = () => {
 
     try {
       const success = await login(password);
-      if (!success) {
-        addToast('Invalid password', 'error');
+      const errorMessage = validateLoginResponse(success);
+      if (errorMessage) {
+        addToast(t('auth.invalidPassword'), 'error');
       }
     } catch {
-      addToast('Login failed. Please try again.', 'error');
+      addToast(t('auth.loginFailed'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -34,11 +43,11 @@ export const LoginForm: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-theme-primary">
       <div className="max-w-md w-full space-y-8 p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-theme-primary mb-2">Dashboard</h1>
-          <p className="text-theme-secondary">Enter your password to continue</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">{t('header.title')}</h1>
+          <p className="text-theme-secondary">{t('auth.prompt')}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
           <div>
             <label htmlFor="password" className="sr-only">
               Password
@@ -57,13 +66,9 @@ export const LoginForm: React.FC = () => {
           </div>
 
           <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-theme-inverse bg-interactive-primary hover:bg-interactive-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-interactive-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
+            <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
+              {isLoading ? t('auth.signingIn') : t('auth.signIn')}
+            </Button>
           </div>
         </form>
       </div>

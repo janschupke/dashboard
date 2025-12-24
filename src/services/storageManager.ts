@@ -1,6 +1,11 @@
 import React from 'react';
 
-import type { DragboardTileData } from '../components/dragboard/dragboardTypes';
+import { DateTime } from 'luxon';
+
+import { generateLogId } from '../utils/idGenerator';
+import { hoursToMs } from '../utils/timeUtils';
+
+import type { DragboardTileData } from '../components/dragboard/types';
 
 // --- Types ---
 export const AppTheme = {
@@ -67,7 +72,7 @@ export const STORAGE_KEYS = {
 };
 
 // Log retention time: 1 hour in milliseconds
-export const LOG_RETENTION_TIME = 60 * 60 * 1000;
+const LOG_RETENTION_TIME = hoursToMs(1);
 
 export const DEFAULT_APPCONFIG: AppConfig = {
   isSidebarCollapsed: false,
@@ -80,8 +85,7 @@ export interface DashboardState {
   tiles: Array<{
     id: string;
     type: string;
-    position: { x: number; y: number };
-    size: string;
+    order: number;
     createdAt: number;
     config?: Record<string, unknown>;
   }>;
@@ -209,7 +213,7 @@ export class StorageManager {
   }
 
   private clearExpiredLogs() {
-    const retentionThreshold = Date.now() - LOG_RETENTION_TIME;
+    const retentionThreshold = DateTime.now().toMillis() - LOG_RETENTION_TIME;
     this.logs = this.logs.filter((log) => log.timestamp >= retentionThreshold);
   }
 
@@ -222,8 +226,8 @@ export class StorageManager {
   addLog(entry: Omit<APILogEntry, 'id' | 'timestamp'>) {
     const newLog: APILogEntry = {
       ...entry,
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: Date.now(),
+      id: generateLogId(),
+      timestamp: DateTime.now().toMillis(),
     };
     // Add new log and filter out old logs
     this.logs.unshift(newLog);

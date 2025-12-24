@@ -1,16 +1,20 @@
 import React, { Suspense, useState, useCallback } from 'react';
 
+import { DateTime } from 'luxon';
+
 import { Header } from '../../components/header/Header.tsx';
+import { TileRefreshProvider } from '../../contexts/TileRefreshContext';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { useTheme } from '../../hooks/useTheme';
+import { useTileRefreshService } from '../../hooks/useTileRefreshService';
 import { useStorageManager } from '../../services/storageManager';
+import { DEFAULT_REFRESH_DELAY_MS } from '../../services/tileRefreshService';
 import { useLogManager } from '../api-log/useLogManager';
 import { DragboardProvider, DragboardGrid, DragboardTile, useDragboard } from '../dragboard';
 import { Sidebar } from '../sidebar/Sidebar';
 import { Tile } from '../tile/Tile';
 
 import { ErrorBoundary } from './ErrorBoundary';
-import { DASHBOARD_GRID_CONFIG } from './gridConfig';
 
 import type { DragboardTileData } from '../dragboard';
 
@@ -29,18 +33,21 @@ function OverlayContent({
   const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { tiles, addTile, removeTile } = useDragboard();
+  const refreshService = useTileRefreshService();
 
-  // Refresh all tiles function
+  // Refresh all tiles function - extracted business logic
   const refreshAllTiles = useCallback(async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     try {
-      // TODO: hook this to loading states
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Use the refresh service to handle tile refreshes
+      await refreshService.refreshAllTiles();
+      // Add a small delay for UI feedback
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_REFRESH_DELAY_MS));
     } finally {
       setIsRefreshing(false);
     }
-  }, [isRefreshing]);
+  }, [isRefreshing, refreshService]);
 
   useKeyboardNavigation({
     toggleLogView,
@@ -66,32 +73,43 @@ function OverlayContent({
         refreshAllTiles={refreshAllTiles}
         isRefreshing={isRefreshing}
       />
-      <div className="flex h-full pt-16 relative">
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
-          selectedIndex={sidebarSelectedIndex}
-          setSelectedIndex={setSidebarSelectedIndex}
-          tiles={tiles}
-          addTile={addTile}
-          removeTile={removeTile}
-        />
+      <div className="flex h-full pt-16 relative w-full items-stretch">
+        {/* Desktop sidebar */}
+        <div
+          className="hidden md:block transition-all duration-300 ease-in-out"
+          style={{ width: isSidebarCollapsed ? 0 : 256 }}
+        >
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
+            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+            selectedIndex={sidebarSelectedIndex}
+            setSelectedIndex={setSidebarSelectedIndex}
+            tiles={tiles}
+            addTile={addTile}
+            removeTile={removeTile}
+            variant="desktop"
+          />
+        </div>
+        {/* Mobile slide-down sidebar from header */}
+        <div className="md:hidden fixed left-0 right-0 top-16 z-50">
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
+            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+            selectedIndex={sidebarSelectedIndex}
+            setSelectedIndex={setSidebarSelectedIndex}
+            tiles={tiles}
+            addTile={addTile}
+            removeTile={removeTile}
+            variant="mobile"
+          />
+        </div>
         <main
-          className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out"
-          style={{
-            width: isSidebarCollapsed ? '100%' : 'calc(100% - 256px)',
-            marginLeft: 0,
-            transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
+          className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out w-full"
+          style={{ marginLeft: 0 }}
         >
           <DragboardGrid>
             {tiles.map((tile) => (
-              <DragboardTile
-                key={tile.id}
-                id={tile.id}
-                position={tile.position || { x: 0, y: 0 }}
-                size={typeof tile.size === 'string' ? tile.size : 'medium'}
-              >
+              <DragboardTile key={tile.id} id={tile.id}>
                 <Tile tile={tile} />
               </DragboardTile>
             ))}
@@ -117,9 +135,10 @@ function useTileStorage() {
             ({
               ...tile,
               type: tile.type,
-              size: tile.size,
-              createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : Date.now(),
-              config: tile.config || {},
+              order: typeof tile.order === 'number' ? tile.order : 0, // Default to 0 if missing
+              createdAt:
+                typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
+              config: tile.config ?? {},
             }) as DragboardTileData,
         ),
       );
@@ -140,10 +159,10 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
         tiles: tiles.map((tile: DragboardTileData) => ({
           id: tile.id,
           type: tile.type,
-          position: tile.position,
-          size: tile.size,
-          createdAt: typeof tile.createdAt === 'number' ? tile.createdAt : Date.now(),
-          config: tile.config || {},
+          order: tile.order,
+          createdAt:
+            typeof tile.createdAt === 'number' ? tile.createdAt : DateTime.now().toMillis(),
+          config: tile.config ?? {},
         })),
       });
       if (prevTiles) {
@@ -187,7 +206,7 @@ export function Overlay() {
         storage.setSidebarState({
           activeTiles,
           isCollapsed: newState,
-          lastUpdated: Date.now(),
+          lastUpdated: DateTime.now().toMillis(),
         });
         return newState;
       });
@@ -197,15 +216,17 @@ export function Overlay() {
 
   return (
     <ErrorBoundary variant="app">
-      <DragboardProvider config={DASHBOARD_GRID_CONFIG} initialTiles={initialTiles}>
-        <TilePersistenceListener storage={storage} />
-        <OverlayContent
-          isSidebarCollapsed={isSidebarCollapsed}
-          setSidebarCollapsed={handleSidebarToggle}
-          sidebarSelectedIndex={sidebarSelectedIndex}
-          setSidebarSelectedIndex={setSidebarSelectedIndex}
-        />
-      </DragboardProvider>
+      <TileRefreshProvider>
+        <DragboardProvider initialTiles={initialTiles}>
+          <TilePersistenceListener storage={storage} />
+          <OverlayContent
+            isSidebarCollapsed={isSidebarCollapsed}
+            setSidebarCollapsed={handleSidebarToggle}
+            sidebarSelectedIndex={sidebarSelectedIndex}
+            setSidebarSelectedIndex={setSidebarSelectedIndex}
+          />
+        </DragboardProvider>
+      </TileRefreshProvider>
     </ErrorBoundary>
   );
 }

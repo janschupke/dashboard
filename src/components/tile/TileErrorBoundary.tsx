@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { ERROR_MESSAGES } from '../../constants/errorMessages';
+
 interface TileErrorBoundaryProps {
   children: React.ReactNode;
 }
@@ -22,19 +24,19 @@ export class TileErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  // Remove unused parameters to fix linter error
-  componentDidCatch() {
+  override componentDidCatch() {
     // Optionally log error
-    // console.error('Tile error');
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">
           <div>
-            <p className="font-semibold">Tile Error</p>
-            <p className="text-xs mt-1">{this.state.error?.message || 'Unknown error'}</p>
+            <p className="font-semibold">{ERROR_MESSAGES.TILE.TILE_ERROR}</p>
+            <p className="text-xs mt-1">
+              {this.state.error?.message ?? ERROR_MESSAGES.TILE.UNKNOWN_ERROR}
+            </p>
           </div>
         </div>
       );

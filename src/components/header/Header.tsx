@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { LogButton } from '../api-log/LogButton';
 
 import { CollapseButton } from './CollapseButton';
@@ -12,7 +14,7 @@ export interface HeaderProps {
   theme: 'light' | 'dark';
   toggleCollapse: () => void;
   tilesCount: number;
-  refreshAllTiles?: () => void;
+  refreshAllTiles?: () => void | Promise<void>;
   isRefreshing?: boolean;
 }
 
@@ -25,18 +27,23 @@ export const Header: React.FC<HeaderProps> = ({
   tilesCount,
   refreshAllTiles,
   isRefreshing = false,
-}) => (
-  <header className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-theme-primary px-4 py-3 flex items-center justify-between h-16">
-    <div className="flex items-center space-x-3">
-      <CollapseButton onToggle={toggleCollapse} />
-      <h1 className="text-xl font-semibold text-theme-primary">Dashboard</h1>
-    </div>
-    <div className="flex items-center space-x-2">
-      <LogButton isOpen={isLogViewOpen} onToggle={toggleLogView} />
-      <RefreshButton onRefresh={refreshAllTiles || (() => {})} isRefreshing={isRefreshing} />
-      <ThemeButton theme={theme} onToggle={toggleTheme} />
-      <LogoutButton />
-      <span className="text-sm text-theme-secondary">{tilesCount} tiles</span>
-    </div>
-  </header>
-);
+}) => {
+  const { t } = useTranslation();
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-theme-primary px-3 md:px-4 py-3 flex items-center justify-between h-16">
+      <div className="flex items-center space-x-2 md:space-x-3">
+        <CollapseButton onToggle={toggleCollapse} />
+        <h1 className="text-lg md:text-xl font-semibold text-theme-primary">{t('header.title')}</h1>
+      </div>
+      <div className="flex items-center space-x-1 md:space-x-2">
+        <LogButton isOpen={isLogViewOpen} onToggle={toggleLogView} />
+        <RefreshButton onRefresh={refreshAllTiles ?? (() => {})} isRefreshing={isRefreshing} />
+        <ThemeButton theme={theme} onToggle={toggleTheme} />
+        <LogoutButton />
+        <span className="hidden sm:inline-block text-sm text-theme-secondary">
+          {t('header.tilesCount', { count: tilesCount })}
+        </span>
+      </div>
+    </header>
+  );
+};

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useCallback } from 'react';
 
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { TILE_CATEGORIES } from '../../types/tileCategories';
-import { findNextFreePosition } from '../dragboard';
-import { DASHBOARD_GRID_CONFIG } from '../overlay/gridConfig';
+import { generateTileId } from '../../utils/idGenerator';
 import { TILE_CATALOG } from '../tile/TileFactoryRegistry';
 
 import { SidebarItem } from './SidebarItem';
@@ -20,6 +22,7 @@ interface SidebarProps {
   tiles: DragboardTileData[];
   addTile: (tile: DragboardTileData) => void;
   removeTile: (id: string) => void;
+  variant?: 'desktop' | 'mobile';
 }
 
 export function Sidebar({
@@ -30,13 +33,14 @@ export function Sidebar({
   tiles,
   addTile,
   removeTile,
+  variant = 'desktop',
 }: SidebarProps) {
   // Use TILE_CATALOG for available tiles
   const availableTiles = useMemo(
     () =>
       TILE_CATALOG.map((entry) => {
         const meta =
-          entry.meta ||
+          entry.meta ??
           (entry.getMeta ? entry.getMeta() : { title: '', icon: '', category: undefined });
         return {
           type: entry.type,
@@ -70,6 +74,8 @@ export function Sidebar({
     [tilesByCategory],
   );
 
+  const { t } = useTranslation();
+
   const isTileActive = useCallback(
     (tileType: TileType) => tiles.some((tile) => tile.type === tileType),
     [tiles],
@@ -81,16 +87,12 @@ export function Sidebar({
         const tile = tiles.find((t) => t.type === tileType);
         if (tile) removeTile(tile.id);
       } else {
-        const position = findNextFreePosition(tiles, DASHBOARD_GRID_CONFIG, 'medium') || {
-          x: 0,
-          y: 0,
-        };
+        // Add tile - order will be assigned automatically (at end)
         addTile({
-          id: `tile-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateTileId(),
           type: tileType,
-          position,
-          size: 'medium',
-          createdAt: Date.now(),
+          order: tiles.length, // Add at end
+          createdAt: DateTime.now().toMillis(),
         });
       }
     },
@@ -100,7 +102,7 @@ export function Sidebar({
   useKeyboardNavigation({
     navigation: {
       items: flatTiles.map((tile) => tile.type),
-      onToggle: (tileType) => handleTileToggle(tileType as TileType),
+      onToggle: (tileType) => void handleTileToggle(tileType as TileType),
       onSidebarToggle,
       isCollapsed,
     },
@@ -125,18 +127,22 @@ export function Sidebar({
     <>
       <aside
         role="complementary"
-        aria-label="Tile catalog sidebar"
-        className={`h-full bg-surface-primary shadow-lg border-r border-theme-primary transition-all duration-300 ease-in-out flex-shrink-0 ${isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-64 opacity-100'}`}
-        style={{ minWidth: isCollapsed ? 0 : 256 }}
+        aria-label={/* i18n */ 'sidebar.ariaLabel'}
+        className={
+          variant === 'desktop'
+            ? `h-full bg-surface-primary shadow-lg border-r border-theme-primary transition-all duration-300 ease-in-out flex-shrink-0 ${isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-64 opacity-100'}`
+            : `w-full bg-surface-primary shadow-lg border-b border-theme-primary transform origin-top transition-transform duration-300 ease-in-out ${isCollapsed ? 'scale-y-0 pointer-events-none' : 'scale-y-100'} max-h-[calc(100vh-4rem)] overflow-hidden`
+        }
+        style={variant === 'desktop' ? { minWidth: isCollapsed ? 0 : 256 } : undefined}
       >
         <div
-          className={`flex flex-col h-full transition-all duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`flex flex-col h-full transition-all duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'} ${variant === 'mobile' ? 'max-h-[calc(100vh-4rem)] overflow-y-auto' : ''}`}
         >
           {!isCollapsed && (
             <>
               <div className="flex-shrink-0 p-4 border-b border-theme-primary">
                 <h2 className="text-lg font-semibold text-theme-primary" id="tiles-heading">
-                  Available Tiles ({flatTiles.length})
+                  {t('sidebar.availableTiles', { count: flatTiles.length })}
                 </h2>
               </div>
               <div className="relative flex-1 p-4 overflow-y-auto scrollbar-hide">
@@ -152,7 +158,7 @@ export function Sidebar({
                         role="heading"
                         aria-level={3}
                       >
-                        {category}
+                        {t(`tileCategories.${category}`)}
                       </h3>
                       <hr className="border-theme-primary mb-2" />
                       <div className="space-y-3">

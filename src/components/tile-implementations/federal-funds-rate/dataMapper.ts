@@ -14,6 +14,10 @@ export class FederalFundsRateDataMapper extends BaseDataMapper<
     const observations = apiResponse.observations;
     const latestObservation = observations[observations.length - 1];
 
+    if (!latestObservation) {
+      throw new Error('No observations available');
+    }
+
     return {
       currentRate: parseFloat(latestObservation.value),
       lastUpdate: new Date(latestObservation.date),
@@ -31,11 +35,11 @@ export class FederalFundsRateDataMapper extends BaseDataMapper<
 
     const response = apiResponse as Record<string, unknown>;
 
-    if (!response.observations || !Array.isArray(response.observations)) {
+    if (!response['observations'] || !Array.isArray(response['observations'])) {
       return false;
     }
 
-    const observations = response.observations as Array<Record<string, unknown>>;
+    const observations = response['observations'] as Array<Record<string, unknown>>;
 
     if (observations.length === 0) {
       return false;
@@ -52,11 +56,12 @@ export class FederalFundsRateDataMapper extends BaseDataMapper<
     }
 
     const firstObs = observations[0];
+    if (!firstObs) return false;
     return (
-      typeof firstObs.realtime_start === 'string' &&
-      typeof firstObs.realtime_end === 'string' &&
-      typeof firstObs.date === 'string' &&
-      typeof firstObs.value === 'string'
+      typeof firstObs['realtime_start'] === 'string' &&
+      typeof firstObs['realtime_end'] === 'string' &&
+      typeof firstObs['date'] === 'string' &&
+      typeof firstObs['value'] === 'string'
     );
   }
 }

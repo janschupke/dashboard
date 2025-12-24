@@ -45,7 +45,11 @@ export const mockDragboardComponents = () => {
 export const mockTileComponent = () => {
   vi.mock('../../components/tile/Tile', () => ({
     Tile: ({ tile }: { tile: Record<string, unknown> }) =>
-      React.createElement('div', { 'data-testid': `mock-tile-${tile.id}` }, `MockTile ${tile.id}`),
+      React.createElement(
+        'div',
+        { 'data-testid': `mock-tile-${tile['id']}` },
+        `MockTile ${tile['id']}`,
+      ),
   }));
 };
 
@@ -54,16 +58,15 @@ export const mockHeaderComponent = () => {
     Header: (props: Record<string, unknown>) => {
       headerMock(props);
 
-      console.log('MOCK HEADER RENDERED', props);
       return React.createElement('div', { 'data-testid': 'mock-header' }, [
         React.createElement('h1', { key: 'title' }, 'Dashboard'),
-        React.createElement('span', { key: 'tiles-count' }, `${props.tilesCount} tiles`),
+        React.createElement('span', { key: 'tiles-count' }, `${props['tilesCount']} tiles`),
         React.createElement(
           'button',
           {
             key: 'collapse',
             'data-testid': 'collapse-button',
-            onClick: props.toggleCollapse as () => void,
+            onClick: props['toggleCollapse'] as () => void,
           },
           'Collapse',
         ),
@@ -74,9 +77,9 @@ export const mockHeaderComponent = () => {
             'data-testid': 'refresh-button',
             'aria-label': 'Refresh all tiles',
             title: 'Refresh all tiles (R)',
-            onClick: props.refreshAllTiles as () => void,
-            disabled: props.isRefreshing as boolean,
-            className: props.isRefreshing ? 'opacity-50 cursor-not-allowed' : '',
+            onClick: props['refreshAllTiles'] as () => void,
+            disabled: props['isRefreshing'] as boolean,
+            className: props['isRefreshing'] ? 'opacity-50 cursor-not-allowed' : '',
           },
           'Refresh',
         ),
@@ -85,9 +88,9 @@ export const mockHeaderComponent = () => {
           {
             key: 'theme',
             'data-testid': 'theme-button',
-            onClick: props.toggleTheme as () => void,
+            onClick: props['toggleTheme'] as () => void,
           },
-          props.theme === 'light' ? '🌙' : '☀',
+          props['theme'] === 'light' ? '🌙' : '☀',
         ),
         React.createElement(
           'button',

@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 
 import { useWeatherAlertsApi } from './useWeatherAlertsApi';
 import { WeatherAlertsTileContent } from './WeatherAlertsTileContent';
 
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { DragboardTileData } from '../../dragboard';
 
 export const WeatherAlertsTile = ({
   tile,
@@ -37,13 +38,13 @@ export const WeatherAlertsTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}
       {...rest}
     >
-      <WeatherAlertsTileContent alerts={data?.alerts || []} />
+      <WeatherAlertsTileContent alerts={data?.alerts ?? []} />
     </GenericTile>
   );
 };

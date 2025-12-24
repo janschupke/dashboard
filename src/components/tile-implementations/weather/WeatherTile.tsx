@@ -1,7 +1,10 @@
 import { useMemo, useState, useCallback, memo } from 'react';
 
 import { format } from 'date-fns';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 
+import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
 import { useTileData } from '../../tile/useTileData';
 
@@ -10,7 +13,8 @@ import { useWeatherApi } from './useWeatherApi';
 
 import type { WeatherTileData } from './types';
 import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
-import type { DragboardTileData } from '../../dragboard/dragboardTypes';
+import type { TileType } from '../../../types/tile';
+import type { DragboardTileData } from '../../dragboard';
 
 const WeatherIcon = memo(function WeatherIcon({
   icon,
@@ -60,7 +64,7 @@ const WeatherIcon = memo(function WeatherIcon({
       '50n': '🌫️',
     };
 
-    return iconMap[iconCode] || '🌤️';
+    return iconMap[iconCode] ?? '🌤️';
   };
 
   return (
@@ -75,8 +79,18 @@ const WeatherIcon = memo(function WeatherIcon({
 });
 
 const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTileData }) {
+  const { t } = useTranslation();
   const getWindDirection = (degrees: number) => {
-    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const directions = [
+      t('weather.N'),
+      t('weather.NE'),
+      t('weather.E'),
+      t('weather.SE'),
+      t('weather.S'),
+      t('weather.SW'),
+      t('weather.W'),
+      t('weather.NW'),
+    ];
     const index = Math.round(degrees / 45) % 8;
     return directions[index];
   };
@@ -84,23 +98,23 @@ const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTil
   return (
     <div className="grid grid-cols-2 gap-2 text-xs">
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Feels like</span>
+        <span className="text-theme-tertiary">{t('weather.feelsLike')}</span>
         <span className="text-theme-primary font-medium">
           {Math.round(data.temperature.feels_like)}°C
         </span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Humidity</span>
+        <span className="text-theme-tertiary">{t('weather.humidity')}</span>
         <span className="text-theme-primary font-medium">{data.humidity}%</span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Wind</span>
+        <span className="text-theme-tertiary">{t('weather.wind')}</span>
         <span className="text-theme-primary font-medium">
           {data.wind.speed} m/s {getWindDirection(data.wind.direction)}
         </span>
       </div>
       <div className="flex items-center justify-between p-1 bg-surface-secondary rounded">
-        <span className="text-theme-tertiary">Pressure</span>
+        <span className="text-theme-tertiary">{t('weather.pressure')}</span>
         <span className="text-theme-primary font-medium">{data.pressure} hPa</span>
       </div>
     </div>
@@ -117,7 +131,8 @@ const WeatherForecast = memo(function WeatherForecast({
   if (!showForecast || daily.length === 0) return null;
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'EEE');
+    const dt = DateTime.fromISO(dateString);
+    return dt.isValid ? format(dt.toJSDate(), 'EEE') : dateString;
   };
 
   return (
@@ -162,10 +177,12 @@ const WeatherTileContent = memo(function WeatherTileContent({
   showForecast: boolean;
   onToggleForecast: () => void;
 }) {
+  const { t } = useTranslation();
+
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">
-        <span className="text-theme-tertiary text-sm">No weather data available</span>
+        <span className="text-theme-tertiary text-sm">{t('tiles.noDataAvailable')}</span>
       </div>
     );
   }
@@ -191,7 +208,7 @@ const WeatherTileContent = memo(function WeatherTileContent({
         </div>
         <div className="text-right">
           <div className="text-sm font-medium text-theme-primary">
-            {cityConfig ? `${cityConfig.city}, ${cityConfig.country}` : 'Unknown Location'}
+            {cityConfig ? `${cityConfig.city}, ${cityConfig.country}` : t('tiles.unknownLocation')}
           </div>
         </div>
       </div>
@@ -203,12 +220,12 @@ const WeatherTileContent = memo(function WeatherTileContent({
 
       {/* Forecast Toggle */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-theme-tertiary">Forecast</span>
+        <span className="text-xs text-theme-tertiary">{t('weather.forecast')}</span>
         <button
           onClick={onToggleForecast}
           className="text-xs text-theme-tertiary hover:text-theme-secondary"
         >
-          {showForecast ? 'Hide' : 'Show'}
+          {showForecast ? t('general.hide') : t('general.show')}
         </button>
       </div>
 
@@ -232,7 +249,7 @@ export const WeatherTile = ({
   const { getWeather } = useWeatherApi();
 
   // Get city configuration based on tile type
-  const cityConfig = getWeatherCityConfig(tile.type);
+  const cityConfig = getWeatherCityConfig(tile.type as TileType);
 
   const pathParams = useMemo<PathParams>(() => ({}), []);
   const queryParams = useMemo<WeatherQueryParams>(
@@ -260,7 +277,7 @@ export const WeatherTile = ({
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? lastUpdated.toISOString() : undefined}
+      lastUpdate={formatDateToISO(lastUpdated)}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

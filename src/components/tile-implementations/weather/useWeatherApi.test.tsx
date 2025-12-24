@@ -1,16 +1,17 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 
+import { storageManager } from '../../../services/storageManager';
 import { MockDataServicesProvider } from '../../../test/mocks/componentMocks.tsx';
 import { MockResponseData } from '../../../test/mocks/endpointMocks';
+import { server } from '../../../test/mocks/server';
 import {
-  EndpointTestUtils,
   API_ENDPOINTS,
   setupWeatherSuccessMock,
   setupSuccessMock,
   setupDelayedMock,
   setupFailureMock,
-} from '../../../test/utils/endpointTestUtils';
+} from '../../../test/utils/mswTestUtils';
 import { TileType } from '../../../types/tile';
 
 import { WeatherDataMapper } from './dataMapper';
@@ -41,7 +42,6 @@ describe('useWeatherApi', () => {
 
   describe('getWeather - Success Scenarios', () => {
     it('should successfully fetch weather data', async () => {
-      EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
       const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
@@ -78,7 +78,6 @@ describe('useWeatherApi', () => {
     });
 
     it('should handle empty weather data', async () => {
-      EndpointTestUtils.clearMocks();
       setupSuccessMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, {
         current: null,
         daily: [],
@@ -95,7 +94,6 @@ describe('useWeatherApi', () => {
     });
 
     it('should handle delayed response', async () => {
-      EndpointTestUtils.clearMocks();
       setupDelayedMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, MockResponseData.getWeatherData(), 50);
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
       await waitFor(async () => {
@@ -109,9 +107,14 @@ describe('useWeatherApi', () => {
   });
 
   describe('getWeather - Failure Scenarios', () => {
+    beforeEach(() => {
+      // Clear any cached data before failure tests
+      server.resetHandlers();
+      storageManager.clearTileState();
+    });
+
     it('should handle network errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, 'network');
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
@@ -123,7 +126,6 @@ describe('useWeatherApi', () => {
 
     it('should handle timeout errors', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, 'timeout');
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
@@ -135,7 +137,6 @@ describe('useWeatherApi', () => {
 
     it('should handle API errors (500)', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, 'api');
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
@@ -147,7 +148,6 @@ describe('useWeatherApi', () => {
 
     it('should handle malformed JSON responses', async () => {
       // Arrange
-      EndpointTestUtils.clearMocks();
       setupFailureMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, 'malformed');
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
@@ -160,7 +160,6 @@ describe('useWeatherApi', () => {
 
   describe('getWeather - Edge Cases', () => {
     it('should handle different coordinate combinations', async () => {
-      EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
       const testParams: WeatherQueryParams[] = [{ lat: 52.52, lon: 13.405 }];
@@ -174,7 +173,6 @@ describe('useWeatherApi', () => {
 
   describe('getWeather - Data Validation', () => {
     it('should return properly structured weather data', async () => {
-      EndpointTestUtils.clearMocks();
       setupWeatherSuccessMock();
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
       const fetchResult = await result.current.getWeather(mockTileId, {}, mockParams);
@@ -244,7 +242,6 @@ describe('useWeatherApi', () => {
         ],
         timezone: 'Europe/London',
       };
-      EndpointTestUtils.clearMocks();
       setupSuccessMock(API_ENDPOINTS.OPENWEATHERMAP_ONECALL, multiWeatherData);
       const { result } = renderHook(() => useWeatherApi(), { wrapper });
 
