@@ -21,6 +21,7 @@ interface SidebarProps {
   tiles: DragboardTileData[];
   addTile: (tile: DragboardTileData) => void;
   removeTile: (id: string) => void;
+  variant?: 'desktop' | 'mobile';
 }
 
 export function Sidebar({
@@ -31,6 +32,7 @@ export function Sidebar({
   tiles,
   addTile,
   removeTile,
+  variant = 'desktop',
 }: SidebarProps) {
   // Use TILE_CATALOG for available tiles
   const availableTiles = useMemo(
@@ -123,11 +125,15 @@ export function Sidebar({
       <aside
         role="complementary"
         aria-label="Tile catalog sidebar"
-        className={`h-full bg-surface-primary shadow-lg border-r border-theme-primary transition-all duration-300 ease-in-out flex-shrink-0 ${isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-64 opacity-100'}`}
-        style={{ minWidth: isCollapsed ? 0 : 256 }}
+        className={
+          variant === 'desktop'
+            ? `h-full bg-surface-primary shadow-lg border-r border-theme-primary transition-all duration-300 ease-in-out flex-shrink-0 ${isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-64 opacity-100'}`
+            : `w-full bg-surface-primary shadow-lg border-b border-theme-primary transform origin-top transition-transform duration-300 ease-in-out ${isCollapsed ? 'scale-y-0 pointer-events-none' : 'scale-y-100'} max-h-[calc(100vh-4rem)] overflow-hidden`
+        }
+        style={variant === 'desktop' ? { minWidth: isCollapsed ? 0 : 256 } : undefined}
       >
         <div
-          className={`flex flex-col h-full transition-all duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`flex flex-col h-full transition-all duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'} ${variant === 'mobile' ? 'max-h-[calc(100vh-4rem)] overflow-y-auto' : ''}`}
         >
           {!isCollapsed && (
             <>

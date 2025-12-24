@@ -73,23 +73,39 @@ function OverlayContent({
         refreshAllTiles={refreshAllTiles}
         isRefreshing={isRefreshing}
       />
-      <div className="flex h-full pt-16 relative">
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
-          selectedIndex={sidebarSelectedIndex}
-          setSelectedIndex={setSidebarSelectedIndex}
-          tiles={tiles}
-          addTile={addTile}
-          removeTile={removeTile}
-        />
+      <div className="flex h-full pt-16 relative w-full items-stretch">
+        {/* Desktop sidebar */}
+        <div
+          className="hidden md:block transition-all duration-300 ease-in-out"
+          style={{ width: isSidebarCollapsed ? 0 : 256 }}
+        >
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
+            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+            selectedIndex={sidebarSelectedIndex}
+            setSelectedIndex={setSidebarSelectedIndex}
+            tiles={tiles}
+            addTile={addTile}
+            removeTile={removeTile}
+            variant="desktop"
+          />
+        </div>
+        {/* Mobile slide-down sidebar from header */}
+        <div className="md:hidden fixed left-0 right-0 top-16 z-50">
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
+            onSidebarToggle={() => setSidebarCollapsed(tiles.map((t) => t.id))}
+            selectedIndex={sidebarSelectedIndex}
+            setSelectedIndex={setSidebarSelectedIndex}
+            tiles={tiles}
+            addTile={addTile}
+            removeTile={removeTile}
+            variant="mobile"
+          />
+        </div>
         <main
-          className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out"
-          style={{
-            width: isSidebarCollapsed ? '100%' : 'calc(100% - 256px)',
-            marginLeft: 0,
-            transition: 'width 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
+          className="overflow-auto relative scrollbar-hide transition-all duration-300 ease-in-out w-full"
+          style={{ marginLeft: 0 }}
         >
           <DragboardGrid>
             {tiles.map((tile) => (
