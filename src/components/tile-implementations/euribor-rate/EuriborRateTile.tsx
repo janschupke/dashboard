@@ -32,7 +32,7 @@ export const EuriborRateTile = ({
 }) => {
   const { getEuriborRate } = useEuriborApi();
   const pathParams = useMemo(() => ({}), []);
-  const queryParams = useMemo(() => ({}), []);
+  const queryParams = useMemo(() => ({ format: 'jsondata' as const }), []);
   const refreshConfig = useMemo(
     () => ({
       refreshInterval: REFRESH_INTERVALS.TILES.EURIBOR_RATE,

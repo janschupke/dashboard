@@ -22,7 +22,10 @@ export class PreciousMetalsDataMapper extends BaseDataMapper<
       typeof (apiResponse as { gold: unknown }).gold === 'object' &&
       typeof (apiResponse as { silver: unknown }).silver === 'object' &&
       (apiResponse as { gold: { price?: unknown } }).gold?.price !== undefined &&
-      typeof (apiResponse as { gold: { price: unknown } }).gold.price === 'number'
+      typeof (apiResponse as { gold: { price: unknown } }).gold.price === 'number' &&
+      // Allow change_24h and change_percentage_24h to be 0 or missing
+      ((apiResponse as { gold: { change_24h?: unknown } }).gold.change_24h === undefined ||
+        typeof (apiResponse as { gold: { change_24h: unknown } }).gold.change_24h === 'number')
     );
   }
 }
