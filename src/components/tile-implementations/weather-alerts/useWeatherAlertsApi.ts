@@ -20,7 +20,7 @@ export function useWeatherAlertsApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data: WeatherAlertsApiResponse = await response.json();
+          const data = (await response.json()) as WeatherAlertsApiResponse;
           return { data, status: response.status };
         },
         tileId,

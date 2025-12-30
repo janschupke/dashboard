@@ -13,15 +13,22 @@ export class CryptocurrencyDataMapper extends BaseDataMapper<
   }
 
   validate(apiResponse: unknown): apiResponse is CryptocurrencyApiResponse[] {
-    return (
-      Array.isArray(apiResponse) &&
-      apiResponse.every(
-        (coin) =>
-          typeof coin.id === 'string' &&
-          typeof coin.symbol === 'string' &&
-          typeof coin.name === 'string' &&
-          typeof coin.current_price === 'number',
-      )
-    );
+    if (!Array.isArray(apiResponse)) {
+      return false;
+    }
+    return apiResponse.every((coin): coin is CryptocurrencyApiResponse => {
+      return (
+        typeof coin === 'object' &&
+        coin !== null &&
+        'id' in coin &&
+        'symbol' in coin &&
+        'name' in coin &&
+        'current_price' in coin &&
+        typeof (coin as { id: unknown }).id === 'string' &&
+        typeof (coin as { symbol: unknown }).symbol === 'string' &&
+        typeof (coin as { name: unknown }).name === 'string' &&
+        typeof (coin as { current_price: unknown }).current_price === 'number'
+      );
+    });
   }
 }

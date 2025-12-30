@@ -14,7 +14,7 @@ import type { FederalFundsRateTileData, TimeRange } from './types';
 import type { FredQueryParams } from '../../../services/apiEndpoints';
 import type { DragboardTileData } from '../../dragboard';
 
-const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
+const FederalFundsRateTileContent = memo(({
   data,
   timeRange,
   onTimeRangeChange,
@@ -22,7 +22,7 @@ const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
   data: FederalFundsRateTileData | null;
   timeRange: TimeRange;
   onTimeRangeChange: (range: TimeRange) => void;
-}) {
+}) => {
   const chartData: ChartDataPoint[] = useMemo(() => {
     if (!data?.historicalData) return [];
 
@@ -61,6 +61,7 @@ const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
     </div>
   );
 });
+FederalFundsRateTileContent.displayName = 'FederalFundsRateTileContent';
 
 export const FederalFundsRateTile = ({
   tile,

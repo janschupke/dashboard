@@ -14,12 +14,15 @@ export interface StatusIcon {
  */
 export function getStatusIcon(status?: TileStatus): StatusIcon | null {
   switch (status) {
+    case TileStatus.Loading:
+      return null; // No icon for loading state
     case TileStatus.Stale:
       return { name: 'warning', className: 'text-status-warning' };
     case TileStatus.Success:
       return { name: 'success', className: 'text-status-success' };
     case TileStatus.Error:
       return { name: 'close', className: 'text-status-error' };
+    case undefined:
     default:
       return null;
   }
@@ -30,12 +33,15 @@ export function getStatusIcon(status?: TileStatus): StatusIcon | null {
  */
 export function getStatusTooltipText(status?: TileStatus): string {
   switch (status) {
+    case TileStatus.Loading:
+      return 'Loading data...';
     case TileStatus.Success:
       return 'Data is up to date';
     case TileStatus.Error:
       return 'Data fetch failed';
     case TileStatus.Stale:
       return 'Data is stale';
+    case undefined:
     default:
       return '';
   }

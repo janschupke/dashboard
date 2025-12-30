@@ -37,7 +37,9 @@ describe('LogButton', () => {
 
   it('updates bubbles when logs are added via context', () => {
     function AddLogButton() {
-      const { addLog } = React.useContext(LogContext)!;
+      const context = React.useContext(LogContext);
+      if (!context) throw new Error('LogContext not found');
+      const { addLog } = context;
       return (
         <button
           onClick={() => addLog({ level: 'error', apiCall: 'C', reason: 'fail', details: {} })}

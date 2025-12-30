@@ -20,7 +20,7 @@ export function useCryptoApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data = await response.json();
+          const data = (await response.json()) as unknown;
           return { data, status: response.status };
         },
         tileId,

@@ -79,7 +79,7 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
       };
     });
 
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () =>
         useTileData(mockApiFn, tileId, pathParams, queryParams, {
           refreshInterval: 60000,
@@ -113,7 +113,8 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
     // Should have updated timestamp
     const secondTimestamp = result.current.lastUpdated;
     expect(secondTimestamp).toBeTruthy();
-    expect(secondTimestamp?.getTime()).toBeGreaterThan(firstTimestamp!.getTime());
+    if (!firstTimestamp || !secondTimestamp) throw new Error('Timestamps not found');
+    expect(secondTimestamp.getTime()).toBeGreaterThan(firstTimestamp.getTime());
     expect(result.current.status).toBe(TileStatus.Error);
   });
 
@@ -147,15 +148,14 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
     expect(result.current.lastUpdated).toBeTruthy();
 
     // Timestamp should be recent (within last second)
-    const timestamp = result.current.lastUpdated!.getTime();
+    const timestamp = result.current.lastUpdated?.getTime();
+    if (!timestamp) throw new Error('Timestamp not found');
     expect(timestamp).toBeGreaterThanOrEqual(beforeTime);
     expect(timestamp).toBeLessThanOrEqual(Date.now());
   });
 
   it('updates timestamp on manual refresh for error tile', async () => {
-    let requestCount = 0;
     const mockApiFn = vi.fn(async () => {
-      requestCount++;
       const now = DateTime.now().toMillis();
       return {
         data: null,
@@ -199,8 +199,8 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
 
     // Should have new timestamp
     const newTimestamp = result.current.lastUpdated;
-    expect(newTimestamp).toBeTruthy();
-    expect(newTimestamp!.getTime()).toBeGreaterThan(initialTimestamp!.getTime());
+    if (!newTimestamp || !initialTimestamp) throw new Error('Timestamps not found');
+    expect(newTimestamp.getTime()).toBeGreaterThan(initialTimestamp.getTime());
   });
 
   it('preserves lastSuccessfulDataRequest when error occurs with cached data', async () => {
@@ -214,9 +214,7 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
 
     vi.mocked(storageManager.getTileState).mockReturnValue(cachedData);
 
-    let callCount = 0;
     const mockApiFn = vi.fn(async () => {
-      callCount++;
       const currentTime = DateTime.now().toMillis();
       // Simulate error with cached data
       return {

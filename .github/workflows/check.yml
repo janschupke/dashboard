@@ -1,12 +1,8 @@
-name: Project Check
+name: PR Checks
 
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
-    branches:
-      - '**'
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   check:
@@ -34,7 +30,7 @@ jobs:
         run: npm run test:run
 
       - name: ESLint
-        run: npm run lint
+        run: npm run lint:check
 
-      - name: Prettier
-        run: npm run format
+      - name: Prettier format check
+        run: npm run format:check

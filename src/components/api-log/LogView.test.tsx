@@ -31,15 +31,20 @@ describe('LogView', () => {
     storageManager.addLog({ level: 'warning', apiCall: 'B', reason: 'warn', details: {} });
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
     const logs = storageManager.getLogs();
-    expect(screen.getByTestId(`log-row-${logs[1]!.id}`)).toHaveTextContent('A');
-    expect(screen.getByTestId(`log-row-${logs[0]!.id}`)).toHaveTextContent('B');
+    const log1 = logs[1];
+    const log0 = logs[0];
+    if (!log1 || !log0) throw new Error('Logs not found');
+    expect(screen.getByTestId(`log-row-${log1.id}`)).toHaveTextContent('A');
+    expect(screen.getByTestId(`log-row-${log0.id}`)).toHaveTextContent('B');
     expect(screen.getByText('1 Errors')).toBeInTheDocument();
     expect(screen.getByText('1 Warnings')).toBeInTheDocument();
   });
 
   it('updates log table when logs are added via context', () => {
     function AddLogButton() {
-      const { addLog } = React.useContext(LogContext)!;
+      const context = React.useContext(LogContext);
+      if (!context) throw new Error('LogContext not found');
+      const { addLog } = context;
       return (
         <button
           onClick={() => addLog({ level: 'error', apiCall: 'C', reason: 'fail', details: {} })}
@@ -55,22 +60,28 @@ describe('LogView', () => {
       </>,
     );
     fireEvent.click(screen.getByText('Add Error'));
-    const logId = storageManager.getLogs()[0]!.id;
-    expect(screen.getByTestId(`log-row-${logId}`)).toHaveTextContent('C');
+    const logs = storageManager.getLogs();
+    const firstLog = logs[0];
+    if (!firstLog) throw new Error('Log not found');
+    expect(screen.getByTestId(`log-row-${firstLog.id}`)).toHaveTextContent('C');
   });
 
   it('updates log table when logs are added via storageManager directly', async () => {
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
     storageManager.addLog({ level: 'error', apiCall: 'D', reason: 'fail', details: {} });
-    const logId = storageManager.getLogs()[0]!.id;
-    expect(await screen.findByTestId(`log-row-${logId}`)).toHaveTextContent('D');
+    const logs = storageManager.getLogs();
+    const firstLog = logs[0];
+    if (!firstLog) throw new Error('Log not found');
+    expect(await screen.findByTestId(`log-row-${firstLog.id}`)).toHaveTextContent('D');
   });
 
   it('removes log entries when logs are cleared', async () => {
     storageManager.addLog({ level: 'error', apiCall: 'E', reason: 'fail', details: {} });
     renderWithProvider(<LogView isOpen={true} onClose={() => {}} />);
-    const logId = storageManager.getLogs()[0]!.id;
-    expect(screen.getByTestId(`log-row-${logId}`)).toHaveTextContent('E');
+    const logs = storageManager.getLogs();
+    const firstLog = logs[0];
+    if (!firstLog) throw new Error('Log not found');
+    expect(screen.getByTestId(`log-row-${firstLog.id}`)).toHaveTextContent('E');
     storageManager.clearLogs();
     await screen.findByText('No API logs'); // wait for update
     expect(screen.queryByTestId(`log-row-${logId}`)).toBeNull();

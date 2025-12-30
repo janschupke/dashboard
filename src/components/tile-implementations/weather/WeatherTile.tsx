@@ -16,7 +16,7 @@ import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoi
 import type { TileType } from '../../../types/tile';
 import type { DragboardTileData } from '../../dragboard';
 
-const WeatherIcon = memo(function WeatherIcon({
+const WeatherIcon = memo(({
   icon,
   description,
   size = 'md',
@@ -24,7 +24,7 @@ const WeatherIcon = memo(function WeatherIcon({
   icon: string;
   description: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
-}) {
+}) => {
   const sizeClasses = {
     sm: 'w-6 h-6 text-sm',
     md: 'w-8 h-8 text-base',
@@ -77,8 +77,9 @@ const WeatherIcon = memo(function WeatherIcon({
     </span>
   );
 });
+WeatherIcon.displayName = 'WeatherIcon';
 
-const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTileData }) {
+const WeatherMetrics = memo(({ data }: { data: WeatherTileData }): JSX.Element => {
   const { t } = useTranslation();
   const getWindDirection = (degrees: number) => {
     const directions = [
@@ -120,14 +121,15 @@ const WeatherMetrics = memo(function WeatherMetrics({ data }: { data: WeatherTil
     </div>
   );
 });
+WeatherMetrics.displayName = 'WeatherMetrics';
 
-const WeatherForecast = memo(function WeatherForecast({
+const WeatherForecast = memo(({
   daily,
   showForecast,
 }: {
   daily: WeatherTileData['daily'];
   showForecast: boolean;
-}) {
+}) => {
   if (!showForecast || daily.length === 0) return null;
 
   const formatDate = (dateString: string) => {
@@ -166,7 +168,7 @@ const WeatherForecast = memo(function WeatherForecast({
   );
 });
 
-const WeatherTileContent = memo(function WeatherTileContent({
+const WeatherTileContent = memo(({
   data,
   cityConfig,
   showForecast,
@@ -176,7 +178,7 @@ const WeatherTileContent = memo(function WeatherTileContent({
   cityConfig: { city: string; country: string } | null;
   showForecast: boolean;
   onToggleForecast: () => void;
-}) {
+}) => {
   const { t } = useTranslation();
 
   if (!data) {
@@ -293,5 +295,6 @@ export const WeatherTile = ({
     </GenericTile>
   );
 };
+WeatherTileContent.displayName = 'WeatherTileContent';
 
 WeatherTile.displayName = 'WeatherTile';

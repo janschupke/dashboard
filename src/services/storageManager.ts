@@ -113,15 +113,15 @@ export class StorageManager {
     if (this.initialized) return;
     try {
       const appConfigRaw = localStorage.getItem(STORAGE_KEYS.APPCONFIG);
-      this.appConfig = appConfigRaw ? JSON.parse(appConfigRaw) : DEFAULT_APPCONFIG;
+      this.appConfig = appConfigRaw ? (JSON.parse(appConfigRaw) as AppConfig) : DEFAULT_APPCONFIG;
       const dashboardRaw = localStorage.getItem(STORAGE_KEYS.DASHBOARD_STATE);
-      this.dashboardState = dashboardRaw ? JSON.parse(dashboardRaw) : null;
+      this.dashboardState = dashboardRaw ? (JSON.parse(dashboardRaw) as DashboardState) : null;
       const tileStateRaw = localStorage.getItem(STORAGE_KEYS.TILE_STATE);
-      this.tileState = tileStateRaw ? JSON.parse(tileStateRaw) : {};
+      this.tileState = tileStateRaw ? (JSON.parse(tileStateRaw) as Record<string, TileState>) : {};
       const sidebarRaw = localStorage.getItem(STORAGE_KEYS.SIDEBAR);
-      this.sidebarState = sidebarRaw ? JSON.parse(sidebarRaw) : null;
+      this.sidebarState = sidebarRaw ? (JSON.parse(sidebarRaw) as SidebarState) : null;
       const logsRaw = localStorage.getItem(STORAGE_KEYS.LOGS);
-      this.logs = logsRaw ? JSON.parse(logsRaw) : [];
+      this.logs = logsRaw ? (JSON.parse(logsRaw) as APILogEntry[]) : [];
       this.initialized = true;
     } catch (error) {
       console.error('StorageManager init failed:', error);

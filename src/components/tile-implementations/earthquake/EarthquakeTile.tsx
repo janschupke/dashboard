@@ -14,11 +14,12 @@ import { useTileData } from '../../tile/useTileData';
 
 import { useEarthquakeApi } from './useEarthquakeApi';
 
+import type { EarthquakeTileData } from './types';
 import type { EarthquakeTileDataArray } from './useEarthquakeApi';
 import type { UsgsEarthquakeQueryParams } from '../../../services/apiEndpoints';
 import type { DragboardTileData } from '../../dragboard';
 
-const EarthquakeTileContent = memo(function EarthquakeTileContent({
+const EarthquakeTileContent = memo(({
   data,
   magnitudeThreshold,
   onThresholdChange,
@@ -26,9 +27,9 @@ const EarthquakeTileContent = memo(function EarthquakeTileContent({
   data: EarthquakeTileDataArray | null;
   magnitudeThreshold: number;
   onThresholdChange: (value: number) => void;
-}) {
+}) => {
   // Handle the case where data might be an array directly or have items property
-  const earthquakes = data?.items ?? (Array.isArray(data) ? data : []);
+  const earthquakes: EarthquakeTileData[] = data?.items ?? [];
 
   // Filter earthquakes by magnitude threshold and sort by time (most recent first)
   const filteredEarthquakes = earthquakes
@@ -118,6 +119,7 @@ const EarthquakeTileContent = memo(function EarthquakeTileContent({
     </div>
   );
 });
+EarthquakeTileContent.displayName = 'EarthquakeTileContent';
 
 export const EarthquakeTile = ({
   tile,

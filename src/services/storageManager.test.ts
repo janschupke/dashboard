@@ -138,7 +138,9 @@ describe('StorageManager', () => {
       storageManager.addLog(logEntry);
       let logs = storageManager.getLogs();
       expect(logs.length).toBe(1);
-      expect(logs[0]!.level).toBe('error');
+      const firstLog = logs[0];
+      if (!firstLog) throw new Error('Log not found');
+      expect(firstLog.level).toBe('error');
       // Simulate an old log in storage
       const oldLog = {
         id: 'old',
