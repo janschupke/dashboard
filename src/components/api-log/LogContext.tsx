@@ -38,16 +38,7 @@ export const LogProvider: React.FC<LogProviderProps> = ({ children }) => {
 
   const removeLog = useCallback(
     (id: string) => {
-      const logs = storageManager.getLogs().filter((log) => log.id !== id);
-      storageManager.clearLogs();
-      logs.forEach((log) =>
-        storageManager.addLog({
-          level: log.level,
-          apiCall: log.apiCall,
-          reason: log.reason,
-          details: log.details,
-        }),
-      );
+      storageManager.removeLog(id);
       // refreshLogs(); // now handled by listener
     },
     [

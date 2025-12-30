@@ -24,9 +24,53 @@ interface LogViewProps {
   onClose: () => void;
 }
 
+interface ConfirmModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  message: string;
+}
+
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onConfirm, onCancel, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-modal-title"
+    >
+      <div
+        className="bg-surface-primary rounded-lg shadow-xl border border-primary p-6 max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 id="confirm-modal-title" className="text-lg font-semibold text-primary mb-4">
+          Confirm Delete
+        </h3>
+        <p className="text-sm text-secondary mb-6">{message}</p>
+        <div className="flex justify-end gap-3">
+          <Button variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={onConfirm}
+            className="!bg-status-error !text-white hover:!bg-status-error/90 focus:ring-status-error"
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
   const { logs, removeLog } = useLogContext();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Prevent background scroll when log is open
@@ -222,7 +266,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  removeLog(row.original.id);
+                  setDeleteConfirmId(row.original.id);
                 }}
                 className="hover:text-status-error hover:bg-status-error/10"
                 aria-label={`Remove log entry for ${row.original.apiCall}`}
@@ -235,11 +279,27 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
         },
       },
     ],
-    [expandedIds, removeLog, formatTimestamp, getLevelColor, getLevelIcon],
+    [expandedIds, formatTimestamp, getLevelColor, getLevelIcon, setDeleteConfirmId],
   );
 
+  const handleConfirmDelete = useCallback(() => {
+    if (deleteConfirmId) {
+      removeLog(deleteConfirmId);
+      setDeleteConfirmId(null);
+    }
+  }, [deleteConfirmId, removeLog]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteConfirmId(null);
+  }, []);
+
+  const logToDelete = deleteConfirmId ? logs.find((log) => log.id === deleteConfirmId) : null;
+
+  // Memoize table data to prevent unnecessary re-renders that cause blinking
+  const tableData = useMemo(() => logs, [logs]);
+
   const table = useReactTable({
-    data: logs,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -269,9 +329,20 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
 
   // Position exactly over the tile grid area (absolute, not fixed)
   return (
-    <div
-      data-log-view
-      className="absolute inset-0 z-40 flex flex-col bg-surface-primary overflow-hidden"
+    <>
+      <ConfirmModal
+        isOpen={deleteConfirmId !== null}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        message={
+          logToDelete
+            ? `Are you sure you want to delete the log entry for "${logToDelete.apiCall}"?`
+            : 'Are you sure you want to delete this log entry?'
+        }
+      />
+      <div
+        data-log-view
+        className="absolute inset-0 z-40 flex flex-col bg-surface-primary overflow-hidden"
       onWheel={(e) => {
         // Prevent scroll propagation to parent
         e.stopPropagation();
@@ -282,10 +353,10 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
       }}
     >
       {/* Header - solid background */}
-      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-secondary bg-surface-primary z-10">
-        <div className="flex items-center gap-3">
-          <Icon name="clipboard-list" className="w-6 h-6 text-secondary" />
-          <h2 className="text-xl font-semibold text-primary">API Logs</h2>
+      <div className="flex-shrink-0 flex items-center justify-between p-2 border-b border-secondary bg-surface-primary z-10">
+        <div className="flex items-center gap-2">
+          <Icon name="clipboard-list" className="w-4 h-4 text-secondary" />
+          <h2 className="text-base font-semibold text-primary">API Logs</h2>
           <div className="flex gap-2">
             <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-status-error/20 text-status-error rounded">
               <Icon name="exclamation-triangle" className="w-3 h-3" />
@@ -339,7 +410,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                     headerGroup.headers.map((header) => (
                       <th
                         key={header.id}
-                        className="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-medium text-secondary whitespace-nowrap"
                       >
                         {header.isPlaceholder
                           ? null
@@ -386,7 +457,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                       style={{ outline: 'none' }}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3">
+                        <td key={cell.id} className="px-4 py-1">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
@@ -395,7 +466,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                       <tr id={`log-details-${row.original.id}`}>
                         <td
                           colSpan={table.getAllColumns().length}
-                          className="px-4 pb-4 pt-0 text-xs text-secondary bg-surface-secondary"
+                          className="px-4 pb-4 pt-2 text-xs text-secondary bg-surface-secondary"
                         >
                           <pre className="whitespace-pre-wrap break-all">
                             {JSON.stringify(row.original.details, null, 2)}
@@ -411,5 +482,6 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
         )}
       </div>
     </div>
+    </>
   );
 };

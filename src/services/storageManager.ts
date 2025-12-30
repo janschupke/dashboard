@@ -243,6 +243,19 @@ export class StorageManager {
     this.notifyLogListeners();
   }
 
+  removeLog(id: string): void {
+    const index = this.logs.findIndex((log) => log.id === id);
+    if (index !== -1) {
+      this.logs.splice(index, 1);
+      try {
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(this.logs));
+      } catch (error) {
+        console.error('Failed to remove log:', error);
+      }
+      this.notifyLogListeners();
+    }
+  }
+
   clearLogs() {
     this.logs = [];
     try {
