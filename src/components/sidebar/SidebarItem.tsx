@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
+import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
 
 import { useDragboardActions } from '../dragboard';
@@ -98,7 +99,8 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           void handleClick();
         }
       }}
-      title={t('sidebar.toggleItemTitle', {
+      data-tooltip-id={`sidebar-item-tooltip-${tileType}`}
+      data-tooltip-content={t('sidebar.toggleItemTitle', {
         action: isActive ? t('general.remove') : t('general.add'),
         name,
         preposition: isActive ? t('general.from') : t('general.to'),
@@ -126,6 +128,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           <Icon name="success" size="sm" className="text-accent-primary" aria-hidden="true" />
         ) : null}
       </span>
+      <Tooltip id={`sidebar-item-tooltip-${tileType}`} />
     </Button>
   );
 };

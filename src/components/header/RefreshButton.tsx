@@ -1,3 +1,4 @@
+import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../ui/Button';
@@ -17,15 +18,19 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <Button
-      variant="icon"
-      onClick={() => void onRefresh()}
-      disabled={disabled || isRefreshing}
-      aria-label={t('header.refreshAll')}
-      title={t('header.refreshShortcut')}
-      data-testid="refresh-button"
-    >
-      <Icon name={isRefreshing ? 'hourglass' : 'refresh'} size="md" />
-    </Button>
+    <>
+      <Button
+        variant="icon"
+        onClick={() => void onRefresh()}
+        disabled={disabled || isRefreshing}
+        aria-label={t('header.refreshAll')}
+        data-tooltip-id="refresh-button-tooltip"
+        data-tooltip-content={t('header.refreshShortcut')}
+        data-testid="refresh-button"
+      >
+        <Icon name={isRefreshing ? 'hourglass' : 'refresh'} size="md" />
+      </Button>
+      <Tooltip id="refresh-button-tooltip" />
+    </>
   );
 };

@@ -415,3 +415,9 @@
 .slider:focus::-moz-range-thumb {
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
+
+/* Tooltip z-index - ensure tooltips appear above all tiles and UI elements */
+[data-tooltip-id],
+.react-tooltip {
+  z-index: 9999 !important;
+}

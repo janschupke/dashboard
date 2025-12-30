@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '../../hooks/useAuth';
@@ -23,14 +24,18 @@ export const LogoutButton: React.FC = () => {
   };
 
   return (
-    <Button
-      variant="icon"
-      size="sm"
-      onClick={() => void handleLogout()}
-      title="Logout"
-      data-testid="logout-button"
-    >
-      <Icon name="logout" size="sm" />
-    </Button>
+    <>
+      <Button
+        variant="icon"
+        size="sm"
+        onClick={() => void handleLogout()}
+        data-tooltip-id="logout-button-tooltip"
+        data-tooltip-content="Logout"
+        data-testid="logout-button"
+      >
+        <Icon name="logout" size="sm" />
+      </Button>
+      <Tooltip id="logout-button-tooltip" />
+    </>
   );
 };

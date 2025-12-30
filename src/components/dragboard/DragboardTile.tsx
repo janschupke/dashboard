@@ -1,5 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 
+import { Tooltip } from 'react-tooltip';
+
 import { Icon } from '../ui/Icon';
 
 import { DRAGBOARD_CONSTANTS } from './constants';
@@ -85,15 +87,20 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
       role="gridcell"
       aria-label={`Tile ${id}`}
     >
-      <button
-        onClick={handleRemove}
-        className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
-        aria-label="Remove tile"
-        type="button"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <Icon name="close" size="sm" />
-      </button>
+      <>
+        <button
+          onClick={handleRemove}
+          className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
+          aria-label="Remove tile"
+          data-tooltip-id={`dragboard-tile-remove-tooltip-${id}`}
+          data-tooltip-content="Remove tile"
+          type="button"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <Icon name="close" size="sm" />
+        </button>
+        <Tooltip id={`dragboard-tile-remove-tooltip-${id}`} />
+      </>
       {React.isValidElement(children)
         ? React.cloneElement(children, { dragHandleProps } as { dragHandleProps: typeof dragHandleProps })
         : children}

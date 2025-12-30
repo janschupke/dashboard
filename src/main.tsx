@@ -1,6 +1,7 @@
 import './index.css';
 import './theme-init';
 import './i18n/config';
+import 'react-tooltip/dist/react-tooltip.css';
 
 import React from 'react';
 

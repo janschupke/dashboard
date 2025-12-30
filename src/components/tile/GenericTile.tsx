@@ -1,8 +1,9 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
 
+import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
 
-import { formatRelativeTime, now, fromISO } from '../../utils/luxonUtils';
+import { formatRelativeTime, now, fromISO, toLocaleString } from '../../utils/luxonUtils';
 import { minutesToMs } from '../../utils/timeUtils';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
@@ -41,12 +42,14 @@ const StatusBar = ({
   lastUpdate,
   onManualRefresh,
   isLoading,
+  tileId,
 }: {
   data: TileDataType | null;
   status?: TileStatus;
   lastUpdate?: string;
   onManualRefresh?: () => void;
   isLoading?: boolean;
+  tileId: string;
 }) => {
   const [currentTime, setCurrentTime] = useState(now());
 
@@ -94,27 +97,80 @@ const StatusBar = ({
 
   const statusIcon = getStatusIcon();
 
+  // Get status tooltip text
+  const getStatusTooltipText = () => {
+    switch (status) {
+      case TileStatus.Success:
+        return 'Data is up to date';
+      case TileStatus.Error:
+        return 'Data fetch failed';
+      case TileStatus.Stale:
+        return 'Data is stale';
+      default:
+        return '';
+    }
+  };
+
+  // Format full datetime for tooltip
+  const formatFullDateTime = (timestamp?: string): string => {
+    if (!timestamp) return t('tile.never');
+    try {
+      const date = fromISO(timestamp);
+      if (!date.isValid) return t('tile.invalidDate');
+      return toLocaleString(date, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    } catch {
+      return t('tile.invalidDate');
+    }
+  };
+
+  const lastRequestTooltipId = `tile-last-request-tooltip-${tileId}`;
+  const statusTooltipId = `tile-status-tooltip-${tileId}`;
+
   return (
     <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-theme-primary bg-surface-secondary text-secondary rounded-b-xl">
       <div className="flex items-center space-x-2">
         {onManualRefresh && (
-          <button
-            onClick={onManualRefresh}
-            className="p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer"
-            aria-label={t('tiles.refreshData')}
-            title={t('tiles.refreshData')}
-          >
-            <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
-          </button>
+          <>
+            <button
+              onClick={onManualRefresh}
+              className="p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer"
+              aria-label={t('tiles.refreshData')}
+              data-tooltip-id="tile-refresh-tooltip"
+              data-tooltip-content={t('tiles.refreshData')}
+            >
+              <Icon name={isLoading ? 'hourglass' : 'refresh'} size="sm" />
+            </button>
+            <Tooltip id="tile-refresh-tooltip" />
+          </>
         )}
-        <span>
+        <span
+          data-tooltip-id={lastRequestTooltipId}
+          data-tooltip-content={formatFullDateTime(lastUpdate)}
+          className="cursor-help"
+        >
           {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate)}
         </span>
+        <Tooltip id={lastRequestTooltipId} />
       </div>
       {statusIcon && (
-        <span onClick={logTileState} className="cursor-pointer">
-          <Icon name={statusIcon.name} size="sm" className={statusIcon.className} />
-        </span>
+        <>
+          <span
+            onClick={logTileState}
+            className="cursor-pointer"
+            data-tooltip-id={statusTooltipId}
+            data-tooltip-content={getStatusTooltipText()}
+          >
+            <Icon name={statusIcon.name} size="sm" className={statusIcon.className} />
+          </span>
+          <Tooltip id={statusTooltipId} />
+        </>
       )}
     </div>
   );
@@ -224,15 +280,20 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
 
           {/* Close Button - Positioned in top right corner */}
           {onRemove && (
-            <button
-              onClick={() => void handleRemove()}
-              className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
-              aria-label={`Remove ${meta.title} tile`}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-            >
-              <Icon name="close" size="sm" />
-            </button>
+            <>
+              <button
+                onClick={() => void handleRemove()}
+                className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
+                aria-label={`Remove ${meta.title} tile`}
+                data-tooltip-id={`tile-close-tooltip-${tile.id}`}
+                data-tooltip-content={`Remove ${meta.title} tile`}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                <Icon name="close" size="sm" />
+              </button>
+              <Tooltip id={`tile-close-tooltip-${tile.id}`} />
+            </>
           )}
 
           {/* Tile Content */}
@@ -251,6 +312,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             lastUpdate={lastUpdate}
             onManualRefresh={onManualRefresh}
             isLoading={isLoading}
+            tileId={tile.id}
           />
         </Card>
       </TileErrorBoundary>
