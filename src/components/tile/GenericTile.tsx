@@ -2,7 +2,6 @@ import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 're
 
 import { useTranslation } from 'react-i18next';
 
-import { ERROR_MESSAGES } from '../../constants/errorMessages';
 import { formatRelativeTime, now, fromISO } from '../../utils/luxonUtils';
 import { minutesToMs } from '../../utils/timeUtils';
 import { Card } from '../ui/Card';
@@ -121,14 +120,17 @@ const StatusBar = ({
   );
 };
 
-const ErrorContent = React.memo(() => (
-  <div className="flex flex-col items-center justify-center h-full space-y-1">
-    <div className="text-4xl mb-4">🍆</div>
-    <p className="text-theme-status-error text-sm text-center">
-      {ERROR_MESSAGES.TILE.DATA_FETCH_FAILED}
-    </p>
-  </div>
-));
+const ErrorContent = React.memo(() => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center justify-center h-full space-y-1">
+      <div className="text-4xl mb-4">🍆</div>
+      <p className="text-theme-status-error text-sm text-center">
+        {t('errors.dataFetchFailed')}
+      </p>
+    </div>
+  );
+});
 
 export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
   (

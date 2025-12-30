@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { ALPHA_VANTAGE_ERROR_FIELDS } from '../constants/apiFields';
-import { ERROR_MESSAGES } from '../constants/errorMessages';
+import i18n from '../i18n/config';
 import { secondsToMs } from '../utils/timeUtils';
 
 import { type BaseApiResponse, DataMapperRegistry } from './dataMapper';
@@ -76,7 +76,7 @@ export class DataFetcher {
       let apiResponse: unknown = await timeoutPromise(
         fetchFunction(),
         DATA_FETCH_TIMEOUT_MS,
-        ERROR_MESSAGES.API.TIMEOUT(15),
+        i18n.t('api.timeout', { seconds: 15 }),
       );
       // If fetchFunction returns a Response, extract status and data
       if (apiResponse instanceof Response) {
@@ -176,7 +176,7 @@ export class DataFetcher {
     const { apiCall = tileType } = options;
     const mapper = this.mapperRegistry.get<TTileType, TApiResponse, TTileData>(tileType);
     if (!mapper) {
-      throw new Error(ERROR_MESSAGES.API.NO_MAPPER_FOUND(tileType));
+      throw new Error(i18n.t('api.noMapperFound', { tileType }));
     }
     return this.handleFetchAndTransform(
       fetchFunction,
@@ -197,7 +197,7 @@ export class DataFetcher {
     const { apiCall = tileType } = options;
     const parser = this.parserRegistry.get<TTileType, TRawData, TTileData>(tileType);
     if (!parser) {
-      throw new Error(ERROR_MESSAGES.API.NO_PARSER_FOUND(tileType));
+      throw new Error(i18n.t('api.noParserFound', { tileType }));
     }
     return this.handleFetchAndTransform(
       fetchFunction,

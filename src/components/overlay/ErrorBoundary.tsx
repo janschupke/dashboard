@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { DateTime } from 'luxon';
-
-import { ERROR_MESSAGES } from '../../constants/errorMessages';
+import i18n from '../../i18n/config';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -79,7 +78,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         const FallbackComponent = this.props.fallback;
         return (
           <FallbackComponent
-            error={new Error(String(ERROR_MESSAGES.TILE.UNKNOWN_ERROR))}
+            error={new Error(i18n.t('errors.unknown'))}
             resetError={this.resetError}
           />
         );
@@ -89,14 +88,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       if (this.props.variant === 'component') {
         return (
           <div className="p-4 text-center text-red-600" data-testid="error-boundary-message">
-            {String(ERROR_MESSAGES.TILE.COMPONENT_LOAD_ERROR)}
+            {i18n.t('errors.componentLoad')}
           </div>
         );
       }
 
       return (
         <div className="flex items-center justify-center h-screen w-full">
-          <div className="text-center" aria-label={/* i18n */ 'errors.unknown'}>
+          <div className="text-center" aria-label={i18n.t('errors.unknown')}>
             <div className="text-8xl mb-4">🍆</div>
           </div>
         </div>

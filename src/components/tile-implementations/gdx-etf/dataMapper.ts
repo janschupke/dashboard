@@ -1,6 +1,6 @@
 import { ALPHA_VANTAGE_FIELDS } from '../../../constants/apiFields';
 import { TradingStatus } from '../../../constants/enums';
-import { ERROR_MESSAGES } from '../../../constants/errorMessages';
+import i18n from '../../../i18n/config';
 
 import type { GdxEtfApiResponse, GdxEtfTileData } from './types';
 import type { DataMapper } from '../../../services/dataMapper';
@@ -13,10 +13,10 @@ export const gdxEtfDataMapper: DataMapper<GdxEtfApiResponse, GdxEtfTileData> = {
     // Only handle Alpha Vantage GLOBAL_QUOTE response format
     const globalQuote = apiResponse[ALPHA_VANTAGE_FIELDS.GLOBAL_QUOTE];
     if (!globalQuote) {
-      throw new Error(ERROR_MESSAGES.API.NO_GLOBAL_QUOTE);
+      throw new Error(i18n.t('api.noGlobalQuote'));
     }
     if (!globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL] || !globalQuote[ALPHA_VANTAGE_FIELDS.PRICE]) {
-      throw new Error(ERROR_MESSAGES.API.MISSING_REQUIRED_FIELDS);
+      throw new Error(i18n.t('api.missingRequiredFields'));
     }
     return {
       symbol: globalQuote[ALPHA_VANTAGE_FIELDS.SYMBOL],
@@ -41,7 +41,7 @@ export const gdxEtfDataMapper: DataMapper<GdxEtfApiResponse, GdxEtfTileData> = {
       return this.map(apiResponse);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(ERROR_MESSAGES.API.MAPPING_FAILED(errorMessage));
+      throw new Error(i18n.t('api.mappingFailed', { error: errorMessage }));
     }
   },
   validate: (data: unknown): data is GdxEtfApiResponse => {
