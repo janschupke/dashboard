@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
 import { formatDateToISO } from '../../../utils/dateFormatters';
@@ -10,7 +10,7 @@ import { useUraniumApi } from './useUraniumApi';
 import type { UraniumTileData } from './types';
 import type { DragboardTileData } from '../../dragboard';
 
-const UraniumTileContent = ({ data }: { data: UraniumTileData | null }) => {
+const UraniumTileContent = ({ data }: { data: UraniumTileData | null }): React.ReactNode => {
   if (data) {
     return (
       <div className="flex flex-col items-center justify-center h-full space-y-2">
@@ -29,7 +29,7 @@ export const UraniumTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getUraniumPrice } = useUraniumApi();
   const pathParams = useMemo(() => ({}), []);
   const queryParams = useMemo(() => ({ range: '1D' }), []);
@@ -41,20 +41,16 @@ export const UraniumTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getUraniumPrice,
-    tile.id,
-    pathParams,
-    queryParams,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getUraniumPrice, tile.id, pathParams, queryParams, refreshConfig);
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

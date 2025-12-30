@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TileRefreshProvider } from '../../contexts/TileRefreshContext';
 import { storageManager } from '../../services/storageManager';
 
-import { useTileData , TileStatus } from './useTileData';
+import { useTileData, TileStatus } from './useTileData';
 
 // Create a fresh QueryClient for each test with no retries/timers
 const createTestQueryClient = () =>
@@ -248,4 +248,3 @@ describe('useTileData - Error Tile Timestamp Updates', () => {
     expect(result.current.lastSuccessfulDataUpdate).toBeTruthy();
   });
 });
-

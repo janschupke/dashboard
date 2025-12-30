@@ -26,7 +26,7 @@ const DragboardActionsContext = createContext<{
 
 /* eslint-disable react-refresh/only-export-components */
 // Separate hooks for selective subscriptions
-export const useTiles = () => {
+export const useTiles = (): DragboardTileData[] => {
   const tiles = useContext(TilesContext);
   if (!tiles) {
     throw new Error('useTiles must be used within DragboardProvider');
@@ -34,7 +34,11 @@ export const useTiles = () => {
   return tiles;
 };
 
-export const useDragState = () => {
+export const useDragState = (): {
+  draggingTileId: string | null;
+  dropIndex: number | null;
+  sidebarTileType?: string;
+} => {
   const dragState = useContext(DragStateContext);
   if (!dragState) {
     throw new Error('useDragState must be used within DragboardProvider');
@@ -42,7 +46,15 @@ export const useDragState = () => {
   return dragState;
 };
 
-export const useDragboardActions = () => {
+export const useDragboardActions = (): {
+  addTile: (tile: Omit<DragboardTileData, 'order'>) => void;
+  removeTile: (id: string) => void;
+  startTileDrag: (tileId: string) => void;
+  endTileDrag: (dropIndex: number | null) => void;
+  startSidebarDrag: (tileType: string) => void;
+  endSidebarDrag: (dropIndex: number | null, tileType: string) => void;
+  setDropTarget: (dropIndex: number | null) => void;
+} => {
   const actions = useContext(DragboardActionsContext);
   if (!actions) {
     throw new Error('useDragboardActions must be used within DragboardProvider');
@@ -51,7 +63,12 @@ export const useDragboardActions = () => {
 };
 
 // Hook to get specific tile data - only re-renders when that tile changes
-export const useTileById = (id: string) => {
+export const useTileById = (
+  id: string,
+): {
+  tile: DragboardTileData | undefined;
+  isDragging: boolean;
+} => {
   const tiles = useTiles();
   const dragState = useDragState();
   return useMemo(
@@ -64,7 +81,21 @@ export const useTileById = (id: string) => {
 };
 
 // Legacy hook for backward compatibility - use specific hooks when possible
-export const useDragboard = () => {
+export const useDragboard = (): {
+  tiles: DragboardTileData[];
+  dragState: {
+    draggingTileId: string | null;
+    dropIndex: number | null;
+    sidebarTileType?: string;
+  };
+  addTile: (tile: Omit<DragboardTileData, 'order'>) => void;
+  removeTile: (id: string) => void;
+  startTileDrag: (tileId: string) => void;
+  endTileDrag: (dropIndex: number | null) => void;
+  startSidebarDrag: (tileType: string) => void;
+  endSidebarDrag: (dropIndex: number | null, tileType: string) => void;
+  setDropTarget: (dropIndex: number | null) => void;
+} => {
   const tiles = useTiles();
   const dragState = useDragState();
   const actions = useDragboardActions();
@@ -212,7 +243,6 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
         setDragState({
           draggingTileId: null,
           dropIndex: null,
-          sidebarTileType: undefined,
         });
         return;
       }
@@ -234,7 +264,6 @@ export const DragboardProvider: React.FC<DragboardProviderProps> = ({
       setDragState({
         draggingTileId: null,
         dropIndex: null,
-        sidebarTileType: undefined,
       });
     },
     [normalizeOrders],

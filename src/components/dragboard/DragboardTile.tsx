@@ -38,7 +38,7 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
     return null;
   }
 
-  const handleDragStart = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.DragEvent): void => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
 
@@ -56,11 +56,11 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
     startTileDrag(id);
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (): void => {
     endTileDrag(null); // Will be updated by drop handler
   };
 
-  const handleRemove = (e: React.MouseEvent) => {
+  const handleRemove = (e: React.MouseEvent): void => {
     e.stopPropagation();
     removeTile(id);
   };

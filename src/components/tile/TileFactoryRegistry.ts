@@ -161,7 +161,13 @@ export const TILE_CATALOG: TileCatalogEntry[] = [
   },
 ];
 
-export function getLazyTileComponent(type: TileType) {
+export function getLazyTileComponent(
+  type: TileType,
+):
+  | React.LazyExoticComponent<
+      React.ComponentType<{ tile: DragboardTileData; meta: TileMeta; [key: string]: unknown }>
+    >
+  | undefined {
   const entry = TILE_CATALOG.find((e) => e.type === type);
   return entry ? entry.getLazyComponent() : undefined;
 }

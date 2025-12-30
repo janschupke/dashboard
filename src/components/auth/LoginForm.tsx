@@ -14,7 +14,7 @@ export const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const { addToast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
     // Validate password using extracted validation logic

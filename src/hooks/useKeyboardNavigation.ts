@@ -24,7 +24,14 @@ export interface KeyboardNavigationOptions {
  * in a hierarchical manner to prevent conflicts.
  * Handles L (log) and R (refresh) hotkeys directly.
  */
-export const useKeyboardNavigation = (options: KeyboardNavigationOptions) => {
+export interface KeyboardNavigationReturn {
+  selectedIndex: number;
+  setSelectedIndex: (index: number) => void;
+}
+
+export const useKeyboardNavigation = (
+  options: KeyboardNavigationOptions,
+): KeyboardNavigationReturn => {
   const {
     navigation,
     enabled = true,
@@ -40,7 +47,7 @@ export const useKeyboardNavigation = (options: KeyboardNavigationOptions) => {
       if (!enabled) return;
 
       // Default filter: ignore input fields and modifier keys
-      const defaultFilter = (event: KeyboardEvent) => {
+      const defaultFilter = (event: KeyboardEvent): boolean => {
         const tag = (event.target as HTMLElement)?.tagName;
         return !(
           tag === 'INPUT' ||

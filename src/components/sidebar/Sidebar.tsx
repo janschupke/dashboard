@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,7 @@ export function Sidebar({
   addTile,
   removeTile,
   variant = 'desktop',
-}: SidebarProps) {
+}: SidebarProps): React.ReactNode {
   // Use TILE_CATALOG for available tiles
   const availableTiles = useMemo(
     () =>

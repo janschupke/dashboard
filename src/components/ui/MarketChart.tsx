@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { format } from 'date-fns';
 import { DateTime } from 'luxon';
@@ -103,7 +103,7 @@ export const MarketChart = memo<MarketChartProps>(
       active?: boolean;
       payload?: Array<{ value: number }>;
       label?: string;
-    }) => {
+    }): React.ReactNode => {
       if (active && payload?.length && payload[0]) {
         return (
           <div className="bg-surface-primary border border-border-primary rounded-lg p-2 shadow-lg">

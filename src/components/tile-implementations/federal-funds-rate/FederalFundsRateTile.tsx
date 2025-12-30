@@ -1,4 +1,4 @@
-import { useMemo, useState, memo } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 
 import { format } from 'date-fns';
 
@@ -14,53 +14,55 @@ import type { FederalFundsRateTileData, TimeRange } from './types';
 import type { FredQueryParams } from '../../../services/apiEndpoints';
 import type { DragboardTileData } from '../../dragboard';
 
-const FederalFundsRateTileContent = memo(({
-  data,
-  timeRange,
-  onTimeRangeChange,
-}: {
-  data: FederalFundsRateTileData | null;
-  timeRange: TimeRange;
-  onTimeRangeChange: (range: TimeRange) => void;
-}) => {
-  const chartData: ChartDataPoint[] = useMemo(() => {
-    if (!data?.historicalData) return [];
+const FederalFundsRateTileContent = memo(
+  ({
+    data,
+    timeRange,
+    onTimeRangeChange,
+  }: {
+    data: FederalFundsRateTileData | null;
+    timeRange: TimeRange;
+    onTimeRangeChange: (range: TimeRange) => void;
+  }) => {
+    const chartData: ChartDataPoint[] = useMemo(() => {
+      if (!data?.historicalData) return [];
 
-    return data.historicalData.map((entry) => ({
-      date: entry.date,
-      value: entry.rate,
-    }));
-  }, [data?.historicalData]);
+      return data.historicalData.map((entry) => ({
+        date: entry.date,
+        value: entry.rate,
+      }));
+    }, [data?.historicalData]);
 
-  // TODO: fix the null data globally
-  if (!data) return null;
+    // TODO: fix the null data globally
+    if (!data) return null;
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Current Rate Display */}
-      <div className="flex flex-col items-center justify-center p-4 border-b border-border-secondary">
-        <div className="text-3xl font-bold text-primary">{data.currentRate}%</div>
-        {data.lastUpdate && (
-          <div className="text-xs text-tertiary mt-1">
-            Updated: {format(data.lastUpdate, 'MMM dd, yyyy')}
-          </div>
-        )}
+    return (
+      <div className="flex flex-col h-full">
+        {/* Current Rate Display */}
+        <div className="flex flex-col items-center justify-center p-4 border-b border-border-secondary">
+          <div className="text-3xl font-bold text-primary">{data.currentRate}%</div>
+          {data.lastUpdate && (
+            <div className="text-xs text-tertiary mt-1">
+              Updated: {format(data.lastUpdate, 'MMM dd, yyyy')}
+            </div>
+          )}
+        </div>
+
+        {/* Chart Section */}
+        <div className="flex-1">
+          <MarketChart
+            data={chartData}
+            timeRange={timeRange}
+            onTimeRangeChange={onTimeRangeChange}
+            title="Time Range"
+            valueLabel="Rate"
+            valueFormatter={(value) => `${value}%`}
+          />
+        </div>
       </div>
-
-      {/* Chart Section */}
-      <div className="flex-1">
-        <MarketChart
-          data={chartData}
-          timeRange={timeRange}
-          onTimeRangeChange={onTimeRangeChange}
-          title="Time Range"
-          valueLabel="Rate"
-          valueFormatter={(value) => `${value}%`}
-        />
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
 FederalFundsRateTileContent.displayName = 'FederalFundsRateTileContent';
 
 export const FederalFundsRateTile = ({
@@ -70,7 +72,7 @@ export const FederalFundsRateTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1Y');
   const { getFederalFundsRate } = useFederalFundsApi();
 
@@ -90,21 +92,17 @@ export const FederalFundsRateTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getFederalFundsRate,
-    tile.id,
-    {},
-    params,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getFederalFundsRate, tile.id, {}, params, refreshConfig);
 
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

@@ -58,7 +58,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     onMouseLeave?.();
   }, [onMouseLeave]);
 
-  const getBorderClass = () => {
+  const getBorderClass = (): string => {
     if (isSelected) {
       return 'border-status-warning';
     }

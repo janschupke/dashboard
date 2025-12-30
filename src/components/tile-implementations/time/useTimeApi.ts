@@ -8,7 +8,13 @@ import type { TimeTileData } from './types';
 import type { TimeQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useTimeApi() {
+export function useTimeApi(): {
+  getTime: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: TimeQueryParams,
+  ) => Promise<TileConfig<TimeTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getTime = useCallback(
     async (

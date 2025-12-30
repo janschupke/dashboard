@@ -3,7 +3,6 @@ import { useMemo, useEffect } from 'react';
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 
-
 import { REFRESH_INTERVALS } from '../../contexts/constants';
 import { useTileRefreshService } from '../../hooks/useTileRefreshService';
 import { storageManager } from '../../services/storageManager';
@@ -210,7 +209,7 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
     data,
     status,
     lastUpdated: lastRequestTimestamp, // Use lastDataRequest timestamp (works for errors too)
-    lastSuccessfulDataUpdate,
+    ...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate }),
     manualRefresh,
     isLoading: showLoading,
   };

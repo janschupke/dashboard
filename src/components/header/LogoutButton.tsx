@@ -13,7 +13,7 @@ export const LogoutButton: React.FC = () => {
   const { logout } = useAuth();
   const { addToast } = useToast();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       await logout();
       addToast(t('auth.logoutSuccess'), 'success');

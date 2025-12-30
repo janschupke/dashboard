@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { DateTime } from 'luxon';
 
@@ -37,7 +37,14 @@ const getBusinessStatus = (dt: DateTime): 'open' | 'closed' | 'opening soon' | '
   }
 };
 
-export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; meta: TileMeta }) => {
+export const TimeTile = ({
+  tile,
+  meta,
+  ...rest
+}: {
+  tile: DragboardTileData;
+  meta: TileMeta;
+}): React.ReactNode => {
   const { getTime } = useTimeApi();
   const cityConfig =
     CITY_CONFIG[tile.type as keyof typeof CITY_CONFIG] || CITY_CONFIG[TileType.TIME_TAIPEI];
@@ -59,16 +66,11 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
   );
 
   // API refresh every 5 minutes (for timezone/offset updates)
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getTime,
-    tile.id,
-    {},
-    params,
-    {
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getTime, tile.id, {}, params, {
       refreshInterval: minutesToMs(5), // 5 minutes
       enableAutoRefresh: true,
-    },
-  );
+    });
 
   // Recalculate time display on each update (using updateCount as dependency)
   const currentTimeData = useMemo((): TimeTileData | null => {
@@ -88,13 +90,14 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
     // eslint-disable-next-line react-hooks/exhaustive-deps -- updateCount intentionally triggers recalculation every second
   }, [data, updateCount]);
 
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={currentTimeData}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

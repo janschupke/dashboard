@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { formatDateToISO } from '../../../utils/dateFormatters';
 import { GenericTile, type TileMeta } from '../../tile/GenericTile';
@@ -16,7 +16,7 @@ export const WeatherAlertsTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getWeatherAlerts } = useWeatherAlertsApi();
   const params = useMemo(
     () => ({
@@ -26,20 +26,17 @@ export const WeatherAlertsTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getWeatherAlerts,
-    tile.id,
-    {},
-    params,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getWeatherAlerts, tile.id, {}, params);
 
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

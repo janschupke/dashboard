@@ -8,7 +8,13 @@ import type { PreciousMetalsTileData } from './types';
 import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function usePreciousMetalsApi() {
+export function usePreciousMetalsApi(): {
+  getPreciousMetals: (
+    tileId: string,
+    pathParams: GoldApiPathParams,
+    queryParams: QueryParams,
+  ) => Promise<TileConfig<PreciousMetalsTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getPreciousMetals = useCallback(
     async (

@@ -21,7 +21,6 @@ import {
 } from './tileUtils';
 import { TileStatus } from './useTileData';
 
-import type { TileDataType } from '../../services/storageManager';
 import type { TileCategory } from '../../types/tileCategories';
 import type { DragboardTileData } from '../dragboard';
 
@@ -38,16 +37,15 @@ export interface GenericTileProps {
   status?: TileStatus;
   lastUpdate?: string;
   lastSuccessfulDataUpdate?: string; // Timestamp of last successful data fetch
-  data: TileDataType | null;
   onManualRefresh?: () => void;
   isLoading?: boolean;
   onRemove?: (id: string) => void;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   className?: string;
+  data?: unknown; // Optional data prop for tiles that need it
 }
 
 const StatusBar = ({
-  data,
   status,
   lastUpdate,
   lastSuccessfulDataUpdate,
@@ -55,14 +53,13 @@ const StatusBar = ({
   isLoading,
   tileId,
 }: {
-  data: TileDataType | null;
   status?: TileStatus;
   lastUpdate?: string;
   lastSuccessfulDataUpdate?: string;
   onManualRefresh?: () => void;
   isLoading?: boolean;
   tileId: string;
-}) => {
+}): React.ReactNode => {
   const [currentTime, setCurrentTime] = useState(now());
 
   // Update current time every minute to keep elapsed time accurate
@@ -76,10 +73,6 @@ const StatusBar = ({
 
   const { t } = useTranslation();
   const statusIcon = getStatusIcon(status);
-
-  const logTileState = () => {
-    console.log('Tile state:', { data, status, lastUpdate });
-  };
 
   const lastRequestTooltipId = `tile-last-request-tooltip-${tileId}`;
   const statusTooltipId = `tile-status-tooltip-${tileId}`;
@@ -104,8 +97,14 @@ const StatusBar = ({
         <span
           data-tooltip-id={lastRequestTooltipId}
           {...(getLastRequestTooltipHtml(status, lastUpdate, lastSuccessfulDataUpdate, t)
-            ? { 'data-tooltip-html': getLastRequestTooltipHtml(status, lastUpdate, lastSuccessfulDataUpdate, t) }
-            : { 'data-tooltip-content': getLastRequestTooltipContent(status, lastUpdate, t) })}
+            ? {
+                'data-tooltip-html':
+                  getLastRequestTooltipHtml(status, lastUpdate, lastSuccessfulDataUpdate, t) ??
+                  null,
+              }
+            : {
+                'data-tooltip-content': getLastRequestTooltipContent(status, lastUpdate, t) ?? null,
+              })}
           className="cursor-help"
         >
           {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate, currentTime, t)}
@@ -115,7 +114,6 @@ const StatusBar = ({
       {statusIcon && (
         <>
           <span
-            onClick={logTileState}
             className="cursor-pointer"
             data-tooltip-id={statusTooltipId}
             data-tooltip-content={getStatusTooltipText(status)}
@@ -151,7 +149,6 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       status,
       lastUpdate,
       lastSuccessfulDataUpdate,
-      data,
       onManualRefresh,
       isLoading,
     },
@@ -164,7 +161,6 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
         // TODO: Optionally show a toast or error message
       }
     }, [tile.id, onRemove]);
-
 
     // Memoize the content based on status
     const content = useMemo(() => {
@@ -204,12 +200,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
           {/* Tile Header - Grabbable */}
           <div {...headerProps} data-tile-drag-handle="true">
             <div className="flex items-center space-x-3">
-              <Icon
-                name={meta.icon}
-                size="sm"
-                className="text-accent-primary"
-                aria-hidden="true"
-              />
+              <Icon name={meta.icon} size="sm" className="text-accent-primary" aria-hidden="true" />
               <h3 className="text-base font-semibold text-primary truncate">{meta.title}</h3>
             </div>
           </div>
@@ -243,12 +234,11 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
 
           {/* Status Bar */}
           <StatusBar
-            data={data}
-            status={status}
-            lastUpdate={lastUpdate}
-            lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
-            onManualRefresh={onManualRefresh}
-            isLoading={isLoading}
+            {...(status !== undefined && { status })}
+            {...(lastUpdate !== undefined && { lastUpdate })}
+            {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
+            {...(onManualRefresh !== undefined && { onManualRefresh })}
+            {...(isLoading !== undefined && { isLoading })}
             tileId={tile.id}
           />
         </Card>

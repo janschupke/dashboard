@@ -12,7 +12,13 @@ export interface EarthquakeTileDataArray extends TileDataType {
   items: EarthquakeTileData[];
 }
 
-export function useEarthquakeApi() {
+export function useEarthquakeApi(): {
+  getEarthquakes: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: UsgsEarthquakeQueryParams,
+  ) => Promise<TileConfig<EarthquakeTileDataArray>>;
+} {
   const { dataFetcher } = useDataServices();
   const getEarthquakes = useCallback(
     async (

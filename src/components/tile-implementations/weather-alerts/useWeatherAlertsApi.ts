@@ -8,7 +8,13 @@ import type { WeatherAlertsTileData, WeatherAlertsApiResponse } from './types';
 import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useWeatherAlertsApi() {
+export function useWeatherAlertsApi(): {
+  getWeatherAlerts: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: WeatherQueryParams,
+  ) => Promise<TileConfig<WeatherAlertsTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getWeatherAlerts = useCallback(
     async (

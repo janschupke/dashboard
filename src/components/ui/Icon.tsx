@@ -1,10 +1,12 @@
+import React from 'react';
+
 interface IconProps {
   name: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export function Icon({ name, size = 'md', className = '' }: IconProps) {
+export function Icon({ name, size = 'md', className = '' }: IconProps): React.ReactNode {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',

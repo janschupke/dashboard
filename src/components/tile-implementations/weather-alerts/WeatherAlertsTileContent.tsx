@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useTranslation } from 'react-i18next';
 
 import { fromUnixTimestamp, toLocaleString } from '../../../utils/luxonUtils';
@@ -8,7 +10,7 @@ export const WeatherAlertsTileContent = ({
   alerts,
 }: {
   alerts: WeatherAlertsTileData['alerts'];
-}) => {
+}): React.ReactNode => {
   const { t } = useTranslation();
 
   if (!alerts || alerts.length === 0) {

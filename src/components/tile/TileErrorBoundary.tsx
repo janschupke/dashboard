@@ -21,15 +21,15 @@ export class TileErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(error: Error): TileErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  override componentDidCatch() {
+  override componentDidCatch(): void {
     // Optionally log error
   }
 
-  override render() {
+  override render(): React.ReactNode {
     if (this.state.hasError) {
       return <ErrorDisplay error={this.state.error} />;
     }
@@ -37,7 +37,7 @@ export class TileErrorBoundary extends React.Component<
   }
 }
 
-function ErrorDisplay({ error }: { error: Error | null }) {
+function ErrorDisplay({ error }: { error: Error | null }): React.ReactNode {
   const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">

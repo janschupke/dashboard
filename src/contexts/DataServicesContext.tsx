@@ -12,7 +12,7 @@ export interface DataServices {
 
 export const DataServicesContext = createContext<DataServices | undefined>(undefined);
 
-export const useDataServices = () => {
+export const useDataServices = (): DataServices => {
   const ctx = useContext(DataServicesContext);
   if (!ctx) throw new Error('useDataServices must be used within a DataServicesContext.Provider');
   return ctx;

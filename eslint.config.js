@@ -7,7 +7,18 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['dist', 'coverage', 'api', 'scripts', 'eslint.config.js', 'node_modules', 'build', '.next'] },
+  {
+    ignores: [
+      'dist',
+      'coverage',
+      'api',
+      'scripts',
+      'eslint.config.js',
+      'node_modules',
+      'build',
+      '.next',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs['recommended-latest'],
@@ -132,7 +143,15 @@ export default [
       '@typescript-eslint/prefer-reduce-type-parameter': 'error',
       '@typescript-eslint/prefer-return-this-type': 'error',
       '@typescript-eslint/no-redundant-type-constituents': 'error',
-      '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true, allowTypedFunctionExpressions: true, allowHigherOrderFunctions: true, allowDirectConstAssertionInArrowFunctions: true }],
+      '@typescript-eslint/explicit-function-return-type': [
+        'warn',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+          allowDirectConstAssertionInArrowFunctions: true,
+        },
+      ],
     },
   },
   {

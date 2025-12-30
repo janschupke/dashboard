@@ -26,7 +26,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleRemove = () => {
+  const handleRemove = (): void => {
     setIsExiting(true);
     // Wait for exit animation to complete before removing from DOM
     setTimeout(() => {
@@ -34,7 +34,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     }, 300);
   };
 
-  const getToastStyles = (type: ToastType) => {
+  const getToastStyles = (type: ToastType): string => {
     const baseStyles =
       'max-w-sm w-full p-4 rounded-lg shadow-lg transition-all duration-300 transform';
 
@@ -63,7 +63,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     return `${baseStyles} ${typeStyles} ${animationStyles}`;
   };
 
-  const getIcon = (type: ToastType) => {
+  const getIcon = (type: ToastType): React.ReactNode => {
     switch (type) {
       case 'error':
         return <Icon name="toast-error" size="sm" />;

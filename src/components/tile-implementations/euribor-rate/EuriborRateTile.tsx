@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
 import { formatDateToISO } from '../../../utils/dateFormatters';
@@ -10,7 +10,11 @@ import { useEuriborApi } from './useEuriborApi';
 import type { EuriborRateTileData } from './types';
 import type { DragboardTileData } from '../../dragboard';
 
-const EuriborRateTileContent = ({ data }: { data: EuriborRateTileData | null }) => {
+const EuriborRateTileContent = ({
+  data,
+}: {
+  data: EuriborRateTileData | null;
+}): React.ReactNode => {
   if (data) {
     return (
       <div className="flex flex-col items-center justify-center h-full space-y-2">
@@ -29,7 +33,7 @@ export const EuriborRateTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getEuriborRate } = useEuriborApi();
   const pathParams = useMemo(() => ({}), []);
   const queryParams = useMemo(() => ({ format: 'json' as const }), []);
@@ -41,20 +45,16 @@ export const EuriborRateTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getEuriborRate,
-    tile.id,
-    pathParams,
-    queryParams,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getEuriborRate, tile.id, pathParams, queryParams, refreshConfig);
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

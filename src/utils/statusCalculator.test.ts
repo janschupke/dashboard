@@ -17,7 +17,9 @@ const makeCached = (
     data: (overrides.data as NonNullable<Data>) ?? { v: 1 },
     lastDataRequest: overrides.lastDataRequest ?? now,
     lastDataRequestSuccessful: overrides.lastDataRequestSuccessful ?? true,
-    lastSuccessfulDataRequest: overrides.lastSuccessfulDataRequest ?? (overrides.lastDataRequestSuccessful !== false ? now : null),
+    lastSuccessfulDataRequest:
+      overrides.lastSuccessfulDataRequest ??
+      (overrides.lastDataRequestSuccessful !== false ? now : null),
   };
 };
 
@@ -29,7 +31,9 @@ const makeResult = (
     data: (overrides.data as NonNullable<Data>) ?? { v: 2 },
     lastDataRequest: overrides.lastDataRequest ?? now,
     lastDataRequestSuccessful: overrides.lastDataRequestSuccessful ?? true,
-    lastSuccessfulDataRequest: overrides.lastSuccessfulDataRequest ?? (overrides.lastDataRequestSuccessful !== false ? now : null),
+    lastSuccessfulDataRequest:
+      overrides.lastSuccessfulDataRequest ??
+      (overrides.lastDataRequestSuccessful !== false ? now : null),
   };
 };
 

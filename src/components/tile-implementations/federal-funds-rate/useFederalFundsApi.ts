@@ -8,7 +8,13 @@ import type { FederalFundsRateTileData } from './types';
 import type { FredQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useFederalFundsApi() {
+export function useFederalFundsApi(): {
+  getFederalFundsRate: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: FredQueryParams,
+  ) => Promise<TileConfig<FederalFundsRateTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getFederalFundsRate = useCallback(
     /**

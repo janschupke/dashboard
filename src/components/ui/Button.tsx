@@ -9,8 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const variantClasses = {
   primary:
     'bg-interactive-primary text-theme-inverse hover:bg-interactive-hover focus:ring-interactive-primary',
-  secondary:
-    'bg-surface-secondary text-primary hover:bg-surface-tertiary border border-primary',
+  secondary: 'bg-surface-secondary text-primary hover:bg-surface-tertiary border border-primary',
   ghost: 'text-secondary hover:text-primary hover:bg-surface-secondary',
   icon: 'text-secondary hover:text-primary hover:bg-surface-secondary focus:ring-0 focus:ring-offset-0',
 };

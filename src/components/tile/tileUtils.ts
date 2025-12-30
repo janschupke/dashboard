@@ -144,4 +144,3 @@ export function getBorderClass(status?: TileStatus): string {
   }
   return '';
 }
-

@@ -84,7 +84,7 @@ describe('LogView', () => {
     expect(screen.getByTestId(`log-row-${firstLog.id}`)).toHaveTextContent('E');
     storageManager.clearLogs();
     await screen.findByText('No API logs'); // wait for update
-    expect(screen.queryByTestId(`log-row-${logId}`)).toBeNull();
+    expect(screen.queryByTestId(`log-row-${firstLog.id}`)).toBeNull();
     expect(screen.getByText('No API logs')).toBeInTheDocument();
   });
 

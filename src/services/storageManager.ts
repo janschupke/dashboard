@@ -109,7 +109,7 @@ export class StorageManager {
   // TODO: research, also LogContext. It's weird.
   private logListeners: Array<() => void> = [];
 
-  init() {
+  init(): void {
     if (this.initialized) return;
     try {
       const appConfigRaw = localStorage.getItem(STORAGE_KEYS.APPCONFIG);
@@ -133,7 +133,7 @@ export class StorageManager {
     return this.appConfig;
   }
 
-  setAppConfig(config: AppConfig) {
+  setAppConfig(config: AppConfig): void {
     this.appConfig = config;
     try {
       localStorage.setItem(STORAGE_KEYS.APPCONFIG, JSON.stringify(config));
@@ -148,7 +148,7 @@ export class StorageManager {
     return this.dashboardState;
   }
 
-  setDashboardState(state: DashboardState) {
+  setDashboardState(state: DashboardState): void {
     this.dashboardState = state;
     try {
       localStorage.setItem(STORAGE_KEYS.DASHBOARD_STATE, JSON.stringify(state));
@@ -164,7 +164,7 @@ export class StorageManager {
   }
 
   // TODO: fix unknown
-  setTileState<TData = unknown>(tileId: string, state: TileState<TData>) {
+  setTileState<TData = unknown>(tileId: string, state: TileState<TData>): void {
     this.tileState[tileId] = state;
     try {
       localStorage.setItem(STORAGE_KEYS.TILE_STATE, JSON.stringify(this.tileState));
@@ -173,7 +173,7 @@ export class StorageManager {
     }
   }
 
-  clearTileState() {
+  clearTileState(): void {
     this.tileState = {};
     try {
       localStorage.removeItem(STORAGE_KEYS.TILE_STATE);
@@ -187,7 +187,7 @@ export class StorageManager {
     return this.sidebarState;
   }
 
-  setSidebarState(state: SidebarState) {
+  setSidebarState(state: SidebarState): void {
     this.sidebarState = state;
     try {
       localStorage.setItem(STORAGE_KEYS.SIDEBAR, JSON.stringify(state));
@@ -196,15 +196,15 @@ export class StorageManager {
     }
   }
 
-  subscribeToLogs(listener: () => void) {
+  subscribeToLogs(listener: () => void): void {
     this.logListeners.push(listener);
   }
 
-  unsubscribeFromLogs(listener: () => void) {
+  unsubscribeFromLogs(listener: () => void): void {
     this.logListeners = this.logListeners.filter((l) => l !== listener);
   }
 
-  private notifyLogListeners() {
+  private notifyLogListeners(): void {
     for (const listener of this.logListeners) {
       try {
         listener();
@@ -214,7 +214,7 @@ export class StorageManager {
     }
   }
 
-  private clearExpiredLogs() {
+  private clearExpiredLogs(): void {
     const retentionThreshold = DateTime.now().toMillis() - LOG_RETENTION_TIME;
     this.logs = this.logs.filter((log) => log.timestamp >= retentionThreshold);
   }
@@ -225,7 +225,7 @@ export class StorageManager {
     return this.logs;
   }
 
-  addLog(entry: Omit<APILogEntry, 'id' | 'timestamp'>) {
+  addLog(entry: Omit<APILogEntry, 'id' | 'timestamp'>): void {
     const newLog: APILogEntry = {
       ...entry,
       id: generateLogId(),
@@ -256,7 +256,7 @@ export class StorageManager {
     }
   }
 
-  clearLogs() {
+  clearLogs(): void {
     this.logs = [];
     try {
       localStorage.removeItem(STORAGE_KEYS.LOGS);
@@ -270,4 +270,4 @@ export class StorageManager {
 export const storageManager = new StorageManager();
 
 const StorageManagerContext = React.createContext(storageManager);
-export const useStorageManager = () => React.useContext(StorageManagerContext);
+export const useStorageManager = (): StorageManager => React.useContext(StorageManagerContext);

@@ -15,7 +15,12 @@ export interface TileProps {
   refreshKey?: number;
 }
 
-const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProps) => {
+const TileComponent = ({
+  tile,
+  dragHandleProps,
+  onRemove,
+  refreshKey,
+}: TileProps): React.ReactNode => {
   const LazyTileComponent = getLazyTileComponent(tile.type as TileType);
   const meta = getTileMeta(tile.type as TileType);
 
@@ -27,8 +32,8 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
           title: 'tiles.unknownTile', // i18n key consumed downstream if needed
           icon: 'warning',
         }}
-        dragHandleProps={dragHandleProps}
-        onRemove={onRemove}
+        {...(dragHandleProps !== undefined && { dragHandleProps })}
+        {...(onRemove !== undefined && { onRemove })}
         data={null}
       >
         <div className="flex items-center justify-center h-full p-4 text-tertiary">
@@ -46,8 +51,8 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
         <GenericTile
           tile={tile}
           meta={meta}
-          dragHandleProps={dragHandleProps}
-          onRemove={onRemove}
+          {...(dragHandleProps !== undefined && { dragHandleProps })}
+          {...(onRemove !== undefined && { onRemove })}
           data={null}
         >
           <LoadingComponent />
@@ -65,7 +70,7 @@ const TileComponent = ({ tile, dragHandleProps, onRemove, refreshKey }: TileProp
   );
 };
 
-export const Tile = memo(TileComponent, (prevProps, nextProps) => {
+export const Tile = memo(TileComponent, (prevProps, nextProps): boolean => {
   // Only re-render if tile object reference changed or other props changed
   return (
     prevProps.tile === nextProps.tile &&

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
 import { formatDateToISO } from '../../../utils/dateFormatters';
@@ -12,7 +12,11 @@ import type { PreciousMetalsTileData } from './types';
 import type { GoldApiPathParams, QueryParams } from '../../../services/apiEndpoints';
 import type { DragboardTileData } from '../../dragboard';
 
-const PreciousMetalsTileContent = ({ data }: { data: PreciousMetalsTileData | null }) => {
+const PreciousMetalsTileContent = ({
+  data,
+}: {
+  data: PreciousMetalsTileData | null;
+}): React.ReactNode => {
   if (data) {
     return (
       <div className="flex flex-col h-full p-2">
@@ -49,7 +53,7 @@ export const PreciousMetalsTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getPreciousMetals } = usePreciousMetalsApi();
   const pathParams = useMemo<GoldApiPathParams>(() => ({ symbol: 'XAU' }), []);
   const queryParams = useMemo<QueryParams>(() => ({}), []);
@@ -61,21 +65,17 @@ export const PreciousMetalsTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
-    getPreciousMetals,
-    tile.id,
-    pathParams,
-    queryParams,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getPreciousMetals, tile.id, pathParams, queryParams, refreshConfig);
 
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
-      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

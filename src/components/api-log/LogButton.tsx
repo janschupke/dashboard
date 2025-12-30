@@ -13,8 +13,8 @@ interface LogButtonProps {
 
 export const LogButton: React.FC<LogButtonProps> = ({ isOpen, onToggle }) => {
   const { logs } = useLogContext();
-  const errorCount = logs.filter((log) => log.level === 'error').length;
-  const warningCount = logs.filter((log) => log.level === 'warning').length;
+  const errorCount = logs.filter((log): boolean => log.level === 'error').length;
+  const warningCount = logs.filter((log): boolean => log.level === 'warning').length;
   const { t } = useTranslation();
 
   return (
