@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Icon } from '../ui/Icon';
 
@@ -19,6 +19,7 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
   // Use selective hook that only re-renders when THIS tile changes
   const { tile, isDragging } = useTileById(id);
   const { startTileDrag, endTileDrag, removeTile } = useDragboardActions();
+  const tileContainerRef = useRef<HTMLDivElement>(null);
 
   // Calculate grid position from order
   // Order 0 = first cell, order 1 = second cell, etc.
@@ -38,6 +39,18 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
+
+    // Find the actual tile Card element (not the wrapper) to use as drag image
+    const tileCard = tileContainerRef.current?.querySelector('[data-tile-id]') as HTMLElement;
+    if (tileCard) {
+      // Calculate offset to position drag image relative to cursor
+      const rect = tileCard.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+
+      e.dataTransfer.setDragImage(tileCard, offsetX, offsetY);
+    }
+
     startTileDrag(id);
   };
 
@@ -50,8 +63,16 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
     removeTile(id);
   };
 
+  // Create drag handle props to pass to the tile header
+  const dragHandleProps = {
+    draggable: true,
+    onDragStart: handleDragStart,
+    onDragEnd: handleDragEnd,
+  };
+
   return (
     <div
+      ref={tileContainerRef}
       className="relative flex flex-col w-full h-full group"
       style={{
         minWidth: `${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px`,
@@ -63,9 +84,6 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
       data-tile-id={id}
       role="gridcell"
       aria-label={`Tile ${id}`}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
     >
       <button
         onClick={handleRemove}
@@ -76,7 +94,9 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
       >
         <Icon name="close" size="sm" />
       </button>
-      {children}
+      {React.isValidElement(children)
+        ? React.cloneElement(children, { dragHandleProps } as { dragHandleProps: typeof dragHandleProps })
+        : children}
     </div>
   );
 };
