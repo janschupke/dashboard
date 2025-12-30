@@ -23,7 +23,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('GenericTile - Last Request Tooltip', () => {
   const mockTile: DragboardTileData = {
     id: 'test-tile',
-    type: TileType.WEATHER,
+    type: TileType.WEATHER_HELSINKI,
     order: 0,
     createdAt: Date.now(),
   };
@@ -67,8 +67,8 @@ describe('GenericTile - Last Request Tooltip', () => {
     // Check that the tooltip HTML attribute contains both timestamps
     const tooltipHtml = tooltipTrigger?.getAttribute('data-tooltip-html');
     expect(tooltipHtml).toBeTruthy();
-    expect(tooltipHtml).toContain('Last request:');
-    expect(tooltipHtml).toContain('Last data:');
+    expect(tooltipHtml).toContain('tile.lastRequest');
+    expect(tooltipHtml).toContain('tile.lastData');
     expect(tooltipHtml).toContain('2024');
     expect(tooltipHtml).toContain('<br />');
     // Should show different times: request at 10:30, data at 09:00
@@ -102,10 +102,10 @@ describe('GenericTile - Last Request Tooltip', () => {
 
     const tooltipHtml = tooltipTrigger?.getAttribute('data-tooltip-html');
     expect(tooltipHtml).toBeTruthy();
-    expect(tooltipHtml).toContain('Last request:');
-    expect(tooltipHtml).toContain('Last data:');
+    expect(tooltipHtml).toContain('tile.lastRequest');
+    expect(tooltipHtml).toContain('tile.lastData');
     // Should contain "never" when lastSuccessfulDataUpdate is not available
-    expect(tooltipHtml).toContain('never');
+    expect(tooltipHtml).toContain('tile.never');
   });
 
   it('displays simple tooltip content for success status', () => {
@@ -193,10 +193,10 @@ describe('GenericTile - Last Request Tooltip', () => {
 
     const tooltipHtml = tooltipTrigger?.getAttribute('data-tooltip-html');
     expect(tooltipHtml).toBeTruthy();
-    expect(tooltipHtml).toContain('Last request:');
-    expect(tooltipHtml).toContain('Last data:');
+    expect(tooltipHtml).toContain('tile.lastRequest');
+    expect(tooltipHtml).toContain('tile.lastData');
     // Should show the actual successful data timestamp, not "never"
-    expect(tooltipHtml).not.toContain('never');
+    expect(tooltipHtml).not.toContain('tile.never');
     // Should contain formatted date (e.g., "January 15, 2024")
     expect(tooltipHtml).toContain('January');
     expect(tooltipHtml).toContain('2024');

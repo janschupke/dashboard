@@ -1,3 +1,22 @@
+/**
+ * Sanitize URL by removing sensitive query parameters for logging
+ * @param {string} urlString - The URL to sanitize
+ * @param {string[]} sensitiveParams - Array of parameter names to remove
+ * @returns {string} - URL with sensitive parameters removed
+ */
+const sanitizeUrlForLogging = (urlString, sensitiveParams) => {
+  try {
+    const url = new URL(urlString);
+    sensitiveParams.forEach((param) => {
+      url.searchParams.delete(param);
+    });
+    return url.toString();
+  } catch {
+    // If URL parsing fails, return a safe placeholder
+    return '[invalid URL]';
+  }
+};
+
 const handler = async (req, res) => {
   // Parse the URL and query params
   const urlObj = new URL(
@@ -48,7 +67,7 @@ const handler = async (req, res) => {
     if (jsonData['Error Message'] || jsonData['Note']) {
       const errorMsg = jsonData['Error Message'] || jsonData['Note'];
       console.error('Alpha Vantage API Error:', {
-        url,
+        url: sanitizeUrlForLogging(url, ['apikey']),
         error: errorMsg,
         response: jsonData,
       });

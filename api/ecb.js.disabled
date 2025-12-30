@@ -1,4 +1,8 @@
 const handler = async (req, res) => {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   // Parse the URL and ensure format=jsondata is included
   const urlObj = new URL(`https://sdw-wsrest.ecb.europa.eu${req.url?.replace(/^\/api\/ecb/, '')}`);
 

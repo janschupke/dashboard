@@ -43,6 +43,11 @@ const EarthquakeTileContent = memo(
       const currentTime = now();
       const hours = diffInHours(date, currentTime);
 
+      // Guard against negative hours (future timestamps)
+      if (hours < 0) {
+        return 'just now';
+      }
+
       if (hours < 1) {
         const minutes = Math.round(hours * 60);
         return `${minutes}m ago`;
@@ -63,7 +68,7 @@ const EarthquakeTileContent = memo(
     return (
       <div className="flex flex-col h-full">
         {/* Magnitude Threshold Slider */}
-        <div className="p-2 border-b border-theme-secondary">
+        <div className="p-2 border-b border-secondary">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-theme-tertiary">Magnitude ≥</span>
             <span className="text-xs font-medium text-theme-primary">{magnitudeThreshold}</span>
@@ -88,7 +93,7 @@ const EarthquakeTileContent = memo(
               {filteredEarthquakes.map((quake, index) => (
                 <div
                   key={`${quake.id}-${index}`}
-                  className="flex items-center justify-between py-1 border-b border-theme-secondary last:border-b-0"
+                  className="flex items-center justify-between py-1 border-b border-secondary last:border-b-0"
                 >
                   <div className="flex items-center space-x-2 flex-1 min-w-0">
                     <span className="text-xs text-theme-tertiary w-4 text-right">{index + 1}</span>

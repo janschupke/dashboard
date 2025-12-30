@@ -1,5 +1,6 @@
 {
   "auth": {
+    "password": "Password",
     "passwordRequired": "Password is required",
     "invalidPassword": "Invalid password",
     "loginFailed": "Login failed. Please try again.",
@@ -19,7 +20,12 @@
     "hoursAgo_other": "{{count}}h ago",
     "invalidDate": "Invalid date",
     "content": "content",
-    "lastRequest": "Last request"
+    "lastRequest": "Last request",
+    "lastData": "Last data",
+    "loading": "Loading data...",
+    "upToDate": "Data is up to date",
+    "error": "Data fetch failed",
+    "stale": "Data is stale"
   },
   "api": {
     "timeout": "API request timed out after {{seconds}} seconds",
@@ -44,7 +50,8 @@
     "toggleSidebar": "Toggle sidebar",
     "refreshAll": "Refresh all tiles",
     "refreshShortcut": "Refresh all tiles (R)",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "logout": "Logout"
   },
   "weather": {
     "N": "N",

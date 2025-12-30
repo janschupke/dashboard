@@ -428,7 +428,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                     (row): React.ReactNode => (
                       <React.Fragment key={row.id}>
                         <tr
-                          className={`hover:bg-surface-secondary/60 transition-colors duration-150 cursor-pointer ${
+                          className={`hover:bg-surface-secondary/60 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-primary ${
                             expandedIds.has(row.original.id) ? 'bg-surface-secondary' : ''
                           }`}
                           onClick={(): void => {
@@ -458,7 +458,6 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
                               });
                             }
                           }}
-                          style={{ outline: 'none' }}
                         >
                           {row.getVisibleCells().map(
                             (cell): React.ReactNode => (

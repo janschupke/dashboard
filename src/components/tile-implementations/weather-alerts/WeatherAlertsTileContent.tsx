@@ -26,7 +26,7 @@ export const WeatherAlertsTileContent = ({
   return (
     <div className="flex flex-col space-y-2 w-full">
       {alerts.map((alert, idx) => (
-        <div key={idx} className="border rounded p-2 bg-surface-secondary border-theme-primary">
+        <div key={idx} className="border rounded p-2 bg-surface-secondary border-primary">
           <div className="font-bold text-primary">{alert.event}</div>
           <div className="text-xs text-secondary">{alert.sender_name}</div>
           <div className="text-xs text-secondary">

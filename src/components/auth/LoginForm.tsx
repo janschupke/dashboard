@@ -59,8 +59,8 @@ export const LoginForm: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="relative block w-full px-3 py-2 border border-theme-secondary rounded-md placeholder-theme-secondary text-theme-primary bg-surface-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary focus:border-interactive-primary focus:z-10 sm:text-sm"
-              placeholder="Password"
+              className="relative block w-full px-3 py-2 border border-secondary rounded-md placeholder-theme-secondary text-theme-primary bg-surface-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary focus:border-interactive-primary focus:z-10 sm:text-sm"
+              placeholder={t('auth.password')}
               disabled={isLoading}
             />
           </div>

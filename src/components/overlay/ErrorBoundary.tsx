@@ -11,16 +11,17 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error: Error | null;
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
@@ -38,19 +39,16 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   resetError = (): void => {
-    this.setState({ hasError: false });
+    this.setState({ hasError: false, error: null });
   };
 
   override render(): React.ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return (
-          <FallbackComponent
-            error={new Error(i18n.t('errors.unknown'))}
-            resetError={this.resetError}
-          />
-        );
+        // Use the actual caught error, or create a generic one if somehow missing
+        const errorToPass = this.state.error ?? new Error(i18n.t('errors.unknown'));
+        return <FallbackComponent error={errorToPass} resetError={this.resetError} />;
       }
 
       // Component-level error boundary (simpler)

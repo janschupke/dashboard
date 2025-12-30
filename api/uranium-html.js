@@ -2,6 +2,7 @@ const handler = async (req, res) => {
   try {
     // Parse query parameters
     const urlObj = new URL(`http://localhost${req.url || ''}`);
+    // TODO: support different time ranges via ?range= parameter (e.g., '1D', '1W', '1M', '1Y')
     const range = urlObj.searchParams.get('range') || '1D';
 
     // Trading Economics URL for uranium prices

@@ -111,7 +111,7 @@ export const handlers = [
   }),
 
   // Federal Funds Rate (FRED)
-  http.get(`${API_BASE}/api/fred/fred/series/observations`, async ({ request }) => {
+  http.get(`${API_BASE}/api/fred/series/observations`, async ({ request }) => {
     const url = new URL(request.url);
     const errorType = url.searchParams.get('__error') as
       | 'network'

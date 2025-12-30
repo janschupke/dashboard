@@ -30,7 +30,7 @@ export const LogoutButton: React.FC = () => {
         size="sm"
         onClick={() => void handleLogout()}
         data-tooltip-id="logout-button-tooltip"
-        data-tooltip-content="Logout"
+        data-tooltip-content={t('header.logout')}
         data-testid="logout-button"
       >
         <Icon name="logout" size="sm" />

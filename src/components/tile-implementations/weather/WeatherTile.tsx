@@ -163,6 +163,7 @@ const WeatherForecast = memo(
     );
   },
 );
+WeatherForecast.displayName = 'WeatherForecast';
 
 const WeatherTileContent = memo(
   ({

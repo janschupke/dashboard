@@ -31,16 +31,19 @@ export function getStatusIcon(status?: TileStatus): StatusIcon | null {
 /**
  * Get status tooltip text for status icon
  */
-export function getStatusTooltipText(status?: TileStatus): string {
+export function getStatusTooltipText(
+  status: TileStatus | undefined,
+  t: (key: string) => string,
+): string {
   switch (status) {
     case TileStatus.Loading:
-      return 'Loading data...';
+      return t('tile.loading');
     case TileStatus.Success:
-      return 'Data is up to date';
+      return t('tile.upToDate');
     case TileStatus.Error:
-      return 'Data fetch failed';
+      return t('tile.error');
     case TileStatus.Stale:
-      return 'Data is stale';
+      return t('tile.stale');
     case undefined:
     default:
       return '';
@@ -117,7 +120,7 @@ export function getLastRequestTooltipHtml(
     const lastRequestTime = formatFullDateTime(lastUpdate, t);
     // Stale: use the actual last successful data timestamp
     const lastDataTime = formatFullDateTime(lastSuccessfulDataUpdate, t);
-    return `Last request: ${lastRequestTime}<br />Last data: ${lastDataTime}`;
+    return `${t('tile.lastRequest')}: ${lastRequestTime}<br />${t('tile.lastData')}: ${lastDataTime}`;
   }
   return undefined;
 }

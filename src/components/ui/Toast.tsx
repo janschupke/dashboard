@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useToast } from '../../hooks/useToast';
 
 import { Icon } from './Icon';
@@ -17,6 +19,7 @@ interface AnimatedToastProps {
 }
 
 const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -89,7 +92,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
           <button
             onClick={handleRemove}
             className="inline-flex text-white hover:text-secondary focus:outline-none focus:text-secondary transition-colors duration-200"
-            aria-label={/* i18n */ 'ui.closeNotification'}
+            aria-label={t('ui.closeNotification')}
           >
             <Icon name="close" size="sm" />
           </button>

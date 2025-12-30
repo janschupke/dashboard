@@ -1,3 +1,22 @@
+/**
+ * Sanitize URL by removing sensitive query parameters for logging
+ * @param {string} urlString - The URL to sanitize
+ * @param {string[]} sensitiveParams - Array of parameter names to remove
+ * @returns {string} - URL with sensitive parameters removed
+ */
+const sanitizeUrlForLogging = (urlString, sensitiveParams) => {
+  try {
+    const url = new URL(urlString);
+    sensitiveParams.forEach((param) => {
+      url.searchParams.delete(param);
+    });
+    return url.toString();
+  } catch {
+    // If URL parsing fails, return a safe placeholder
+    return '[invalid URL]';
+  }
+};
+
 const handler = async (req, res) => {
   // Parse the URL and query params
   // Remove /api/fred prefix and ensure /fred is in the path
@@ -38,7 +57,7 @@ const handler = async (req, res) => {
       console.error('FRED API Error:', {
         status: apiRes.status,
         statusText: apiRes.statusText,
-        url,
+        url: sanitizeUrlForLogging(url, ['api_key']),
         response: errorText,
       });
     }

@@ -116,7 +116,7 @@ const StatusBar = ({
           <span
             className="cursor-pointer"
             data-tooltip-id={statusTooltipId}
-            data-tooltip-content={getStatusTooltipText(status)}
+            data-tooltip-content={getStatusTooltipText(status, t)}
           >
             <Icon name={statusIcon.name} size="sm" className={statusIcon.className} />
           </span>
