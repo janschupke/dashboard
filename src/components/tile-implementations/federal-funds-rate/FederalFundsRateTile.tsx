@@ -39,9 +39,9 @@ const FederalFundsRateTileContent = memo(function FederalFundsRateTileContent({
     <div className="flex flex-col h-full">
       {/* Current Rate Display */}
       <div className="flex flex-col items-center justify-center p-4 border-b border-border-secondary">
-        <div className="text-3xl font-bold text-theme-primary">{data.currentRate}%</div>
+        <div className="text-3xl font-bold text-primary">{data.currentRate}%</div>
         {data.lastUpdate && (
-          <div className="text-xs text-theme-tertiary mt-1">
+          <div className="text-xs text-tertiary mt-1">
             Updated: {format(data.lastUpdate, 'MMM dd, yyyy')}
           </div>
         )}

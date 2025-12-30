@@ -10,9 +10,9 @@ const variantClasses = {
   primary:
     'bg-interactive-primary text-theme-inverse hover:bg-interactive-hover focus:ring-interactive-primary',
   secondary:
-    'bg-surface-secondary text-theme-primary hover:bg-surface-tertiary border border-theme-primary',
-  ghost: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary',
-  icon: 'text-theme-secondary hover:text-theme-primary hover:bg-surface-secondary focus:ring-0 focus:ring-offset-0',
+    'bg-surface-secondary text-primary hover:bg-surface-tertiary border border-primary',
+  ghost: 'text-secondary hover:text-primary hover:bg-surface-secondary',
+  icon: 'text-secondary hover:text-primary hover:bg-surface-secondary focus:ring-0 focus:ring-offset-0',
 };
 
 const sizeClasses = {

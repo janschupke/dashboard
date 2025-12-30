@@ -282,7 +282,7 @@ export const LogView: React.FC<LogViewProps> = ({ isOpen, onClose }) => {
       }}
     >
       {/* Header - solid background */}
-      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-theme-secondary bg-surface-primary z-10">
+      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-secondary bg-surface-primary z-10">
         <div className="flex items-center gap-3">
           <Icon name="clipboard-list" className="w-6 h-6 text-secondary" />
           <h2 className="text-xl font-semibold text-primary">API Logs</h2>

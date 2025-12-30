@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'react-tooltip';
 
 import { useDragboardActions } from '../dragboard';
 import { Button } from '../ui/Button';
@@ -63,7 +62,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     if (isSelected) {
       return 'border-status-warning';
     }
-    return 'border-theme-primary';
+    return 'border-primary';
   };
 
   return (
@@ -99,19 +98,13 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           void handleClick();
         }
       }}
-      data-tooltip-id={`sidebar-item-tooltip-${tileType}`}
-      data-tooltip-content={t('sidebar.toggleItemTitle', {
-        action: isActive ? t('general.remove') : t('general.add'),
-        name,
-        preposition: isActive ? t('general.from') : t('general.to'),
-      })}
       aria-grabbed={false}
     >
       <span className="flex items-center flex-1 min-w-0">
         <Icon
           name={icon}
           size="sm"
-          className="text-theme-secondary mr-2 flex-shrink-0"
+          className="text-secondary mr-2 flex-shrink-0"
           aria-hidden="true"
         />
         <span className="text-left text-sm font-medium truncate">{name}</span>
@@ -128,7 +121,6 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           <Icon name="success" size="sm" className="text-accent-primary" aria-hidden="true" />
         ) : null}
       </span>
-      <Tooltip id={`sidebar-item-tooltip-${tileType}`} />
     </Button>
   );
 };

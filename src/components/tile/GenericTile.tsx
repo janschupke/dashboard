@@ -134,7 +134,7 @@ const StatusBar = ({
   const statusTooltipId = `tile-status-tooltip-${tileId}`;
 
   return (
-    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-theme-primary bg-surface-secondary text-secondary rounded-b-xl">
+    <div className="flex items-center justify-between px-2 py-1 text-xs border-t border-primary bg-surface-secondary text-secondary rounded-b-xl">
       <div className="flex items-center space-x-2">
         {onManualRefresh && (
           <>
@@ -244,7 +244,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
     const headerProps = useMemo(
       () => ({
         className:
-          'flex items-center justify-between px-4 py-2 border-b border-theme-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
+          'flex items-center justify-between px-4 py-2 border-b border-primary bg-surface-secondary text-primary cursor-grab active:cursor-grabbing relative min-h-[2.5rem] rounded-t-xl',
         ...dragHandleProps,
       }),
       [dragHandleProps],
@@ -269,7 +269,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
               <Icon
                 name={meta.icon}
                 size="sm"
-                className="text-theme-accent-primary"
+                className="text-accent-primary"
                 aria-hidden="true"
               />
               <h3 className="text-base font-semibold text-primary truncate">{meta.title}</h3>
@@ -281,7 +281,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             <>
               <button
                 onClick={() => void handleRemove()}
-                className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-tertiary rounded transition-colors cursor-pointer z-10"
+                className="absolute top-1 right-1 p-1 text-tertiary hover:text-primary hover:bg-surface-secondary rounded transition-colors cursor-pointer z-10"
                 aria-label={`Remove ${meta.title} tile`}
                 data-tooltip-id={`tile-close-tooltip-${tile.id}`}
                 data-tooltip-content={`Remove ${meta.title} tile`}

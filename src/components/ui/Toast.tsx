@@ -49,7 +49,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
         case 'info':
           return 'bg-status-info text-white border-l-4 border-status-info';
         default:
-          return 'bg-surface-secondary text-theme-primary border-l-4 border-theme-secondary';
+          return 'bg-surface-secondary text-primary border-l-4 border-secondary';
       }
     })();
 
@@ -88,7 +88,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
         <div className="flex-shrink-0 ml-3">
           <button
             onClick={handleRemove}
-            className="inline-flex text-white hover:text-theme-secondary focus:outline-none focus:text-theme-secondary transition-colors duration-200"
+            className="inline-flex text-white hover:text-secondary focus:outline-none focus:text-secondary transition-colors duration-200"
             aria-label={/* i18n */ 'ui.closeNotification'}
           >
             <Icon name="close" size="sm" />
