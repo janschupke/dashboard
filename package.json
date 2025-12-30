@@ -2,6 +2,7 @@
   "name": "dashboard",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -14,6 +15,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "knip": "knip",
+    "knip:fix": "knip --fix --allow-remove-files",
     "knip:production": "knip --production",
     "typecheck": "tsc --noEmit",
     "check": "npm run knip && npm run typecheck && npm run test && npm run lint && npm run format && npm run build",

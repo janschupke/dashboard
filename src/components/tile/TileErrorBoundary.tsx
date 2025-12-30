@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -42,9 +43,7 @@ function ErrorDisplay({ error }: { error: Error | null }) {
     <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">
       <div>
         <p className="font-semibold">{t('errors.tileError')}</p>
-        <p className="text-xs mt-1">
-          {error?.message ?? t('errors.unknown')}
-        </p>
+        <p className="text-xs mt-1">{error?.message ?? t('errors.unknown')}</p>
       </div>
     </div>
   );

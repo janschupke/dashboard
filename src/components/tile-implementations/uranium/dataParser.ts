@@ -54,7 +54,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
     // Try to extract from text content
     const text = element.textContent ?? '';
     const priceMatch = text.match(/(\d+\.?\d*)/);
-    if (priceMatch && priceMatch[1]) {
+    if (priceMatch?.[1]) {
       const parsed = parseFloat(priceMatch[1]);
       if (this.isValidPrice(parsed)) {
         return parsed;
@@ -68,7 +68,11 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
    * Validates if a number is a reasonable price value.
    */
   private isValidPrice(price: number): boolean {
-    return !isNaN(price) && price > UraniumHtmlDataParser.MIN_PRICE && price < UraniumHtmlDataParser.MAX_PRICE;
+    return (
+      !isNaN(price) &&
+      price > UraniumHtmlDataParser.MIN_PRICE &&
+      price < UraniumHtmlDataParser.MAX_PRICE
+    );
   }
 
   /**
@@ -88,7 +92,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
 
       for (const pattern of metaPatterns) {
         const priceMatch = content.match(pattern);
-        if (priceMatch && priceMatch[1]) {
+        if (priceMatch?.[1]) {
           const parsed = parseFloat(priceMatch[1]);
           if (this.isValidPrice(parsed)) {
             return parsed;
@@ -109,7 +113,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
 
     for (const pattern of jsPatterns) {
       const match = html.match(pattern);
-      if (match && match[1]) {
+      if (match?.[1]) {
         const parsed = parseFloat(match[1]);
         if (this.isValidPrice(parsed)) {
           return parsed;
@@ -150,7 +154,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
 
     for (const pattern of UraniumHtmlDataParser.PRICE_PATTERNS) {
       const match = allText.match(pattern);
-      if (match && match[1]) {
+      if (match?.[1]) {
         const parsed = parseFloat(match[1]);
         if (this.isValidPrice(parsed)) {
           return parsed;
@@ -161,7 +165,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
     // Also search in full HTML (for script tags, etc.)
     for (const pattern of UraniumHtmlDataParser.PRICE_PATTERNS) {
       const match = html.match(pattern);
-      if (match && match[1]) {
+      if (match?.[1]) {
         const parsed = parseFloat(match[1]);
         if (this.isValidPrice(parsed)) {
           return parsed;
@@ -187,7 +191,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
     if (priceElement) {
       const text = priceElement.textContent?.trim() ?? '';
       const priceMatch = text.match(/(\d+\.?\d*)/);
-      if (priceMatch && priceMatch[1]) {
+      if (priceMatch?.[1]) {
         const parsed = parseFloat(priceMatch[1]);
         if (this.isValidPrice(parsed)) {
           return parsed;
@@ -223,7 +227,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
       const content = metaDesc.getAttribute('content') ?? '';
       // Match "up 0.68%" or "down 0.68%" patterns
       const percentMatch = content.match(/(?:up|down)\s+(\d+\.?\d*)\s*%/i);
-      if (percentMatch && percentMatch[1]) {
+      if (percentMatch?.[1]) {
         const parsed = parseFloat(percentMatch[1]);
         if (!isNaN(parsed)) {
           // Check if it's "up" (positive) or "down" (negative)
@@ -243,7 +247,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
 
         const text = element.textContent ?? '';
         const changeMatch = text.match(/([+-]?\d+\.?\d*)\s*%?/);
-        if (!changeMatch || !changeMatch[1]) {
+        if (!changeMatch?.[1]) {
           continue;
         }
 
@@ -351,7 +355,7 @@ export class UraniumHtmlDataParser extends BaseDataParser<string, UraniumTileDat
         ((hasPriceInBody || hasPriceInFull) && html.length > 100) ||
         (hasUraniumContent && hasNumbers && html.length > 500)
       );
-    } catch (e) {
+    } catch {
       // If parsing completely fails, fall back to string check
       return this.validateWithStringCheck(html);
     }

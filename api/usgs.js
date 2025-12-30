@@ -4,7 +4,7 @@ const handler = async (req, res) => {
   // Only send minimal headers
   const headers = {
     'User-Agent': 'Dashboard/1.0',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   };
 
   try {
@@ -35,4 +35,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = handler;
+export default handler;

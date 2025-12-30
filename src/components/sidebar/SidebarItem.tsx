@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
-import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'react-tooltip';
 
 import { useDragboardActions } from '../dragboard';
 import { Button } from '../ui/Button';

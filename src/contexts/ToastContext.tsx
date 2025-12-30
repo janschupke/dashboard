@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useCallback, createContext } from 'react';
 
 import { generateId } from '../utils/idGenerator';

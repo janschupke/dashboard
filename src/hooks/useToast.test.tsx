@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 import { ToastProvider } from '../contexts/ToastContext';
+
 import { useToast } from './useToast';
 
 describe('useToast', () => {
@@ -31,4 +32,3 @@ describe('useToast', () => {
     expect(typeof result.current.removeToast).toBe('function');
   });
 });
-

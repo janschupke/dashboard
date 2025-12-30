@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'react-tooltip';
 
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';

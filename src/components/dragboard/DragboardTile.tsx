@@ -102,7 +102,9 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
         <Tooltip id={`dragboard-tile-remove-tooltip-${id}`} />
       </>
       {React.isValidElement(children)
-        ? React.cloneElement(children, { dragHandleProps } as { dragHandleProps: typeof dragHandleProps })
+        ? React.cloneElement(children, { dragHandleProps } as {
+            dragHandleProps: typeof dragHandleProps;
+          })
         : children}
     </div>
   );

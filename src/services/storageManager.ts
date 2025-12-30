@@ -254,5 +254,5 @@ export class StorageManager {
 
 export const storageManager = new StorageManager();
 
-export const StorageManagerContext = React.createContext(storageManager);
+const StorageManagerContext = React.createContext(storageManager);
 export const useStorageManager = () => React.useContext(StorageManagerContext);

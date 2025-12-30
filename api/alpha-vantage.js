@@ -12,7 +12,8 @@ const handler = async (req, res) => {
   // Check if API key is available
   if (!urlObj.searchParams.get('apikey')) {
     return res.status(400).json({
-      error: 'Alpha Vantage API key is required. Set ALPHA_VANTAGE_API_KEY in environment variables.',
+      error:
+        'Alpha Vantage API key is required. Set ALPHA_VANTAGE_API_KEY in environment variables.',
     });
   }
 
@@ -21,7 +22,7 @@ const handler = async (req, res) => {
   // Only send minimal headers
   const headers = {
     'User-Agent': 'Dashboard/1.0',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   };
 
   try {
@@ -67,4 +68,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = handler;
+export default handler;

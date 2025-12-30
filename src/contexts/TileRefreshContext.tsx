@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useRef, createContext } from 'react';
 
 import { TileRefreshService } from '../services/tileRefreshService';

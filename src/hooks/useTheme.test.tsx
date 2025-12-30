@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
+
 import { useTheme } from './useTheme';
 
 describe('useTheme', () => {
@@ -31,4 +32,3 @@ describe('useTheme', () => {
     expect(typeof result.current.setTheme).toBe('function');
   });
 });
-

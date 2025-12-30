@@ -54,7 +54,9 @@ describe('earthquakeDataMapper', () => {
     });
 
     it('should throw error for invalid response', () => {
-      expect(() => earthquakeDataMapper.map(null as never)).toThrow('Invalid EarthquakeApiResponse');
+      expect(() => earthquakeDataMapper.map(null as never)).toThrow(
+        'Invalid EarthquakeApiResponse',
+      );
     });
   });
 
@@ -73,4 +75,3 @@ describe('earthquakeDataMapper', () => {
     });
   });
 });
-

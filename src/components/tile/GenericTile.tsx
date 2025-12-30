@@ -1,7 +1,7 @@
 import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 'react';
 
-import { Tooltip } from 'react-tooltip';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'react-tooltip';
 
 import { formatRelativeTime, now, fromISO, toLocaleString } from '../../utils/luxonUtils';
 import { minutesToMs } from '../../utils/timeUtils';
@@ -181,9 +181,7 @@ const ErrorContent = React.memo(() => {
   return (
     <div className="flex flex-col items-center justify-center h-full space-y-1">
       <div className="text-4xl mb-4">🍆</div>
-      <p className="text-theme-status-error text-sm text-center">
-        {t('errors.dataFetchFailed')}
-      </p>
+      <p className="text-theme-status-error text-sm text-center">{t('errors.dataFetchFailed')}</p>
     </div>
   );
 });

@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 import { TileRefreshProvider } from '../contexts/TileRefreshContext';
+
 import { useTileRefreshService } from './useTileRefreshService';
 
 describe('useTileRefreshService', () => {
@@ -28,4 +29,3 @@ describe('useTileRefreshService', () => {
     expect(typeof result.current).toBe('object');
   });
 });
-

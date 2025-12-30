@@ -1,6 +1,8 @@
 const handler = async (req, res) => {
   // Parse the URL and query params
-  const urlObj = new URL(`https://api.stlouisfed.org${req.url?.replace(/^\/api\/fred/, '')}`);
+  // Remove /api/fred prefix and ensure /fred is in the path
+  const path = req.url?.replace(/^\/api\/fred/, '') || '';
+  const urlObj = new URL(`https://api.stlouisfed.org/fred${path}`);
 
   // If api_key is missing, inject from process.env
   if (!urlObj.searchParams.get('api_key') && process.env.FRED_API_KEY) {
@@ -19,7 +21,7 @@ const handler = async (req, res) => {
   // Only send minimal headers - don't forward client headers
   const headers = {
     'User-Agent': 'Dashboard/1.0',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   };
 
   try {
@@ -53,4 +55,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = handler;
+export default handler;

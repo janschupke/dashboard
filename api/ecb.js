@@ -1,8 +1,6 @@
 const handler = async (req, res) => {
   // Parse the URL and ensure format=jsondata is included
-  const urlObj = new URL(
-    `https://sdw-wsrest.ecb.europa.eu${req.url?.replace(/^\/api\/ecb/, '')}`,
-  );
+  const urlObj = new URL(`https://sdw-wsrest.ecb.europa.eu${req.url?.replace(/^\/api\/ecb/, '')}`);
 
   // CRITICAL: Always add format=jsondata if not present
   if (!urlObj.searchParams.get('format')) {
@@ -16,7 +14,7 @@ const handler = async (req, res) => {
       method: req.method,
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; Dashboard/1.0)',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
@@ -46,4 +44,4 @@ const handler = async (req, res) => {
   }
 };
 
-module.exports = handler;
+export default handler;

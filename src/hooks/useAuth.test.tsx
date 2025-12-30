@@ -1,7 +1,11 @@
+import type { ReactNode } from 'react';
+
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 import { AuthProvider } from '../contexts/AuthContext';
+import { MockDataServicesProvider } from '../test/mocks/componentMocks';
+
 import { useAuth } from './useAuth';
 
 describe('useAuth', () => {
@@ -17,8 +21,10 @@ describe('useAuth', () => {
   });
 
   it('should return auth context when used within AuthProvider', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <AuthProvider>{children}</AuthProvider>
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <MockDataServicesProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </MockDataServicesProvider>
     );
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -38,4 +44,3 @@ describe('useAuth', () => {
     expect(typeof result.current.isAuthenticated).toBe('boolean');
   });
 });
-

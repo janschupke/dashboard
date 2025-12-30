@@ -72,12 +72,9 @@ describe('usePeriodicUpdate', () => {
   });
 
   it('should restart when interval changes', () => {
-    const { result, rerender } = renderHook(
-      ({ interval }) => usePeriodicUpdate({ interval }),
-      {
-        initialProps: { interval: 1000 },
-      },
-    );
+    const { result, rerender } = renderHook(({ interval }) => usePeriodicUpdate({ interval }), {
+      initialProps: { interval: 1000 },
+    });
 
     act(() => {
       vi.advanceTimersByTime(1000);
@@ -91,4 +88,3 @@ describe('usePeriodicUpdate', () => {
     expect(result.current).toBe(2);
   });
 });
-
