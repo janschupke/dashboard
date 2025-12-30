@@ -22,6 +22,7 @@ export interface TileCatalogEntry {
   >;
   meta?: TileMeta; // For static meta
   getMeta?: () => TileMeta; // For dynamic meta (e.g. city)
+  disabled?: boolean; // If true, tile will appear in sidebar but be disabled (non-clickable)
 }
 
 export const TILE_CATALOG: TileCatalogEntry[] = [
@@ -64,6 +65,7 @@ export const TILE_CATALOG: TileCatalogEntry[] = [
         })),
       ),
     meta: euriborRateTileMeta,
+    disabled: true, // Disabled in sidebar: ECB API disabled to reduce serverless function count
   },
   {
     type: TileType.WEATHER_HELSINKI,

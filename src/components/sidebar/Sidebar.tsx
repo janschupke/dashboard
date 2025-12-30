@@ -47,6 +47,7 @@ export function Sidebar({
           name: meta.title,
           icon: meta.icon,
           category: meta.category,
+          disabled: entry.disabled ?? false,
         };
       }).filter((tile) => !!tile.category),
     [],
@@ -173,6 +174,7 @@ export function Sidebar({
                               isActive={isTileActive(tile.type)}
                               isSelected={selectedIndex === idx}
                               onClick={() => handleTileToggle(tile.type)}
+                              disabled={tile.disabled}
                             />
                           );
                         })}
