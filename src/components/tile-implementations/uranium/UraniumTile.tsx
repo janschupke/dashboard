@@ -41,7 +41,7 @@ export const UraniumTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
     getUraniumPrice,
     tile.id,
     pathParams,
@@ -54,6 +54,7 @@ export const UraniumTile = ({
       meta={meta}
       status={status}
       lastUpdate={formatDateToISO(lastUpdated)}
+      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

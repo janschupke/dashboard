@@ -65,7 +65,7 @@ export const CryptocurrencyTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
     getCryptocurrencyMarkets,
     tile.id,
     pathParams,
@@ -80,6 +80,7 @@ export const CryptocurrencyTile = ({
       meta={meta}
       status={status}
       lastUpdate={lastUpdated ? formatDateTimeToISO(fromDate(lastUpdated)) : undefined}
+      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

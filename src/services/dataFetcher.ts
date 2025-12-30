@@ -122,10 +122,19 @@ export class DataFetcher {
         data: transformed,
         lastDataRequest: now,
         lastDataRequestSuccessful: true,
+        lastSuccessfulDataRequest: now, // Save timestamp of successful data fetch
       };
 
       storageManager.setTileState<TTileData>(storageKey, tileState);
-      return tileState;
+
+      // Return TileConfig with all required fields
+      return {
+        ...transformed,
+        data: transformed,
+        lastDataRequest: now,
+        lastDataRequestSuccessful: true,
+        lastSuccessfulDataRequest: now,
+      };
     } catch (error: unknown) {
       if (
         error &&
@@ -150,15 +159,37 @@ export class DataFetcher {
         details: logDetails,
       });
 
-      // On error, try to return cached data if available (stale data is better than nothing)
+      // On error, always return a TileConfig (never throw)
+      // This ensures React Query always gets a result, even on error
       const cachedState = storageManager.getTileState<TTileData>(storageKey);
       const tileState: TileState<TTileData> = {
         data: cachedState?.data ?? null,
         lastDataRequest: now,
         lastDataRequestSuccessful: false,
+        lastSuccessfulDataRequest: cachedState?.lastSuccessfulDataRequest ?? null, // Preserve last successful timestamp
       };
       storageManager.setTileState<TTileData>(storageKey, tileState);
-      return tileState;
+
+      // Always return TileConfig, even if there's no cached data
+      // This ensures React Query gets the updated lastDataRequest timestamp
+      if (cachedState?.data) {
+        return {
+          ...cachedState.data,
+          data: cachedState.data,
+          lastDataRequest: now,
+          lastDataRequestSuccessful: false,
+          lastSuccessfulDataRequest: cachedState.lastSuccessfulDataRequest ?? null,
+        };
+      }
+
+      // No cached data - return error TileConfig (never throw)
+      // Create a minimal TileConfig with error state
+      return {
+        data: null,
+        lastDataRequest: now,
+        lastDataRequestSuccessful: false,
+        lastSuccessfulDataRequest: null,
+      } as TileConfig<TTileData>;
     }
   }
 

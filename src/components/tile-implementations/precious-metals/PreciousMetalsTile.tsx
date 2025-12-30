@@ -61,7 +61,7 @@ export const PreciousMetalsTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
     getPreciousMetals,
     tile.id,
     pathParams,
@@ -75,6 +75,7 @@ export const PreciousMetalsTile = ({
       meta={meta}
       status={status}
       lastUpdate={formatDateToISO(lastUpdated)}
+      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

@@ -3,13 +3,22 @@ import React, { useCallback, forwardRef, useMemo, useState, useEffect } from 're
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'react-tooltip';
 
-import { formatRelativeTime, now, fromISO, toLocaleString } from '../../utils/luxonUtils';
+import { now } from '../../utils/luxonUtils';
 import { minutesToMs } from '../../utils/timeUtils';
 import { Card } from '../ui/Card';
 import { Icon } from '../ui/Icon';
 
 import { LoadingComponent } from './LoadingComponent';
 import { TileErrorBoundary } from './TileErrorBoundary';
+import {
+  formatLastUpdate,
+  getStatusIcon,
+  getStatusTooltipText,
+  getLastRequestTooltipContent,
+  getLastRequestTooltipHtml,
+  getCardVariant,
+  getBorderClass,
+} from './tileUtils';
 import { TileStatus } from './useTileData';
 
 import type { TileDataType } from '../../services/storageManager';
@@ -28,6 +37,7 @@ export interface GenericTileProps {
   children?: React.ReactNode;
   status?: TileStatus;
   lastUpdate?: string;
+  lastSuccessfulDataUpdate?: string; // Timestamp of last successful data fetch
   data: TileDataType | null;
   onManualRefresh?: () => void;
   isLoading?: boolean;
@@ -40,6 +50,7 @@ const StatusBar = ({
   data,
   status,
   lastUpdate,
+  lastSuccessfulDataUpdate,
   onManualRefresh,
   isLoading,
   tileId,
@@ -47,6 +58,7 @@ const StatusBar = ({
   data: TileDataType | null;
   status?: TileStatus;
   lastUpdate?: string;
+  lastSuccessfulDataUpdate?: string;
   onManualRefresh?: () => void;
   isLoading?: boolean;
   tileId: string;
@@ -62,72 +74,11 @@ const StatusBar = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Determine status icon and color
-  const getStatusIcon = () => {
-    switch (status) {
-      case TileStatus.Stale:
-        return { name: 'warning', className: 'text-theme-status-warning' };
-      case TileStatus.Success:
-        return { name: 'success', className: 'text-theme-status-success' };
-      case TileStatus.Error:
-        return { name: 'close', className: 'text-theme-status-error' };
-      default:
-        return null;
-    }
-  };
-
   const { t } = useTranslation();
-
-  // Format last update time using Luxon and i18n
-  const formatLastUpdate = (isLoading?: boolean, timestamp?: string) => {
-    if (isLoading) return t('tile.pending');
-    if (!timestamp) return t('tile.never');
-    try {
-      const date = fromISO(timestamp);
-      if (!date.isValid) return t('tile.invalidDate');
-      return formatRelativeTime(date, currentTime);
-    } catch {
-      return t('tile.invalidDate');
-    }
-  };
+  const statusIcon = getStatusIcon(status);
 
   const logTileState = () => {
     console.log('Tile state:', { data, status, lastUpdate });
-  };
-
-  const statusIcon = getStatusIcon();
-
-  // Get status tooltip text
-  const getStatusTooltipText = () => {
-    switch (status) {
-      case TileStatus.Success:
-        return 'Data is up to date';
-      case TileStatus.Error:
-        return 'Data fetch failed';
-      case TileStatus.Stale:
-        return 'Data is stale';
-      default:
-        return '';
-    }
-  };
-
-  // Format full datetime for tooltip
-  const formatFullDateTime = (timestamp?: string): string => {
-    if (!timestamp) return t('tile.never');
-    try {
-      const date = fromISO(timestamp);
-      if (!date.isValid) return t('tile.invalidDate');
-      return toLocaleString(date, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
-    } catch {
-      return t('tile.invalidDate');
-    }
   };
 
   const lastRequestTooltipId = `tile-last-request-tooltip-${tileId}`;
@@ -152,10 +103,12 @@ const StatusBar = ({
         )}
         <span
           data-tooltip-id={lastRequestTooltipId}
-          data-tooltip-content={formatFullDateTime(lastUpdate)}
+          {...(getLastRequestTooltipHtml(status, lastUpdate, lastSuccessfulDataUpdate, t)
+            ? { 'data-tooltip-html': getLastRequestTooltipHtml(status, lastUpdate, lastSuccessfulDataUpdate, t) }
+            : { 'data-tooltip-content': getLastRequestTooltipContent(status, lastUpdate, t) })}
           className="cursor-help"
         >
-          {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate)}
+          {t('tile.lastRequest')}: {formatLastUpdate(isLoading, lastUpdate, currentTime, t)}
         </span>
         <Tooltip id={lastRequestTooltipId} />
       </div>
@@ -165,7 +118,7 @@ const StatusBar = ({
             onClick={logTileState}
             className="cursor-pointer"
             data-tooltip-id={statusTooltipId}
-            data-tooltip-content={getStatusTooltipText()}
+            data-tooltip-content={getStatusTooltipText(status)}
           >
             <Icon name={statusIcon.name} size="sm" className={statusIcon.className} />
           </span>
@@ -197,6 +150,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       children,
       status,
       lastUpdate,
+      lastSuccessfulDataUpdate,
       data,
       onManualRefresh,
       isLoading,
@@ -211,22 +165,6 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       }
     }, [tile.id, onRemove]);
 
-    const getCardVariant = useCallback((): 'default' | 'elevated' | 'outlined' => {
-      if (status === TileStatus.Error || status === TileStatus.Stale) {
-        return 'outlined';
-      }
-      return 'elevated';
-    }, [status]);
-
-    const getBorderClass = useCallback(() => {
-      if (status === TileStatus.Error) {
-        return 'border-status-error';
-      }
-      if (status === TileStatus.Stale) {
-        return 'border-status-warning';
-      }
-      return '';
-    }, [status]);
 
     // Memoize the content based on status
     const content = useMemo(() => {
@@ -255,8 +193,8 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
       <TileErrorBoundary>
         <Card
           ref={ref}
-          variant={getCardVariant()}
-          className={`relative h-full flex flex-col ${getBorderClass()} ${className ?? ''}`}
+          variant={getCardVariant(status)}
+          className={`relative h-full flex flex-col ${getBorderClass(status)} ${className ?? ''}`}
           data-tile-id={tile.id}
           data-tile-type={tile.type}
           role="gridcell"
@@ -308,6 +246,7 @@ export const GenericTile = forwardRef<HTMLDivElement, GenericTileProps>(
             data={data}
             status={status}
             lastUpdate={lastUpdate}
+            lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
             onManualRefresh={onManualRefresh}
             isLoading={isLoading}
             tileId={tile.id}

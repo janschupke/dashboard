@@ -55,6 +55,7 @@ export interface TileConfig<TData extends TileDataType = TileDataType> extends T
   data: TData | null;
   lastDataRequest: number;
   lastDataRequestSuccessful: boolean;
+  lastSuccessfulDataRequest: number | null; // Timestamp of last successful data fetch
 }
 
 // Extended DashboardTile that includes TileConfig in the config property
@@ -95,6 +96,7 @@ export interface TileState<TData = unknown> {
   data: TData | null;
   lastDataRequest: number;
   lastDataRequestSuccessful: boolean;
+  lastSuccessfulDataRequest: number | null; // Timestamp of last successful data fetch
 }
 
 export class StorageManager {

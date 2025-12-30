@@ -59,7 +59,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
   );
 
   // API refresh every 5 minutes (for timezone/offset updates)
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
     getTime,
     tile.id,
     {},
@@ -94,6 +94,7 @@ export const TimeTile = ({ tile, meta, ...rest }: { tile: DragboardTileData; met
       meta={meta}
       status={status}
       lastUpdate={formatDateToISO(lastUpdated)}
+      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
       data={currentTimeData}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

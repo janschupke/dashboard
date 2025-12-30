@@ -261,7 +261,7 @@ export const WeatherTile = ({
     [cityConfig],
   );
 
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } = useTileData(
     getWeather,
     tile.id,
     pathParams,
@@ -278,6 +278,7 @@ export const WeatherTile = ({
       meta={meta}
       status={status}
       lastUpdate={formatDateToISO(lastUpdated)}
+      lastSuccessfulDataUpdate={lastSuccessfulDataUpdate}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}
