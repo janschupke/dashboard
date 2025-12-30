@@ -1,8 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext } from 'react';
 
 import { useAuthService } from '../services/authService';
 
-import { AuthContext, type AuthContextType } from './AuthContextDef';
+export interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: React.ReactNode;

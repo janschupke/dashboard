@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { TileRefreshContext } from '../contexts/TileRefreshContextDef';
+import { TileRefreshContext } from '../contexts/TileRefreshContext';
 
 export const useTileRefreshService = () => {
   const service = useContext(TileRefreshContext);
