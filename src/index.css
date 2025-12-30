@@ -416,8 +416,7 @@
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
 
-/* Tooltip z-index - ensure tooltips appear above all tiles and UI elements */
-[data-tooltip-id],
+/* Tooltip z-index - ensure tooltips appear above tiles but below header/toast */
 .react-tooltip {
-  z-index: 9999 !important;
+  z-index: 30 !important;
 }
