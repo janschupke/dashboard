@@ -12,6 +12,22 @@ vi.mock('react-i18next', async (orig) => {
   };
 });
 
+// Mock i18next directly to return keys
+vi.mock('../i18n/config', () => ({
+  default: {
+    t: (key: string, options?: Record<string, unknown>) => {
+      // Return the key with interpolated values if options provided
+      if (options) {
+        return Object.entries(options).reduce(
+          (str, [k, v]) => str.replace(`{{${k}}}`, String(v)),
+          key,
+        );
+      }
+      return key;
+    },
+  },
+}));
+
 // Patch fetch to handle relative URLs in test environment
 // This patch only normalizes the URL and then calls the current global fetch (which may be a mock)
 globalThis.fetch = ((prevFetch) => (input: RequestInfo | URL, init?: RequestInit) => {

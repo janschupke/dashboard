@@ -68,7 +68,7 @@ describe('DataFetcher.fetchAndParse', () => {
         undefined,
         '/mock-url',
       ),
-    ).rejects.toThrow(/No parser registered/);
+    ).rejects.toThrow(/api\.noParserFound|No parser/);
   });
 
   it('returns null data when parse throws', async () => {
