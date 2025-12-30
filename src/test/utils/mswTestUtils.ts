@@ -10,7 +10,7 @@ export const API_ENDPOINTS = {
   COINGECKO_MARKETS: '/api/coingecko/api/v3/coins/markets',
   OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/3.0/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
-  FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
+  FRED_SERIES_OBSERVATIONS: '/api/fred/series/observations',
   ECB_EURIBOR_12M: '/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
   URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',
@@ -129,7 +129,8 @@ export const setupUraniumSuccessMock = (): void => {
   server.use(
     http.get(fullUrl, async () => {
       const data = MockResponseData.getUraniumData();
-      const htmlContent = `<html><body><span id="spot-price">${data.spotPrice}</span></body></html>`;
+      // Create more complete HTML that matches what the parser expects
+      const htmlContent = `<html><head><meta name="description" content="Uranium rose to ${data.spotPrice} USD/Lbs" /></head><body><span id="spot-price">${data.spotPrice}</span><td id="p">${data.spotPrice}</td></body></html>`;
       return new HttpResponse(htmlContent, {
         status: 200,
         headers: { 'Content-Type': 'text/html' },

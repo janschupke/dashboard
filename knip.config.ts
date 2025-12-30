@@ -5,7 +5,7 @@ const config: KnipConfig = {
     'src/main.tsx',
     'vite.config.ts',
     'vitest.config.ts',
-    'postcss.config.js',
+    'postcss.config.mjs',
     'tailwind.config.js',
     'eslint.config.js',
     'scripts/**/*.{js,cjs}',

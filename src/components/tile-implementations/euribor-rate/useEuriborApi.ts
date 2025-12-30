@@ -8,7 +8,13 @@ import type { EuriborRateTileData } from './types';
 import type { EuriborQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useEuriborApi() {
+export function useEuriborApi(): {
+  getEuriborRate: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: EuriborQueryParams,
+  ) => Promise<TileConfig<EuriborRateTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getEuriborRate = useCallback(
     async (
@@ -20,7 +26,7 @@ export function useEuriborApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data = await response.json();
+          const data = (await response.json()) as unknown;
           return { data, status: response.status };
         },
         tileId,

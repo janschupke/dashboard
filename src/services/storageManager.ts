@@ -55,6 +55,7 @@ export interface TileConfig<TData extends TileDataType = TileDataType> extends T
   data: TData | null;
   lastDataRequest: number;
   lastDataRequestSuccessful: boolean;
+  lastSuccessfulDataRequest: number | null; // Timestamp of last successful data fetch
 }
 
 // Extended DashboardTile that includes TileConfig in the config property
@@ -95,6 +96,7 @@ export interface TileState<TData = unknown> {
   data: TData | null;
   lastDataRequest: number;
   lastDataRequestSuccessful: boolean;
+  lastSuccessfulDataRequest: number | null; // Timestamp of last successful data fetch
 }
 
 export class StorageManager {
@@ -107,19 +109,19 @@ export class StorageManager {
   // TODO: research, also LogContext. It's weird.
   private logListeners: Array<() => void> = [];
 
-  init() {
+  init(): void {
     if (this.initialized) return;
     try {
       const appConfigRaw = localStorage.getItem(STORAGE_KEYS.APPCONFIG);
-      this.appConfig = appConfigRaw ? JSON.parse(appConfigRaw) : DEFAULT_APPCONFIG;
+      this.appConfig = appConfigRaw ? (JSON.parse(appConfigRaw) as AppConfig) : DEFAULT_APPCONFIG;
       const dashboardRaw = localStorage.getItem(STORAGE_KEYS.DASHBOARD_STATE);
-      this.dashboardState = dashboardRaw ? JSON.parse(dashboardRaw) : null;
+      this.dashboardState = dashboardRaw ? (JSON.parse(dashboardRaw) as DashboardState) : null;
       const tileStateRaw = localStorage.getItem(STORAGE_KEYS.TILE_STATE);
-      this.tileState = tileStateRaw ? JSON.parse(tileStateRaw) : {};
+      this.tileState = tileStateRaw ? (JSON.parse(tileStateRaw) as Record<string, TileState>) : {};
       const sidebarRaw = localStorage.getItem(STORAGE_KEYS.SIDEBAR);
-      this.sidebarState = sidebarRaw ? JSON.parse(sidebarRaw) : null;
+      this.sidebarState = sidebarRaw ? (JSON.parse(sidebarRaw) as SidebarState) : null;
       const logsRaw = localStorage.getItem(STORAGE_KEYS.LOGS);
-      this.logs = logsRaw ? JSON.parse(logsRaw) : [];
+      this.logs = logsRaw ? (JSON.parse(logsRaw) as APILogEntry[]) : [];
       this.initialized = true;
     } catch (error) {
       console.error('StorageManager init failed:', error);
@@ -131,7 +133,7 @@ export class StorageManager {
     return this.appConfig;
   }
 
-  setAppConfig(config: AppConfig) {
+  setAppConfig(config: AppConfig): void {
     this.appConfig = config;
     try {
       localStorage.setItem(STORAGE_KEYS.APPCONFIG, JSON.stringify(config));
@@ -146,7 +148,7 @@ export class StorageManager {
     return this.dashboardState;
   }
 
-  setDashboardState(state: DashboardState) {
+  setDashboardState(state: DashboardState): void {
     this.dashboardState = state;
     try {
       localStorage.setItem(STORAGE_KEYS.DASHBOARD_STATE, JSON.stringify(state));
@@ -162,7 +164,7 @@ export class StorageManager {
   }
 
   // TODO: fix unknown
-  setTileState<TData = unknown>(tileId: string, state: TileState<TData>) {
+  setTileState<TData = unknown>(tileId: string, state: TileState<TData>): void {
     this.tileState[tileId] = state;
     try {
       localStorage.setItem(STORAGE_KEYS.TILE_STATE, JSON.stringify(this.tileState));
@@ -171,7 +173,7 @@ export class StorageManager {
     }
   }
 
-  clearTileState() {
+  clearTileState(): void {
     this.tileState = {};
     try {
       localStorage.removeItem(STORAGE_KEYS.TILE_STATE);
@@ -185,7 +187,7 @@ export class StorageManager {
     return this.sidebarState;
   }
 
-  setSidebarState(state: SidebarState) {
+  setSidebarState(state: SidebarState): void {
     this.sidebarState = state;
     try {
       localStorage.setItem(STORAGE_KEYS.SIDEBAR, JSON.stringify(state));
@@ -194,15 +196,15 @@ export class StorageManager {
     }
   }
 
-  subscribeToLogs(listener: () => void) {
+  subscribeToLogs(listener: () => void): void {
     this.logListeners.push(listener);
   }
 
-  unsubscribeFromLogs(listener: () => void) {
+  unsubscribeFromLogs(listener: () => void): void {
     this.logListeners = this.logListeners.filter((l) => l !== listener);
   }
 
-  private notifyLogListeners() {
+  private notifyLogListeners(): void {
     for (const listener of this.logListeners) {
       try {
         listener();
@@ -212,7 +214,7 @@ export class StorageManager {
     }
   }
 
-  private clearExpiredLogs() {
+  private clearExpiredLogs(): void {
     const retentionThreshold = DateTime.now().toMillis() - LOG_RETENTION_TIME;
     this.logs = this.logs.filter((log) => log.timestamp >= retentionThreshold);
   }
@@ -223,7 +225,7 @@ export class StorageManager {
     return this.logs;
   }
 
-  addLog(entry: Omit<APILogEntry, 'id' | 'timestamp'>) {
+  addLog(entry: Omit<APILogEntry, 'id' | 'timestamp'>): void {
     const newLog: APILogEntry = {
       ...entry,
       id: generateLogId(),
@@ -241,7 +243,20 @@ export class StorageManager {
     this.notifyLogListeners();
   }
 
-  clearLogs() {
+  removeLog(id: string): void {
+    const index = this.logs.findIndex((log) => log.id === id);
+    if (index !== -1) {
+      this.logs.splice(index, 1);
+      try {
+        localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(this.logs));
+      } catch (error) {
+        console.error('Failed to remove log:', error);
+      }
+      this.notifyLogListeners();
+    }
+  }
+
+  clearLogs(): void {
     this.logs = [];
     try {
       localStorage.removeItem(STORAGE_KEYS.LOGS);
@@ -254,5 +269,5 @@ export class StorageManager {
 
 export const storageManager = new StorageManager();
 
-export const StorageManagerContext = React.createContext(storageManager);
-export const useStorageManager = () => React.useContext(StorageManagerContext);
+const StorageManagerContext = React.createContext(storageManager);
+export const useStorageManager = (): StorageManager => React.useContext(StorageManagerContext);

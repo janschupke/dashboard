@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { BusinessStatus } from './constants';
 
 import type { TimeTileData } from './types';
@@ -7,7 +9,7 @@ export interface TimeTileContentProps {
   city: string;
 }
 
-export const TimeTileContent = ({ data, city }: TimeTileContentProps) => {
+export const TimeTileContent = ({ data, city }: TimeTileContentProps): React.ReactNode => {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full">

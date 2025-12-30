@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import { format } from 'date-fns';
 import { DateTime } from 'luxon';
@@ -103,12 +103,12 @@ export const MarketChart = memo<MarketChartProps>(
       active?: boolean;
       payload?: Array<{ value: number }>;
       label?: string;
-    }) => {
+    }): React.ReactNode => {
       if (active && payload?.length && payload[0]) {
         return (
           <div className="bg-surface-primary border border-border-primary rounded-lg p-2 shadow-lg">
-            <p className="text-theme-primary font-medium">{`Date: ${label}`}</p>
-            <p className="text-theme-secondary">{`${valueLabel}: ${valueFormatter(payload[0].value)}`}</p>
+            <p className="text-primary font-medium">{`Date: ${label}`}</p>
+            <p className="text-secondary">{`${valueLabel}: ${valueFormatter(payload[0].value)}`}</p>
           </div>
         );
       }
@@ -120,7 +120,7 @@ export const MarketChart = memo<MarketChartProps>(
         {/* Time Range Controls */}
         {showTimeRangeControls && (
           <div className="flex items-center justify-between p-2 border-b border-border-secondary">
-            <span className="text-xs text-theme-tertiary">{title ?? 'Time Range'}</span>
+            <span className="text-xs text-tertiary">{title ?? 'Time Range'}</span>
             <div className="flex space-x-1">
               {(['1M', '3M', '6M', '1Y', '5Y', 'Max'] as TimeRange[]).map((range) => (
                 <button
@@ -129,7 +129,7 @@ export const MarketChart = memo<MarketChartProps>(
                   className={`px-2 py-1 text-xs rounded ${
                     timeRange === range
                       ? 'bg-interactive-primary text-theme-inverse'
-                      : 'bg-surface-secondary text-theme-secondary hover:bg-interactive-hover'
+                      : 'bg-surface-secondary text-secondary hover:bg-interactive-hover'
                   }`}
                 >
                   {range}
@@ -170,7 +170,7 @@ export const MarketChart = memo<MarketChartProps>(
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <span className="text-theme-tertiary text-sm">No data available</span>
+              <span className="text-tertiary text-sm">No data available</span>
             </div>
           )}
         </div>

@@ -349,18 +349,19 @@
     background-color: var(--accent-secondary);
   }
   .border-status-error {
-    border-color: var(--status-error);
+    border-color: var(--status-error) !important;
   }
   .border-status-warning {
-    border-color: var(--status-warning);
+    border-color: var(--status-warning) !important;
   }
   .border-status-success {
-    border-color: var(--status-success);
+    border-color: var(--status-success) !important;
   }
   .border-status-info {
-    border-color: var(--status-info);
+    border-color: var(--status-info) !important;
   }
 
+  /* Semantic text colors - simplified aliases */
   .text-primary {
     color: var(--text-primary);
   }
@@ -369,6 +370,39 @@
   }
   .text-tertiary {
     color: var(--text-tertiary);
+  }
+
+  /* Semantic background colors */
+  .bg-primary {
+    background-color: var(--bg-primary);
+  }
+  .bg-secondary {
+    background-color: var(--bg-secondary);
+  }
+  .bg-tertiary {
+    background-color: var(--bg-tertiary);
+  }
+
+  /* Semantic surface colors - using bg- prefix for consistency */
+  .bg-surface-primary {
+    background-color: var(--surface-primary);
+  }
+  .bg-surface-secondary {
+    background-color: var(--surface-secondary);
+  }
+  .bg-surface-tertiary {
+    background-color: var(--surface-tertiary);
+  }
+
+  /* Semantic border colors */
+  .border-primary {
+    border-color: var(--border-primary);
+  }
+  .border-secondary {
+    border-color: var(--border-secondary);
+  }
+  .border-tertiary {
+    border-color: var(--border-tertiary);
   }
 }
 
@@ -414,4 +448,23 @@
 
 .slider:focus::-moz-range-thumb {
   box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+/* Tooltip styles - black/inverse background with proper padding */
+.react-tooltip {
+  z-index: 30 !important;
+  font-size: 0.75rem !important; /* 12px - smaller font */
+  line-height: 1.25rem !important;
+  padding: 0.25rem 0.5rem !important; /* 4px 8px - minimal padding */
+  max-width: 200px;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark .react-tooltip {
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  color: #ffffff !important;
 }

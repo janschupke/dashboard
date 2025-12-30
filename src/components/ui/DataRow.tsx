@@ -31,13 +31,13 @@ export const DataRow = React.memo<DataRowProps>(
 
     return (
       <div
-        className={`flex items-center justify-between py-1 ${showBorder ? 'border-b border-theme-secondary last:border-b-0' : ''} ${className}`}
+        className={`flex items-center justify-between py-1 ${showBorder ? 'border-b border-secondary last:border-b-0' : ''} ${className}`}
       >
         <div className="flex items-center space-x-2 flex-1 min-w-0">
-          <span className="text-xs text-theme-tertiary w-4 text-right">{index}</span>
+          <span className="text-xs text-tertiary w-4 text-right">{index}</span>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-medium truncate text-theme-primary">{name}</div>
-            <div className="text-xs text-theme-tertiary uppercase">{code}</div>
+            <div className="text-xs font-medium truncate text-primary">{name}</div>
+            <div className="text-xs text-tertiary uppercase">{code}</div>
           </div>
         </div>
         <div className="flex flex-col items-end space-y-1">

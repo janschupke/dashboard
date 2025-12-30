@@ -8,7 +8,13 @@ import type { UraniumTileData } from './types';
 import type { UraniumHtmlQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useUraniumApi() {
+export function useUraniumApi(): {
+  getUraniumPrice: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: UraniumHtmlQueryParams,
+  ) => Promise<TileConfig<UraniumTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getUraniumPrice = useCallback(
     async (

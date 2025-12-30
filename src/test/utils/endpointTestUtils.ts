@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   COINGECKO_MARKETS: '/api/coingecko/api/v3/coins/markets',
   OPENWEATHERMAP_ONECALL: '/api/openweathermap/data/3.0/onecall',
   YAHOO_FINANCE_CHART: '/api/yahoo-finance/v8/finance/chart',
-  FRED_SERIES_OBSERVATIONS: '/api/fred/fred/series/observations',
+  FRED_SERIES_OBSERVATIONS: '/api/fred/series/observations',
   ECB_EURIBOR_12M: '/api/ecb/service/data/BSI.M.U2.EUR.R.IR12MM.R.A',
   URANIUM_HTML: '/api/uranium-html',
   PRECIOUS_METALS: '/api/precious-metals',

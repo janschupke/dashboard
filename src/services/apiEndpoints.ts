@@ -73,7 +73,7 @@ export interface FredQueryParams extends QueryParams {
 }
 
 export const FRED_SERIES_OBSERVATIONS_ENDPOINT: ApiEndpoint<PathParams, FredQueryParams> = {
-  url: '/api/fred/fred/series/observations',
+  url: '/api/fred/series/observations', // Remove duplicate "fred"
   pathParams: {},
   queryParams: {} as FredQueryParams,
 };

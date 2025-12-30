@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'react-tooltip';
 
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
@@ -12,7 +13,7 @@ export const LogoutButton: React.FC = () => {
   const { logout } = useAuth();
   const { addToast } = useToast();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       await logout();
       addToast(t('auth.logoutSuccess'), 'success');
@@ -23,14 +24,18 @@ export const LogoutButton: React.FC = () => {
   };
 
   return (
-    <Button
-      variant="icon"
-      size="sm"
-      onClick={() => void handleLogout()}
-      title="Logout"
-      data-testid="logout-button"
-    >
-      <Icon name="logout" size="sm" />
-    </Button>
+    <>
+      <Button
+        variant="icon"
+        size="sm"
+        onClick={() => void handleLogout()}
+        data-tooltip-id="logout-button-tooltip"
+        data-tooltip-content={t('header.logout')}
+        data-testid="logout-button"
+      >
+        <Icon name="logout" size="sm" />
+      </Button>
+      <Tooltip id="logout-button-tooltip" />
+    </>
   );
 };

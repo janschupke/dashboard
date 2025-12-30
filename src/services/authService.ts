@@ -60,7 +60,11 @@ const handleAuthApiCall = async (
   }
 };
 
-export function useAuthService() {
+export function useAuthService(): {
+  login: (password: string) => Promise<AuthLoginData>;
+  logout: () => Promise<AuthLogoutData>;
+  checkAuth: () => Promise<AuthCheckData>;
+} {
   const { dataFetcher } = useDataServices();
 
   const login = async (password: string): Promise<AuthLoginData> => {
@@ -88,7 +92,7 @@ export function useAuthService() {
     const data = result.data as { success?: boolean; error?: string };
     return {
       success: data.success ?? false,
-      error: data.error,
+      ...(data.error !== undefined && { error: data.error }),
     };
   };
 

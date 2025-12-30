@@ -8,7 +8,13 @@ import type { WeatherAlertsTileData, WeatherAlertsApiResponse } from './types';
 import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useWeatherAlertsApi() {
+export function useWeatherAlertsApi(): {
+  getWeatherAlerts: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: WeatherQueryParams,
+  ) => Promise<TileConfig<WeatherAlertsTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getWeatherAlerts = useCallback(
     async (
@@ -20,7 +26,7 @@ export function useWeatherAlertsApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data: WeatherAlertsApiResponse = await response.json();
+          const data = (await response.json()) as WeatherAlertsApiResponse;
           return { data, status: response.status };
         },
         tileId,

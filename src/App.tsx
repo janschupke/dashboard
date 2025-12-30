@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { setupGlobalErrorHandling } from './services/apiErrorInterceptor';
 
-function AppContent() {
+function AppContent(): React.ReactNode {
   const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -33,7 +33,7 @@ function AppContent() {
   return <AuthenticatedApp />;
 }
 
-function App() {
+function App(): React.ReactNode {
   return (
     <AuthProvider>
       <AppContent />

@@ -22,6 +22,7 @@ export interface TileCatalogEntry {
   >;
   meta?: TileMeta; // For static meta
   getMeta?: () => TileMeta; // For dynamic meta (e.g. city)
+  disabled?: boolean; // If true, tile will appear in sidebar but be disabled (non-clickable)
 }
 
 export const TILE_CATALOG: TileCatalogEntry[] = [
@@ -64,6 +65,7 @@ export const TILE_CATALOG: TileCatalogEntry[] = [
         })),
       ),
     meta: euriborRateTileMeta,
+    disabled: true, // Disabled in sidebar: ECB API disabled to reduce serverless function count
   },
   {
     type: TileType.WEATHER_HELSINKI,
@@ -161,7 +163,13 @@ export const TILE_CATALOG: TileCatalogEntry[] = [
   },
 ];
 
-export function getLazyTileComponent(type: TileType) {
+export function getLazyTileComponent(
+  type: TileType,
+):
+  | React.LazyExoticComponent<
+      React.ComponentType<{ tile: DragboardTileData; meta: TileMeta; [key: string]: unknown }>
+    >
+  | undefined {
   const entry = TILE_CATALOG.find((e) => e.type === type);
   return entry ? entry.getLazyComponent() : undefined;
 }

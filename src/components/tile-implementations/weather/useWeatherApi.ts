@@ -8,7 +8,13 @@ import type { WeatherTileData } from './types';
 import type { WeatherQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useWeatherApi() {
+export function useWeatherApi(): {
+  getWeather: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: WeatherQueryParams,
+  ) => Promise<TileConfig<WeatherTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getWeather = useCallback(
     async (
@@ -20,7 +26,7 @@ export function useWeatherApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data = await response.json();
+          const data = (await response.json()) as unknown;
           return { data, status: response.status };
         },
         tileId,

@@ -58,11 +58,11 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     onMouseLeave?.();
   }, [onMouseLeave]);
 
-  const getBorderClass = () => {
+  const getBorderClass = (): string => {
     if (isSelected) {
       return 'border-status-warning';
     }
-    return 'border-theme-primary';
+    return 'border-primary';
   };
 
   return (
@@ -98,18 +98,13 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           void handleClick();
         }
       }}
-      title={t('sidebar.toggleItemTitle', {
-        action: isActive ? t('general.remove') : t('general.add'),
-        name,
-        preposition: isActive ? t('general.from') : t('general.to'),
-      })}
       aria-grabbed={false}
     >
       <span className="flex items-center flex-1 min-w-0">
         <Icon
           name={icon}
           size="sm"
-          className="text-theme-secondary mr-2 flex-shrink-0"
+          className="text-secondary mr-2 flex-shrink-0"
           aria-hidden="true"
         />
         <span className="text-left text-sm font-medium truncate">{name}</span>

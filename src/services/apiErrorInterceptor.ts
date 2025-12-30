@@ -54,13 +54,14 @@ export const setupGlobalErrorHandling = (): void => {
       return false;
     };
     window.onunhandledrejection = function (event) {
+      const reason = event.reason as { name?: string; message?: string } | undefined;
       storageManager.addLog({
         level: 'error',
         apiCall: 'window.onunhandledrejection',
         reason: String(event.reason),
         details: {
-          errorName: event.reason?.name ?? '',
-          errorMessage: event.reason?.message ?? '',
+          errorName: reason?.name ?? '',
+          errorMessage: reason?.message ?? '',
         },
       });
       return false;

@@ -1,8 +1,10 @@
+import React from 'react';
+
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 import App from './App';
-import { AuthContext, type AuthContextType } from './contexts/AuthContextDef';
+import { AuthContext, type AuthContextType } from './contexts/AuthContext';
 import { MockToastProvider } from './test/mocks/componentMocks';
 
 // Mock the AuthProvider to control authentication state
@@ -22,9 +24,13 @@ const createMockAuthProvider = (authState: Partial<AuthContextType>) => {
 };
 
 // Mock the AuthProvider module
-vi.mock('./contexts/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
+vi.mock('./contexts/AuthContext', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./contexts/AuthContext')>();
+  return {
+    ...actual,
+    AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
 
 describe('App', () => {
   it('renders login form when unauthenticated', () => {

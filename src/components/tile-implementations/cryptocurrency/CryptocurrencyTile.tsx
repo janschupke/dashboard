@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { REFRESH_INTERVALS } from '../../../contexts/constants';
 import { formatDateTimeToISO } from '../../../utils/dateFormatters';
@@ -12,7 +12,11 @@ import { useCryptoApi } from './useCryptoApi';
 import type { CryptocurrencyTileData } from './types';
 import type { DragboardTileData } from '../../dragboard';
 
-const CryptocurrencyTileContent = ({ data }: { data: CryptocurrencyTileData | null }) => {
+const CryptocurrencyTileContent = ({
+  data,
+}: {
+  data: CryptocurrencyTileData | null;
+}): React.ReactNode => {
   if (data && data.coins.length > 0) {
     const coins = data.coins.slice(0, 5);
 
@@ -46,7 +50,7 @@ export const CryptocurrencyTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getCryptocurrencyMarkets } = useCryptoApi();
   const pathParams = useMemo(() => ({}), []);
   const queryParams = useMemo(
@@ -65,21 +69,17 @@ export const CryptocurrencyTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
-    getCryptocurrencyMarkets,
-    tile.id,
-    pathParams,
-    queryParams,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getCryptocurrencyMarkets, tile.id, pathParams, queryParams, refreshConfig);
 
-  // TODO: fix the undefined update
+  const lastUpdateStr = lastUpdated ? formatDateTimeToISO(fromDate(lastUpdated)) : undefined;
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={lastUpdated ? formatDateTimeToISO(fromDate(lastUpdated)) : undefined}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

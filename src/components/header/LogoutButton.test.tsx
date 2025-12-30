@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { AuthContext } from '../../contexts/AuthContextDef';
+import { AuthContext } from '../../contexts/AuthContext';
 import { MockToastProvider } from '../../test/mocks/componentMocks';
 
 import { LogoutButton } from './LogoutButton';

@@ -1,5 +1,6 @@
 {
   "auth": {
+    "password": "Password",
     "passwordRequired": "Password is required",
     "invalidPassword": "Invalid password",
     "loginFailed": "Login failed. Please try again.",
@@ -10,10 +11,6 @@
     "signIn": "Sign in"
   },
   "tile": {
-    "dataFetchFailed": "Data failed to fetch",
-    "componentLoadError": "There was an error loading this component.",
-    "tileError": "Tile Error",
-    "unknownError": "Unknown error",
     "pending": "Pending",
     "never": "Never",
     "justNow": "Just now",
@@ -21,7 +18,14 @@
     "minutesAgo_other": "{{count}}m ago",
     "hoursAgo_one": "{{count}}h ago",
     "hoursAgo_other": "{{count}}h ago",
-    "invalidDate": "Invalid date"
+    "invalidDate": "Invalid date",
+    "content": "content",
+    "lastRequest": "Last request",
+    "lastData": "Last data",
+    "loading": "Loading data...",
+    "upToDate": "Data is up to date",
+    "error": "Data fetch failed",
+    "stale": "Data is stale"
   },
   "api": {
     "timeout": "API request timed out after {{seconds}} seconds",
@@ -46,7 +50,8 @@
     "toggleSidebar": "Toggle sidebar",
     "refreshAll": "Refresh all tiles",
     "refreshShortcut": "Refresh all tiles (R)",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "logout": "Logout"
   },
   "weather": {
     "N": "N",
@@ -76,13 +81,6 @@
     "gdxEtfName": "VanEck Gold Miners ETF",
     "unknownTile": "Unknown Tile",
     "unknownTileType": "Unknown tile type"
-  },
-  "tile": {
-    "content": "content",
-    "pending": "pending",
-    "never": "never",
-    "invalidDate": "invalid date",
-    "lastRequest": "Last request"
   },
   "errors": {
     "dataFetchFailed": "Data failed to fetch",

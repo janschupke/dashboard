@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ import type { GdxEtfTileData } from './types';
 import type { AlphaVantageQueryParams } from '../../../services/apiEndpoints';
 import type { DragboardTileData } from '../../dragboard';
 
-const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }) => {
+const GdxEtfTileContent = ({ data }: { data: GdxEtfTileData | null }): React.ReactNode => {
   const { t } = useTranslation();
 
   // Check if data is null or contains only default/empty values
@@ -61,7 +61,7 @@ export const GdxEtfTile = ({
 }: {
   tile: DragboardTileData;
   meta: TileMeta;
-}) => {
+}): React.ReactNode => {
   const { getGdxEtf } = useGdxEtfApi();
 
   const params = useMemo<AlphaVantageQueryParams>(
@@ -80,20 +80,17 @@ export const GdxEtfTile = ({
     }),
     [],
   );
-  const { data, status, lastUpdated, manualRefresh, isLoading } = useTileData(
-    getGdxEtf,
-    tile.id,
-    {},
-    params,
-    refreshConfig,
-  );
+  const { data, status, lastUpdated, lastSuccessfulDataUpdate, manualRefresh, isLoading } =
+    useTileData(getGdxEtf, tile.id, {}, params, refreshConfig);
 
+  const lastUpdateStr = formatDateToISO(lastUpdated);
   return (
     <GenericTile
       tile={tile}
       meta={meta}
       status={status}
-      lastUpdate={formatDateToISO(lastUpdated)}
+      {...(lastUpdateStr !== undefined && { lastUpdate: lastUpdateStr })}
+      {...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate })}
       data={data}
       onManualRefresh={manualRefresh}
       isLoading={isLoading}

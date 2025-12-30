@@ -116,7 +116,7 @@ export const mockLazyImports = () => {
     const actual = await vi.importActual('react');
     return {
       ...actual,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       lazy: (_importFn: () => Promise<unknown>) => {
         // Return a synchronous component instead of lazy
         return () =>

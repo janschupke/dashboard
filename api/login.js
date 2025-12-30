@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const TOKEN_EXPIRATION = '7d';
 
@@ -9,7 +9,7 @@ const COOKIE_PATH = '/';
 const COOKIE_SAME_SITE = 'Strict';
 const COOKIE_SECURE_FLAG = process.env.NODE_ENV === 'production' ? '; Secure' : '';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

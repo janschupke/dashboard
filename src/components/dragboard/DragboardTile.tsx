@@ -1,4 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
+
+import { Tooltip } from 'react-tooltip';
 
 import { Icon } from '../ui/Icon';
 
@@ -19,6 +21,7 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
   // Use selective hook that only re-renders when THIS tile changes
   const { tile, isDragging } = useTileById(id);
   const { startTileDrag, endTileDrag, removeTile } = useDragboardActions();
+  const tileContainerRef = useRef<HTMLDivElement>(null);
 
   // Calculate grid position from order
   // Order 0 = first cell, order 1 = second cell, etc.
@@ -35,23 +38,43 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
     return null;
   }
 
-  const handleDragStart = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.DragEvent): void => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', id);
+
+    // Find the actual tile Card element (not the wrapper) to use as drag image
+    const tileCard = tileContainerRef.current?.querySelector('[data-tile-id]') as HTMLElement;
+    if (tileCard) {
+      // Calculate offset to position drag image relative to cursor
+      const rect = tileCard.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+
+      e.dataTransfer.setDragImage(tileCard, offsetX, offsetY);
+    }
+
     startTileDrag(id);
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (): void => {
     endTileDrag(null); // Will be updated by drop handler
   };
 
-  const handleRemove = (e: React.MouseEvent) => {
+  const handleRemove = (e: React.MouseEvent): void => {
     e.stopPropagation();
     removeTile(id);
   };
 
+  // Create drag handle props to pass to the tile header
+  const dragHandleProps = {
+    draggable: true,
+    onDragStart: handleDragStart,
+    onDragEnd: handleDragEnd,
+  };
+
   return (
     <div
+      ref={tileContainerRef}
       className="relative flex flex-col w-full h-full group"
       style={{
         minWidth: `${DRAGBOARD_CONSTANTS.MIN_TILE_WIDTH}px`,
@@ -63,20 +86,26 @@ const DragboardTileComponent: React.FC<DragboardTileProps> = ({
       data-tile-id={id}
       role="gridcell"
       aria-label={`Tile ${id}`}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
     >
-      <button
-        onClick={handleRemove}
-        className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-theme-secondary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
-        aria-label="Remove tile"
-        type="button"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <Icon name="close" size="sm" />
-      </button>
-      {children}
+      <>
+        <button
+          onClick={handleRemove}
+          className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 p-1 rounded bg-surface-secondary hover:bg-surface-tertiary text-secondary hover:text-primary focus:outline-none focus:ring-2 focus:ring-interactive-primary"
+          aria-label="Remove tile"
+          data-tooltip-id={`dragboard-tile-remove-tooltip-${id}`}
+          data-tooltip-content="Remove tile"
+          type="button"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <Icon name="close" size="sm" />
+        </button>
+        <Tooltip id={`dragboard-tile-remove-tooltip-${id}`} />
+      </>
+      {React.isValidElement(children)
+        ? React.cloneElement(children, { dragHandleProps } as {
+            dragHandleProps: typeof dragHandleProps;
+          })
+        : children}
     </div>
   );
 };

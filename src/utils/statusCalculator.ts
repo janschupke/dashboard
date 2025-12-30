@@ -27,7 +27,7 @@ export function calculateTileStatus<T extends TileDataType>(params: {
   tileId: string;
   getCachedData: (tileId: string) => TileState<T> | null;
 }): StatusCalculationResult<T> {
-  const { showLoading, error, result, tileId, getCachedData } = params;
+  const { showLoading, result, tileId, getCachedData } = params;
 
   // Show loading state when fetching and no data available
   if (showLoading) {
@@ -38,16 +38,20 @@ export function calculateTileStatus<T extends TileDataType>(params: {
     };
   }
 
-  if (error || !result) {
-    // Try to get cached data on error
+  // Since dataFetcher always returns a TileConfig (never throws), result should always exist
+  // But we still handle the case where it might be null/undefined for safety
+  if (!result) {
+    // Fallback: try to get cached data
     const cachedData = getCachedData(tileId);
     if (cachedData?.data) {
       return {
         status: TileStatus.Stale,
         data: cachedData.data,
-        lastUpdated: cachedData.lastDataRequest
-          ? fromUnixTimestampMs(cachedData.lastDataRequest)
-          : null,
+        lastUpdated: cachedData.lastSuccessfulDataRequest
+          ? fromUnixTimestampMs(cachedData.lastSuccessfulDataRequest)
+          : cachedData.lastDataRequest
+            ? fromUnixTimestampMs(cachedData.lastDataRequest)
+            : null,
       };
     }
     return {
@@ -60,6 +64,7 @@ export function calculateTileStatus<T extends TileDataType>(params: {
   const data = result.data;
   const lastUpdated = result.lastDataRequest ? fromUnixTimestampMs(result.lastDataRequest) : null;
 
+  // Determine status based on result state
   if (result.lastDataRequestSuccessful && data) {
     return {
       status: TileStatus.Success,
@@ -67,16 +72,22 @@ export function calculateTileStatus<T extends TileDataType>(params: {
       lastUpdated,
     };
   } else if (!result.lastDataRequestSuccessful && data) {
+    // Stale: use lastSuccessfulDataRequest if available, otherwise fall back to lastDataRequest
+    const staleLastUpdated = result.lastSuccessfulDataRequest
+      ? fromUnixTimestampMs(result.lastSuccessfulDataRequest)
+      : lastUpdated;
     return {
       status: TileStatus.Stale,
       data,
-      lastUpdated,
+      lastUpdated: staleLastUpdated,
     };
   } else {
+    // Error: no data and request failed
+    // Use lastDataRequest for lastUpdated (shows when the failed request was made)
     return {
       status: TileStatus.Error,
       data: null,
-      lastUpdated: null,
+      lastUpdated, // This will be the timestamp of the failed request
     };
   }
 }

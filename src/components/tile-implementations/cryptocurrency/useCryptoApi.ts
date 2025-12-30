@@ -8,7 +8,13 @@ import type { CryptocurrencyTileData } from './types';
 import type { CryptoMarketsQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useCryptoApi() {
+export function useCryptoApi(): {
+  getCryptocurrencyMarkets: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: CryptoMarketsQueryParams,
+  ) => Promise<TileConfig<CryptocurrencyTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getCryptocurrencyMarkets = useCallback(
     async (
@@ -20,7 +26,7 @@ export function useCryptoApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data = await response.json();
+          const data = (await response.json()) as unknown;
           return { data, status: response.status };
         },
         tileId,

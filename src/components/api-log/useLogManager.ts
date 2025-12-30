@@ -2,7 +2,14 @@ import { useState, useCallback } from 'react';
 
 import { useLogContext } from './useLogContext';
 
-export const useLogManager = () => {
+export const useLogManager = (): {
+  isLogViewOpen: boolean;
+  toggleLogView: () => void;
+  closeLogView: () => void;
+  hasLogs: boolean;
+  errorCount: number;
+  warningCount: number;
+} => {
   const [isLogViewOpen, setIsLogViewOpen] = useState(false);
   const { logs } = useLogContext();
 

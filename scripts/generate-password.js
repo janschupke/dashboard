@@ -1,6 +1,5 @@
-const readline = require('readline');
-
-const bcrypt = require('bcryptjs');
+import readline from 'readline';
+import bcrypt from 'bcryptjs';
 
 const rl = readline.createInterface({
   input: process.stdin,

@@ -1,10 +1,22 @@
-import React, { useState, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { useState, useCallback, createContext } from 'react';
 
 import { generateId } from '../utils/idGenerator';
 
-import { ToastContext } from './ToastContextDef';
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  duration?: number;
+}
 
-import type { Toast, ToastContextType } from './ToastContextDef';
+export interface ToastContextType {
+  toasts: Toast[];
+  addToast: (message: string, type: Toast['type'], duration?: number) => void;
+  removeToast: (id: string) => void;
+}
+
+export const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 interface ToastProviderProps {
   children: React.ReactNode;

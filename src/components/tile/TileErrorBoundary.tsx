@@ -1,6 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 
-import { ERROR_MESSAGES } from '../../constants/errorMessages';
+import { useTranslation } from 'react-i18next';
 
 interface TileErrorBoundaryProps {
   children: React.ReactNode;
@@ -20,27 +21,30 @@ export class TileErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(error: Error): TileErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  override componentDidCatch() {
+  override componentDidCatch(): void {
     // Optionally log error
   }
 
-  override render() {
+  override render(): React.ReactNode {
     if (this.state.hasError) {
-      return (
-        <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">
-          <div>
-            <p className="font-semibold">{ERROR_MESSAGES.TILE.TILE_ERROR}</p>
-            <p className="text-xs mt-1">
-              {this.state.error?.message ?? ERROR_MESSAGES.TILE.UNKNOWN_ERROR}
-            </p>
-          </div>
-        </div>
-      );
+      return <ErrorDisplay error={this.state.error} />;
     }
     return this.props.children;
   }
+}
+
+function ErrorDisplay({ error }: { error: Error | null }): React.ReactNode {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center justify-center h-full text-error-600 p-4 text-center">
+      <div>
+        <p className="font-semibold">{t('errors.tileError')}</p>
+        <p className="text-xs mt-1">{error?.message ?? t('errors.unknown')}</p>
+      </div>
+    </div>
+  );
 }

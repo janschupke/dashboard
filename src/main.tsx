@@ -1,6 +1,7 @@
 import './index.css';
 import './theme-init';
 import './i18n/config';
+import 'react-tooltip/dist/react-tooltip.css';
 
 import React from 'react';
 
@@ -54,7 +55,9 @@ parserRegistry.register(TileType.URANIUM, new UraniumHtmlDataParser());
 
 const dataServices = { parserRegistry, mapperRegistry, dataFetcher };
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Root element not found');
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <QueryClientProvider>
       <ThemeProvider>

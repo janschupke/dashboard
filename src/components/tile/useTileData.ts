@@ -6,6 +6,7 @@ import { DateTime } from 'luxon';
 import { REFRESH_INTERVALS } from '../../contexts/constants';
 import { useTileRefreshService } from '../../hooks/useTileRefreshService';
 import { storageManager } from '../../services/storageManager';
+import { formatDateTimeToISO } from '../../utils/dateFormatters';
 import { calculateTileStatus } from '../../utils/statusCalculator';
 import { msToSeconds } from '../../utils/timeUtils';
 
@@ -42,6 +43,7 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   data: T | null;
   status: TileStatus;
   lastUpdated: Date | null;
+  lastSuccessfulDataUpdate?: string;
   manualRefresh: () => void;
   isLoading: boolean;
 } {
@@ -113,8 +115,6 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
       // Retry configuration
       retry: 1,
       retryDelay: 1000,
-      // Keep previous data on error (v5 API)
-      placeholderData: (previousData) => previousData,
       // Network mode
       networkMode: 'online',
     }),
@@ -161,8 +161,32 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
 
   const { status, data, lastUpdated: lastUpdatedDateTime } = statusResult;
 
-  // Convert DateTime to Date for backward compatibility (can be removed later)
-  const lastUpdated = lastUpdatedDateTime ? lastUpdatedDateTime.toJSDate() : null;
+  // Get last request timestamp - result always exists now (dataFetcher never throws)
+  // Use result.lastDataRequest which is always updated, even on errors
+  const lastRequestTimestamp = useMemo(() => {
+    if (result?.lastDataRequest) {
+      return DateTime.fromMillis(result.lastDataRequest).toJSDate();
+    }
+    // Fallback: read from storage if result is somehow null (shouldn't happen)
+    const cachedData = storageManager.getTileState<T>(tileId);
+    if (cachedData?.lastDataRequest) {
+      return DateTime.fromMillis(cachedData.lastDataRequest).toJSDate();
+    }
+    // Final fallback: use statusCalculator's lastUpdated
+    return lastUpdatedDateTime ? lastUpdatedDateTime.toJSDate() : null;
+  }, [result, tileId, lastUpdatedDateTime]);
+
+  // Get last successful data timestamp from result or cache
+  const lastSuccessfulDataUpdate = useMemo(() => {
+    if (result?.lastSuccessfulDataRequest) {
+      return formatDateTimeToISO(DateTime.fromMillis(result.lastSuccessfulDataRequest));
+    }
+    const cachedData = storageManager.getTileState<T>(tileId);
+    if (cachedData?.lastSuccessfulDataRequest) {
+      return formatDateTimeToISO(DateTime.fromMillis(cachedData.lastSuccessfulDataRequest));
+    }
+    return undefined;
+  }, [result, tileId]);
 
   // Register with refresh service for global refresh functionality
   const refreshService = useTileRefreshService();
@@ -184,7 +208,8 @@ export function useTileData<T extends TileDataType, TPathParams, TQueryParams>(
   return {
     data,
     status,
-    lastUpdated,
+    lastUpdated: lastRequestTimestamp, // Use lastDataRequest timestamp (works for errors too)
+    ...(lastSuccessfulDataUpdate !== undefined && { lastSuccessfulDataUpdate }),
     manualRefresh,
     isLoading: showLoading,
   };

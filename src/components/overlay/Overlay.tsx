@@ -18,6 +18,15 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 import type { DragboardTileData } from '../dragboard';
 
+type LogManagerReturn = {
+  isLogViewOpen: boolean;
+  toggleLogView: () => void;
+  closeLogView: () => void;
+  hasLogs: boolean;
+  errorCount: number;
+  warningCount: number;
+};
+
 function OverlayContent({
   isSidebarCollapsed,
   setSidebarCollapsed,
@@ -28,10 +37,10 @@ function OverlayContent({
   setSidebarCollapsed: (tiles: string[]) => void;
   sidebarSelectedIndex: number;
   setSidebarSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
-}) {
+}): React.ReactNode {
   const { theme, toggleTheme } = useTheme();
-  const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { isLogViewOpen, toggleLogView, closeLogView } = useLogManager() as LogManagerReturn;
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { tiles, addTile, removeTile } = useDragboard();
   const refreshService = useTileRefreshService();
 
@@ -57,8 +66,9 @@ function OverlayContent({
     setSelectedIndex: setSidebarSelectedIndex,
   });
 
-  const LogView = React.lazy(() =>
-    import('../api-log/LogView').then((m) => ({ default: m.LogView })),
+  const LogView = React.lazy(
+    (): Promise<{ default: React.ComponentType<{ isOpen: boolean; onClose: () => void }> }> =>
+      import('../api-log/LogView').then((m) => ({ default: m.LogView })),
   );
 
   return (
@@ -123,7 +133,10 @@ function OverlayContent({
   );
 }
 
-function useTileStorage() {
+function useTileStorage(): {
+  initialTiles: DragboardTileData[];
+  storage: ReturnType<typeof useStorageManager>;
+} {
   const storage = useStorageManager();
   const [initialTiles, setInitialTiles] = React.useState<DragboardTileData[]>([]);
   React.useEffect(() => {
@@ -147,7 +160,11 @@ function useTileStorage() {
   return { initialTiles, storage };
 }
 
-function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useStorageManager> }) {
+function TilePersistenceListener({
+  storage,
+}: {
+  storage: ReturnType<typeof useStorageManager>;
+}): null {
   const { tiles } = useDragboard();
   const prevTilesRef = React.useRef<DragboardTileData[] | null>(null);
   React.useEffect(() => {
@@ -175,6 +192,7 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
               data: null,
               lastDataRequest: 0,
               lastDataRequestSuccessful: false,
+              lastSuccessfulDataRequest: null,
             });
           }
         }
@@ -188,7 +206,7 @@ function TilePersistenceListener({ storage }: { storage: ReturnType<typeof useSt
   return null;
 }
 
-export function Overlay() {
+export function Overlay(): React.ReactNode {
   const { initialTiles, storage } = useTileStorage();
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(() => {
     // Load initial sidebar state from storage

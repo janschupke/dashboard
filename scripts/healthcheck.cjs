@@ -73,7 +73,7 @@ const endpoints = [
       series_id: 'FEDFUNDS',
       file_type: 'json',
     },
-    baseUrl: `${BASE_URL}/api/fred/fred/series/observations`,
+    baseUrl: `${BASE_URL}/api/fred/series/observations`,
   },
   // Precious Metals API
   {

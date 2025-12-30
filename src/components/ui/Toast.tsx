@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { useToast } from '../../hooks/useToast';
 
 import { Icon } from './Icon';
@@ -17,6 +19,7 @@ interface AnimatedToastProps {
 }
 
 const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -26,7 +29,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleRemove = () => {
+  const handleRemove = (): void => {
     setIsExiting(true);
     // Wait for exit animation to complete before removing from DOM
     setTimeout(() => {
@@ -34,7 +37,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     }, 300);
   };
 
-  const getToastStyles = (type: ToastType) => {
+  const getToastStyles = (type: ToastType): string => {
     const baseStyles =
       'max-w-sm w-full p-4 rounded-lg shadow-lg transition-all duration-300 transform';
 
@@ -49,7 +52,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
         case 'info':
           return 'bg-status-info text-white border-l-4 border-status-info';
         default:
-          return 'bg-surface-secondary text-theme-primary border-l-4 border-theme-secondary';
+          return 'bg-surface-secondary text-primary border-l-4 border-secondary';
       }
     })();
 
@@ -63,7 +66,7 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
     return `${baseStyles} ${typeStyles} ${animationStyles}`;
   };
 
-  const getIcon = (type: ToastType) => {
+  const getIcon = (type: ToastType): React.ReactNode => {
     switch (type) {
       case 'error':
         return <Icon name="toast-error" size="sm" />;
@@ -88,8 +91,8 @@ const AnimatedToast: React.FC<AnimatedToastProps> = ({ toast, onRemove }) => {
         <div className="flex-shrink-0 ml-3">
           <button
             onClick={handleRemove}
-            className="inline-flex text-white hover:text-theme-secondary focus:outline-none focus:text-theme-secondary transition-colors duration-200"
-            aria-label={/* i18n */ 'ui.closeNotification'}
+            className="inline-flex text-white hover:text-secondary focus:outline-none focus:text-secondary transition-colors duration-200"
+            aria-label={t('ui.closeNotification')}
           >
             <Icon name="close" size="sm" />
           </button>

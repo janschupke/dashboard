@@ -6,9 +6,9 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClasses = {
-  default: 'bg-surface-primary border border-theme-primary',
-  elevated: 'bg-surface-primary border border-theme-primary shadow-md hover:shadow-lg',
-  outlined: 'bg-surface-primary border border-theme-secondary',
+  default: 'bg-surface-primary border border-primary',
+  elevated: 'bg-surface-primary border border-primary shadow-md hover:shadow-lg',
+  outlined: 'bg-surface-primary border border-secondary',
 };
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(

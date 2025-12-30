@@ -11,23 +11,31 @@ const handler = async (req, res) => {
 
   const url = urlObj.toString();
 
-  // Create headers object, filtering out problematic headers
-  const headers = {};
-  Object.entries(req.headers).forEach(([key, value]) => {
-    if (key.toLowerCase() !== 'host' && value !== undefined) {
-      headers[key] = Array.isArray(value) ? value[0] : value;
-    }
-  });
+  // Only send minimal headers - don't forward client headers
+  const headers = {
+    'User-Agent': 'Dashboard/1.0',
+    Accept: 'application/json',
+  };
 
-  const apiRes = await fetch(url, {
-    method: req.method,
-    headers,
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-  });
-  const data = await apiRes.arrayBuffer();
-  res.status(apiRes.status);
-  apiRes.headers.forEach((value, key) => res.setHeader(key, value));
-  res.send(Buffer.from(data));
+  try {
+    const apiRes = await fetch(url, {
+      method: 'GET',
+      headers,
+    });
+
+    const data = await apiRes.arrayBuffer();
+    res.status(apiRes.status);
+    apiRes.headers.forEach((value, key) => {
+      // Only forward content-type header
+      if (key.toLowerCase() === 'content-type') {
+        res.setHeader(key, value);
+      }
+    });
+    res.send(Buffer.from(data));
+  } catch (error) {
+    console.error('OpenWeatherMap API Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
-module.exports = handler;
+export default handler;

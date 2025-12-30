@@ -2,7 +2,7 @@ import React from 'react';
 import type { ReactNode } from 'react';
 
 import { DataServicesContext } from '../../contexts/DataServicesContext';
-import { ToastContext } from '../../contexts/ToastContextDef';
+import { ToastContext } from '../../contexts/ToastContext';
 
 import { createMockDataServices } from './componentMocksUtils';
 

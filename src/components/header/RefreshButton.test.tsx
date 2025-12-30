@@ -16,7 +16,8 @@ describe('RefreshButton', () => {
     const button = screen.getByTestId('refresh-button');
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute('aria-label', 'header.refreshAll');
-    expect(button).toHaveAttribute('title', 'header.refreshShortcut');
+    expect(button).toHaveAttribute('data-tooltip-id', 'refresh-button-tooltip');
+    expect(button).toHaveAttribute('data-tooltip-content', 'header.refreshShortcut');
   });
 
   it('calls onRefresh when clicked', () => {

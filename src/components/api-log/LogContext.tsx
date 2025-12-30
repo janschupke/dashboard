@@ -13,7 +13,7 @@ interface LogProviderProps {
 export const LogProvider: React.FC<LogProviderProps> = ({ children }) => {
   const [logs, setLogs] = useState<APILogEntry[]>([]);
 
-  const refreshLogs = useCallback(() => {
+  const refreshLogs = useCallback((): void => {
     const storedLogs = storageManager.getLogs();
     setLogs(Array.isArray(storedLogs) ? storedLogs : []);
   }, []);
@@ -27,7 +27,7 @@ export const LogProvider: React.FC<LogProviderProps> = ({ children }) => {
   }, [refreshLogs]);
 
   const addLog = useCallback(
-    (entry: Omit<APILogEntry, 'id' | 'timestamp'>) => {
+    (entry: Omit<APILogEntry, 'id' | 'timestamp'>): void => {
       storageManager.addLog(entry);
       // refreshLogs(); // now handled by listener
     },
@@ -37,17 +37,8 @@ export const LogProvider: React.FC<LogProviderProps> = ({ children }) => {
   );
 
   const removeLog = useCallback(
-    (id: string) => {
-      const logs = storageManager.getLogs().filter((log) => log.id !== id);
-      storageManager.clearLogs();
-      logs.forEach((log) =>
-        storageManager.addLog({
-          level: log.level,
-          apiCall: log.apiCall,
-          reason: log.reason,
-          details: log.details,
-        }),
-      );
+    (id: string): void => {
+      storageManager.removeLog(id);
       // refreshLogs(); // now handled by listener
     },
     [
@@ -56,7 +47,7 @@ export const LogProvider: React.FC<LogProviderProps> = ({ children }) => {
   );
 
   const clearLogs = useCallback(
-    () => {
+    (): void => {
       storageManager.clearLogs();
       // refreshLogs(); // now handled by listener
     },

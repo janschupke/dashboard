@@ -8,7 +8,13 @@ import type { GdxEtfTileData } from './types';
 import type { AlphaVantageQueryParams, PathParams } from '../../../services/apiEndpoints';
 import type { TileConfig } from '../../../services/storageManager';
 
-export function useGdxEtfApi() {
+export function useGdxEtfApi(): {
+  getGdxEtf: (
+    tileId: string,
+    pathParams: PathParams,
+    queryParams: AlphaVantageQueryParams,
+  ) => Promise<TileConfig<GdxEtfTileData>>;
+} {
   const { dataFetcher } = useDataServices();
   const getGdxEtf = useCallback(
     async (
@@ -20,7 +26,7 @@ export function useGdxEtfApi() {
       return dataFetcher.fetchAndMap(
         async () => {
           const response = await dataFetcher.fetchWithError(url);
-          const data = await response.json();
+          const data = (await response.json()) as unknown;
           return { data, status: response.status };
         },
         tileId,

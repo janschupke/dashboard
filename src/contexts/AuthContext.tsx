@@ -1,8 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { useState, useEffect, useCallback, createContext } from 'react';
 
 import { useAuthService } from '../services/authService';
 
-import { AuthContext, type AuthContextType } from './AuthContextDef';
+import type { AuthCheckData } from '../types/auth';
+
+export interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -22,8 +33,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const data = await authService.checkAuth();
-      setIsAuthenticated(data.authenticated);
+      const checkAuthResult: AuthCheckData = await authService.checkAuth();
+      setIsAuthenticated(checkAuthResult.authenticated);
     } catch (error) {
       console.error('Auth check failed:', error);
       setIsAuthenticated(false);

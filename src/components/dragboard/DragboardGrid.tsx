@@ -22,7 +22,7 @@ export const DragboardGrid: React.FC<DragboardGridProps> = ({ children }) => {
   const { endTileDrag, endSidebarDrag, setDropTarget } = useDragboardActions();
 
   useEffect(() => {
-    const updateColumns = () => {
+    const updateColumns = (): void => {
       if (!gridRef.current) return;
       const width = gridRef.current.getBoundingClientRect().width;
       const columns = calculateViewportColumns(width);
