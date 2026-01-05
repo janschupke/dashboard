@@ -22,6 +22,7 @@
     { "src": "/src/(.*)", "dest": "/src/$1" },
     { "src": "/node_modules/(.*)", "dest": "/node_modules/$1" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/favicon.png", "dest": "/favicon.png" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
